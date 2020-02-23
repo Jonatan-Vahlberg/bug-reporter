@@ -2,10 +2,17 @@ import * as React from 'react';
 
 import {ApplicationContext} from './src/context/ApplicationContext';
 import Navigator from './src/navigation';
+import firebase from 'src/services/api/firebase';
 
 const App = () => {
   return (
-    <ApplicationContext.Provider value={{}}>
+    <ApplicationContext.Provider
+      value={{
+        settings: {},
+        actions: {
+          firebase,
+        },
+      }}>
       <Navigator />
     </ApplicationContext.Provider>
   );

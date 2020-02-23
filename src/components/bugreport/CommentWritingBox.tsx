@@ -3,7 +3,7 @@ import {TextInput, ScrollView, Image, View, StyleSheet} from 'react-native';
 import Profile from '../../models/Profile';
 import metrics from '../../static/metrics';
 import colors from '../../static/colors';
-import {ReportState} from '../../navigation/dashboard/ViewReportScreen';
+import {ReportState} from '../../screens/dashboard/ViewReportScreen';
 
 export interface CommentWritingBoxProps {
   profile?: Profile;

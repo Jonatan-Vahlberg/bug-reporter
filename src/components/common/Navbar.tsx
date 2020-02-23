@@ -7,9 +7,19 @@ import {
   Dimensions,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {
+  ProfileParamList,
+  AuthParamList,
+  MainNavigatorParamList,
+  DashboardParamList,
+} from '../../navigation';
 
 export interface NavProps {
-  navigation: StackNavigationProp<{}>;
+  navigation:
+    | StackNavigationProp<ProfileParamList>
+    | StackNavigationProp<AuthParamList>
+    | StackNavigationProp<MainNavigatorParamList>
+    | StackNavigationProp<DashboardParamList>;
   title?: string;
   root: boolean;
   color?: string;
@@ -36,7 +46,7 @@ Navbar.defaultProps = {
 
 const navStyles = StyleSheet.create({
   baseStyle: {
-    height: 80,
+    height: 60,
     width: Dimensions.get('screen').width,
     alignItems: 'center',
     paddingHorizontal: 20,

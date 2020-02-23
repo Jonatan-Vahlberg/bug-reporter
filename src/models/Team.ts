@@ -7,4 +7,5 @@ export default interface Team {
   reports: BugReport[];
   uuid: string;
   description: string;
+  code: string;
 }

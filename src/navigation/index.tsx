@@ -1,22 +1,30 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackNavigationOptions,
+} from '@react-navigation/stack';
 
-import DashboardScreen from './dashboard/DashboardScreen';
-import CreateNewReportScreen from './dashboard/CreateNewReportScreen';
-import ViewReportScreen from './dashboard/ViewReportScreen';
+import DashboardScreen from '../screens/dashboard/DashboardScreen';
+import CreateNewReportScreen from '../screens/dashboard/CreateNewReportScreen';
+import ViewReportScreen from '../screens/dashboard/ViewReportScreen';
 
-import ProfileScreen from './profile/ProfileScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
-import TeamsListScreen from './teams/TeamsListScreen';
-import TeamDetailScreen from './teams/TeamDetailScreen';
-import TeamsAdminScreen from './teams/TeamsAdminScreen';
-import CreateNewTeamScreen from './teams/CreateNewTeamScreen';
+import TeamsListScreen from '../screens/teams/TeamsListScreen';
+import TeamDetailScreen from '../screens/teams/TeamDetailScreen';
+import TeamsAdminScreen from '../screens/teams/TeamsAdminScreen';
+import CreateNewTeamScreen from '../screens/teams/CreateNewTeamScreen';
 
-import LoginScreen from './auth/LoginScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
 import BugReport from 'src/models/BugReport';
-import Team from 'src/models/Team';
+import Team from '../models/Team';
+import {ApplicationContext} from '../context/ApplicationContext';
+
+const DefaultStackOptions: StackNavigationOptions = {
+  headerShown: false,
+};
 
 export type ProfileParamList = {
   PROFILE_HOME: undefined;
@@ -28,7 +36,7 @@ export type ProfileParamList = {
 const ProfileNavigator = () => {
   const ProfileStack = createStackNavigator<ProfileParamList>();
   return (
-    <ProfileStack.Navigator>
+    <ProfileStack.Navigator screenOptions={DefaultStackOptions}>
       <ProfileStack.Screen name="PROFILE_HOME" component={ProfileScreen} />
     </ProfileStack.Navigator>
   );
@@ -46,7 +54,7 @@ export type TeamsParamList = {
 const TeamsNavigator = () => {
   const TeamsStack = createStackNavigator<TeamsParamList>();
   return (
-    <TeamsStack.Navigator>
+    <TeamsStack.Navigator screenOptions={DefaultStackOptions}>
       <TeamsStack.Screen name="TEAMS_HOME" component={TeamsListScreen} />
       <TeamsStack.Screen name="TEAMS_DETAIL" component={TeamDetailScreen} />
       <TeamsStack.Screen name="TEAMS_ADMIN" component={TeamsAdminScreen} />
@@ -66,7 +74,7 @@ export type DashboardParamList = {
 const DashNavigator = () => {
   const DashStack = createStackNavigator<DashboardParamList>();
   return (
-    <DashStack.Navigator>
+    <DashStack.Navigator screenOptions={DefaultStackOptions}>
       <DashStack.Screen name="DASH_HOME" component={DashboardScreen} />
       <DashStack.Screen name="DASH_CREATE" component={CreateNewReportScreen} />
       <DashStack.Screen name="DASH_VIEW" component={ViewReportScreen} />
@@ -84,7 +92,7 @@ export type MainNavigatorParamList = {
 const MainNavigator = () => {
   const MainTab = createBottomTabNavigator<MainNavigatorParamList>();
   return (
-    <MainTab.Navigator>
+    <MainTab.Navigator screenOptions={DefaultStackOptions}>
       <MainTab.Screen name="DASH" component={DashNavigator} />
       <MainTab.Screen name="TEAMS" component={TeamsNavigator} />
       <MainTab.Screen name="PROFILE" component={ProfileNavigator} />
@@ -99,7 +107,7 @@ export type AuthParamList = {
 const AuthNavigator = () => {
   const AuthStack = createStackNavigator<AuthParamList>();
   return (
-    <AuthStack.Navigator>
+    <AuthStack.Navigator screenOptions={DefaultStackOptions}>
       <AuthStack.Screen name="LOGIN" component={LoginScreen} />
       <AuthStack.Screen name="REGISTER" component={LoginScreen} />
     </AuthStack.Navigator>
@@ -114,12 +122,23 @@ export type RootParamList = {
 const Navigator = () => {
   const RootStack = createStackNavigator<RootParamList>();
   return (
-    <NavigationContainer>
-      <RootStack.Navigator screenOptions={{headerShown: false}}>
-        <RootStack.Screen name="MAIN" component={MainNavigator} />
-        <RootStack.Screen name="AUTH" component={AuthNavigator} />
-      </RootStack.Navigator>
-    </NavigationContainer>
+    <ApplicationContext.Consumer>
+      {context => (
+        <NavigationContainer>
+          <RootStack.Navigator screenOptions={{headerShown: false}}>
+            {context.profile === undefined ? (
+              <>
+                <RootStack.Screen name="MAIN" component={MainNavigator} />
+              </>
+            ) : (
+              <>
+                <RootStack.Screen name="AUTH" component={AuthNavigator} />
+              </>
+            )}
+          </RootStack.Navigator>
+        </NavigationContainer>
+      )}
+    </ApplicationContext.Consumer>
   );
 };
 
