@@ -8,7 +8,7 @@ import firebase, {ApiFirebaseInterface} from '../services/api/firebase';
 
 export type ContextProps = {
   profile?: Profile;
-  teams?: Team[];
+  teams: Team[];
   featuredTeam?: Team;
   settings: object;
   actions: {

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "825475753127",
+    "firebase_url": "https://bug-tracker-17906.firebaseio.com",
+    "project_id": "bug-tracker-17906",
+    "storage_bucket": "bug-tracker-17906.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825475753127:android:0ff789b4dde94bd46ae782",
+        "android_client_info": {
+          "package_name": "info.jonatan_vahlberg.bug_reporter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "825475753127-e6b3lmoao7qkhelhmsn98re5v3gt5r5m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHlvJe10MlZ-yLeeMwtXx_jgcyuA1eXDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "825475753127-e6b3lmoao7qkhelhmsn98re5v3gt5r5m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

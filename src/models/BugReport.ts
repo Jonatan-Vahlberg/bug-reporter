@@ -14,11 +14,4 @@ export default interface BugReport {
   closed: boolean;
   reportedBy?: string;
 }
-
-export enum SeverityValue {
-  NONE = 0,
-  LOW = 1,
-  NORMAL = 2,
-  HIGH = 4,
-  CATASTROPHIC = 10,
-}
+export type SeverityValue = 'NONE' | 'LOW' | 'NORMAL' | 'HIGH' | 'CATASTROPHIC';

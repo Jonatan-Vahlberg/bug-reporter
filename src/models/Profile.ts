@@ -3,6 +3,6 @@ export default interface Profile {
   lastName: string;
   email: string;
   uuid: string;
-  phoneIds: string[];
+  FCMIDS: string[];
   teams: string[];
 }
