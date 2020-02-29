@@ -11,9 +11,9 @@ import {
 import {Text, View, TextInput as Input} from 'react-native';
 import metrics from '../../static/metrics';
 import {ApplicationContext} from '../../context/ApplicationContext';
-import {RouteProp} from '@react-navigation/native';
+import {AuthParamList} from '../../navigation';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {AuthParamList} from '..';
+import {RouteProp} from '@react-navigation/native';
 
 export interface AuthProps {
   navigation: StackNavigationProp<AuthParamList>;
@@ -54,7 +54,7 @@ class LoginScreen extends React.Component<AuthProps, AuthState> {
                 alignItems: 'center',
                 flex: 1,
               }}>
-              <Card label={this.state.showLogin ? 'Login' : 'Register'}>
+              <Card label="Register">
                 <View
                   style={{
                     justifyContent: 'flex-start',

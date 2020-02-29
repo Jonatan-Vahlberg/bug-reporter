@@ -3,11 +3,11 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Team from '../../models/Team';
 import {Navbar, CheckBox, ScreenComponent} from '../../components/common';
 import {View, Button} from 'react-native';
-import NavigationPaths from '../NavigationPaths';
+import NavigationPaths from '../../navigation/NavigationPaths';
 import BugReportListCard from '../../components/bugreport/BugReportListCard';
 import BugReport, {SeverityValue} from '../../models/BugReport';
 import metrics from '../../static/metrics';
-import {DashboardParamList} from '..';
+import {DashboardParamList} from '../../navigation';
 import {RouteProp} from '@react-navigation/native';
 
 export interface DashProps {

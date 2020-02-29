@@ -5,7 +5,7 @@ import {SeverityValue} from '../../models/BugReport';
 import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import {titleRules} from '../../static/rules';
 
-import {DashboardParamList} from '..';
+import {DashboardParamList} from '../../navigation';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 

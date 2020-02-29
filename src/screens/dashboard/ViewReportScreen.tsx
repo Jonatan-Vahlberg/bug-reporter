@@ -2,11 +2,10 @@ import * as React from 'react';
 import BugReport, {SeverityValue} from '../../models/BugReport';
 import {Navbar, ScreenComponent} from '../../components/common';
 import BugReportListCard from '../../components/bugreport/BugReportListCard';
-import {View} from 'react-native';
+import {View, ScrollView, StyleSheet} from 'react-native';
 import CommentWritingBox from '../../components/bugreport/CommentWritingBox';
-import {ScrollView} from 'react-native-gesture-handler';
 
-import {DashboardParamList} from '..';
+import {DashboardParamList} from '../../navigation';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 export interface ReportProps {
@@ -30,21 +29,16 @@ class ViewReportScreen extends React.Component<ReportProps, ReportState> {
     return (
       <ScreenComponent>
         <Navbar navigation={this.props.navigation} title="" root={false} />
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-          }}>
-          <ScrollView>
-            <BugReportListCard report={report} detail={true} />
+        <ScrollView>
+          <BugReportListCard report={report} detail={true} />
+          <View style={styles.commentBox}>
             <CommentWritingBox
               setValue={this.setValue}
               name="comment"
               value={this.state.comment}
             />
-          </ScrollView>
-        </View>
+          </View>
+        </ScrollView>
       </ScreenComponent>
     );
   }
@@ -53,5 +47,13 @@ class ViewReportScreen extends React.Component<ReportProps, ReportState> {
     this.setState({[name]: value} as Pick<ReportState, keyof ReportState>);
   };
 }
+
+const styles = StyleSheet.create({
+  commentBox: {
+    width: '100%',
+    marginHorizontal: 20,
+    paddingBottom: 10,
+  },
+});
 
 export default ViewReportScreen;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import {View} from 'react-native';
 import metrics from '../../static/metrics';
 
 const ScreenComponent: React.FC = props => {
@@ -7,12 +7,11 @@ const ScreenComponent: React.FC = props => {
     <View
       style={{
         width: metrics.screenWidth,
-        height: metrics.screenHeight,
-      }}
-    >
+        flex: 1,
+      }}>
       {props.children}
     </View>
   );
 };
 
-export { ScreenComponent };
+export {ScreenComponent};

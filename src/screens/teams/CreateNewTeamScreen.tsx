@@ -3,7 +3,7 @@ import Team from '../../models/Team';
 import TeamMember from '../../models/TeamMember';
 import {Navbar} from '../../components/common';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {TeamsParamList} from '..';
+import {TeamsParamList} from '../../navigation';
 import {RouteProp} from '@react-navigation/native';
 
 export interface AdminProps {
