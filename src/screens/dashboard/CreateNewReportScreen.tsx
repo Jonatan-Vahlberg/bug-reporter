@@ -2,7 +2,7 @@ import * as React from 'react';
 import Team from '../../models/Team';
 import TeamMember from '../../models/TeamMember';
 import {SeverityValue} from '../../models/BugReport';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, TextInput} from 'react-native';
 import {titleRules} from '../../static/rules';
 
 import {DashboardParamList} from '../../navigation';
@@ -10,7 +10,6 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import {
-  TextInput,
   FormError,
   Navbar,
   Button,
@@ -18,6 +17,7 @@ import {
   ScreenComponent,
 } from '../../components/common';
 import metrics from '../../static/metrics';
+import colors from '../../static/colors';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -44,7 +44,7 @@ class CreateNewReportScreen extends React.Component<ReportProps, ReportState> {
       labels: '',
       dueDate: undefined,
       assgingedTo: undefined,
-      severity: SeverityValue.NONE,
+      severity: 'NONE',
     };
   }
   render() {
@@ -64,7 +64,23 @@ class CreateNewReportScreen extends React.Component<ReportProps, ReportState> {
             visible={false}
           />
           <FormWrapper>
+            <Text>Title</Text>
+            <TextInput
+              placeholder="Enter your title"
+              style={styles.textInput}
+            />
+          </FormWrapper>
+          <FormWrapper>
+            <TextInput
+              numberOfLines={8}
+              textAlignVertical="top"
+              placeholder="Content"
+              style={styles.textInput}
+            />
+          </FormWrapper>
+          <FormWrapper>
             <Text>Team options</Text>
+            <TextInput style={styles.textInput} />
           </FormWrapper>
           <FormWrapper>
             <Text>Advanced options</Text>
@@ -96,6 +112,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: '#fff',
     letterSpacing: 1.4,
+  },
+  textInput: {
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    backgroundColor: colors.backGroundColor,
+    width: '100%',
   },
 });
 

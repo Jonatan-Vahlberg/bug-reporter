@@ -1,23 +1,26 @@
 import * as React from 'react';
-import BugReport, { SeverityValue } from '../../models/BugReport';
-import { Card, TextInput } from '../common';
-import { View, Text, StyleSheet } from 'react-native';
+import BugReport, {SeverityValue} from '../../models/BugReport';
+import {Card, TextInput} from '../common';
+import {View, Text, StyleSheet} from 'react-native';
 import colors from '../../static/colors';
-import { breakoutISODate } from '../../static/functions';
+import {breakoutISODate} from '../../static/functions';
 import TeamMember from '../../models/TeamMember';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {StackNavigationProp} from '@react-navigation/stack';
 import metrics from '../../static/metrics';
+import {DashboardParamList} from '../../navigation';
 
 export interface BugReportListCardProps {
   report: BugReport;
   detail?: boolean;
-  navigateTo?: (report: BugReport) => void;
+  navigation?: StackNavigationProp<DashboardParamList>;
 }
 
-const BugReportListCard: React.FC<BugReportListCardProps> = (
-  props: BugReportListCardProps,
-) => {
+const BugReportListCard: React.FC<BugReportListCardProps> = ({
+  report,
+  navigation,
+  detail,
+}) => {
   const {
     title,
     severity,
@@ -26,7 +29,7 @@ const BugReportListCard: React.FC<BugReportListCardProps> = (
     dueDate,
     closed,
     reportDate,
-  } = props.report;
+  } = report;
   const {
     root,
     header,
@@ -37,39 +40,42 @@ const BugReportListCard: React.FC<BugReportListCardProps> = (
     cardRoot,
   } = generateStyles(severity, closed);
   const SeverityString =
-    SeverityValue[severity].charAt(0).toUpperCase() +
-    SeverityValue[severity].slice(1).toLowerCase();
+    severity.charAt(0).toUpperCase() + severity.slice(1).toLowerCase();
   return (
     <View style={root}>
       <TouchableOpacity
-        disabled={props.detail}
-        onPress={() => props.navigateTo(props.report)}
-      >
-        <Card label={null} style={cardRoot}>
+        disabled={detail}
+        onPress={() => navigation?.navigate('DASH_VIEW', {report})}>
+        <Card label={undefined} style={cardRoot}>
           <View style={header}>
             <Text numberOfLines={1} style={headerText}>
               {title}
             </Text>
-            {severity !== SeverityValue.NONE && (
+            {severity !== 'NONE' && (
               <Text lineBreakMode="tail" style={headerText}>
                 {SeverityString} severity
               </Text>
             )}
           </View>
           {renderSubheader(
-            props.detail,
-            assignedTo,
-            dueDate,
+            detail!,
+            assignedTo!,
+            dueDate!,
             reportDate,
             subheader,
             subheadPart,
           )}
-          {renderContent(props.detail, content, contentBox)}
+          {renderContent(detail!, content, contentBox)}
         </Card>
       </TouchableOpacity>
     </View>
   );
 };
+
+BugReportListCard.defaultProps = {
+  detail: false,
+};
+
 const renderSubheader = (
   detail: boolean,
   assignedTo: TeamMember,
@@ -80,7 +86,7 @@ const renderSubheader = (
 ) => {
   if (detail) {
     return (
-      <View style={[subheaderStyle, { flexDirection: 'column' }]}>
+      <View style={[subheaderStyle, {flexDirection: 'column'}]}>
         <View style={[subheadPart]}>
           {assignedTo ? (
             <Text>Assigned to: {assignedTo.name}</Text>
@@ -89,7 +95,7 @@ const renderSubheader = (
           )}
         </View>
 
-        <View style={[subheadPart, { flexDirection: 'row' }]}>
+        <View style={[subheadPart, {flexDirection: 'row'}]}>
           {reportDate && (
             <Text>Report date: {breakoutISODate(reportDate)}</Text>
           )}
@@ -100,7 +106,7 @@ const renderSubheader = (
   } else {
     return (
       <View style={subheaderStyle}>
-        <View style={[subheadPart, { flex: 1 }]}>
+        <View style={[subheadPart, {flex: 1}]}>
           {assignedTo ? (
             <Text>Assigned to: {assignedTo.name}</Text>
           ) : (
@@ -145,7 +151,7 @@ const generateStyles = (severity: SeverityValue, closed: boolean) => {
     header: {
       backgroundColor: closed
         ? colors.severityColors.CLOSED
-        : colors.severityColors[SeverityValue[severity]],
+        : colors.severityColors[severity],
       minHeight: 60,
       width: '100%',
       flexDirection: 'column',
