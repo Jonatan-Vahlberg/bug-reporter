@@ -77,7 +77,6 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
                 }}
                 navigation={navigation}
               />
-              <ReportContentBox text={text} onOutput={lines => {}} editable />
             </View>
           </ScrollView>
         </ScreenComponent>

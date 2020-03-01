@@ -10,10 +10,9 @@ import FontIcon from 'react-native-vector-icons/Fontisto';
 import SimpIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 export interface ReportContentBoxProps {
-  text: string;
+  lines: ReportLine[];
   onOutput: (lines: ReportLine[]) => void;
   editable: boolean;
-  lines?: ReportLine[];
 }
 export type ReportSatus =
   | 'hashtag'
@@ -25,14 +24,10 @@ export type ReportSatus =
 export type ReportLine = {line: string; status: ReportSatus};
 
 const ReportContentBox: React.FC<ReportContentBoxProps> = ({
-  text,
+  lines,
   onOutput,
   editable,
 }) => {
-  const [lines, setLines] = React.useState<ReportLine[]>(
-    text.split('\n').map(line => ({line, status: 'hashtag'})),
-  );
-  console.log(lines);
   return (
     <View>
       <ScrollView horizontal>
@@ -62,12 +57,10 @@ const ReportContentBox: React.FC<ReportContentBoxProps> = ({
                       line: line.line,
                       status: updateStatusOfLine(line.status),
                     };
-                    setLines(lines => {
-                      let updatedLines = lines;
-                      updatedLines[index] = updatedLine;
-                      onOutput(updatedLines);
-                      return [...updatedLines];
-                    });
+
+                    let updatedLines = lines;
+                    updatedLines[index] = updatedLine;
+                    onOutput(updatedLines);
                   }}>
                   <Icon
                     name={line.status}
@@ -80,15 +73,18 @@ const ReportContentBox: React.FC<ReportContentBoxProps> = ({
                     }}
                   />
                 </TouchableOpacity>
-                <Text
-                  style={{
-                    ...styles.contentTextStyle,
-                    backgroundColor,
-                    color: textColor,
-                    fontWeight:
-                      line.status === 'exclamation' ? 'bold' : 'normal',
-                  }}>
-                  {index + 1}. {line.line}
+                <Text>
+                  {index + 1}.{' '}
+                  <Text
+                    style={{
+                      ...styles.contentTextStyle,
+                      backgroundColor,
+                      color: textColor,
+                      fontWeight:
+                        line.status === 'exclamation' ? 'bold' : 'normal',
+                    }}>
+                    {line.line}
+                  </Text>
                 </Text>
               </View>
             );

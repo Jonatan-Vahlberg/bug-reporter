@@ -73,6 +73,7 @@ export type DashboardParamList = {
 
 const DashNavigator = () => {
   const DashStack = createStackNavigator<DashboardParamList>();
+
   return (
     <DashStack.Navigator screenOptions={DefaultStackOptions}>
       <DashStack.Screen name="DASH_HOME" component={DashboardScreen} />
