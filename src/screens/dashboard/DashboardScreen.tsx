@@ -1,16 +1,20 @@
 import React, {useEffect, useContext} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Team from '../../models/Team';
-import {Navbar, CheckBox, ScreenComponent} from '../../components/common';
+import {Navbar, CheckBox, ScreenComponent, Text} from '../../components/common';
 import {View, Button, ScrollView} from 'react-native';
 import NavigationPaths from '../../navigation/NavigationPaths';
-import BugReportListCard from '../../components/bugreport/BugReportListCard';
+import BugReportListCard from './components/BugReportListCard';
 import BugReport, {SeverityValue} from '../../models/BugReport';
 import metrics from '../../static/metrics';
 import {DashboardParamList} from '../../navigation';
 import {RouteProp} from '@react-navigation/native';
 import {ApplicationContext} from '../../context/ApplicationContext';
-import ReportContentBox from '../../components/bugreport/ReportContentBox';
+import ReportContentBox from './components/ReportContentBox';
+import DashHeader from './components/DashHeader';
+import DashList from './components/DashList';
+import {FAB} from 'react-native-paper';
+import Colors from 'src/static/colors';
 
 export interface DashProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -48,37 +52,19 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
       {context => (
         <ScreenComponent>
           <Navbar title="Dashboard" navigation={navigation} root={true} />
-          <Button
-            title="Create"
+          <DashHeader naviagtion={navigation} />
+          <DashList naviagtion={navigation} />
+          <FAB
+            icon="plus"
+            color={Colors.backGroundColor}
+            style={{
+              position: 'absolute',
+              bottom: 10,
+              right: 10,
+              backgroundColor: Colors.darkerBasicBlue,
+            }}
             onPress={() => navigation.navigate('DASH_CREATE')}
           />
-          <ScrollView>
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: metrics.screenWidth,
-              }}>
-              <BugReportListCard
-                report={{
-                  uuid: 'asdgzijccnoaj',
-                  title: 'Crashing on teams screen',
-                  content: `var SampleNamespace = {
-                  "init" : function() {…},
-                  "destroy" : function() {…},
-                  "defaultValue" : "…",
-                  "NestedNamespace" : {
-                    "member" : "..."
-                  }
-                }`,
-                  reportDate: new Date().toISOString(),
-                  severity: 'CATASTROPHIC',
-                  closed: false,
-                }}
-                navigation={navigation}
-              />
-            </View>
-          </ScrollView>
         </ScreenComponent>
       )}
     </ApplicationContext.Consumer>
@@ -86,3 +72,29 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
 };
 
 export default DashboardScreen;
+
+/* <View
+style={{
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: metrics.screenWidth,
+}}>
+<BugReportListCard
+  report={{
+    uuid: 'asdgzijccnoaj',
+    title: 'Crashing on teams screen',
+    content: `var SampleNamespace = {
+    "init" : function() {…},
+    "destroy" : function() {…},
+    "defaultValue" : "…",
+    "NestedNamespace" : {
+      "member" : "..."
+    }
+  }`,
+    reportDate: new Date().toISOString(),
+    severity: 'CATASTROPHIC',
+    closed: false,
+  }}
+  navigation={navigation}
+/>
+</View> */

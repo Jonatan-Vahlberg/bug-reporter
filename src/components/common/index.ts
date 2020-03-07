@@ -9,3 +9,4 @@ export * from './TouchableIcon';
 export * from './Checkbox';
 export * from './FormWrapper';
 export * from './ScreenComponent';
+export * from './Text';

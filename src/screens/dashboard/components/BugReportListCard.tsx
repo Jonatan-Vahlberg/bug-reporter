@@ -1,21 +1,21 @@
 import * as React from 'react';
-import BugReport, {SeverityValue} from '../../models/BugReport';
-import {Card, TextInput} from '../common';
-import {View, Text, StyleSheet} from 'react-native';
-import colors from '../../static/colors';
-import {breakoutISODate} from '../../static/functions';
-import TeamMember from '../../models/TeamMember';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import metrics from '../../static/metrics';
-import {DashboardParamList} from '../../navigation';
+
+import {TextInput} from 'src/components/common';
+import colors from 'src/static/colors';
+import {breakoutISODate} from 'src/static/functions';
+import TeamMember from 'src/models/TeamMember';
+import metrics from 'src/static/metrics';
+import {DashboardParamList} from 'src/navigation';
+import BugReport, {SeverityValue} from 'src/models/BugReport';
+import {Card} from 'react-native-paper';
 
 export interface BugReportListCardProps {
   report: BugReport;
   detail?: boolean;
   navigation?: StackNavigationProp<DashboardParamList>;
 }
-
 const BugReportListCard: React.FC<BugReportListCardProps> = ({
   report,
   navigation,
@@ -43,31 +43,32 @@ const BugReportListCard: React.FC<BugReportListCardProps> = ({
     severity.charAt(0).toUpperCase() + severity.slice(1).toLowerCase();
   return (
     <View style={root}>
-      <TouchableOpacity
-        disabled={detail}
-        onPress={() => navigation?.navigate('DASH_VIEW', {report})}>
-        <Card label={undefined} style={cardRoot}>
-          <View style={header}>
-            <Text numberOfLines={1} style={headerText}>
-              {title}
+      <Card
+        style={cardRoot}
+        elevation={4}
+        onPress={() =>
+          detail === false ? navigation!.navigate('DASH_VIEW', {report}) : {}
+        }>
+        <View style={header}>
+          <Text numberOfLines={1} style={headerText}>
+            {title}
+          </Text>
+          {severity !== 'NONE' && (
+            <Text lineBreakMode="tail" style={headerText}>
+              {SeverityString} severity
             </Text>
-            {severity !== 'NONE' && (
-              <Text lineBreakMode="tail" style={headerText}>
-                {SeverityString} severity
-              </Text>
-            )}
-          </View>
-          {renderSubheader(
-            detail!,
-            assignedTo!,
-            dueDate!,
-            reportDate,
-            subheader,
-            subheadPart,
           )}
-          {renderContent(detail!, content, contentBox)}
-        </Card>
-      </TouchableOpacity>
+        </View>
+        {renderSubheader(
+          detail!,
+          assignedTo!,
+          dueDate!,
+          reportDate,
+          subheader,
+          subheadPart,
+        )}
+        {renderContent(detail!, content, contentBox)}
+      </Card>
     </View>
   );
 };
@@ -145,8 +146,7 @@ const generateStyles = (severity: SeverityValue, closed: boolean) => {
     },
     cardRoot: {
       width: metrics.screenWidth * 0.9,
-      paddingTop: 0,
-      paddingHorizontal: 0,
+      marginVertical: 10,
     },
     header: {
       backgroundColor: closed

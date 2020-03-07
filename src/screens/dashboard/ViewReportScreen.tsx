@@ -1,13 +1,14 @@
 import * as React from 'react';
 import BugReport, {SeverityValue} from '../../models/BugReport';
 import {Navbar, ScreenComponent} from '../../components/common';
-import BugReportListCard from '../../components/bugreport/BugReportListCard';
+import BugReportListCard from './components/BugReportListCard';
 import {View, ScrollView, StyleSheet} from 'react-native';
-import CommentWritingBox from '../../components/bugreport/CommentWritingBox';
+import CommentWritingBox from './components/CommentWritingBox';
 
-import {DashboardParamList} from '../../navigation';
+import {DashboardParamList} from 'src/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
   route: RouteProp<DashboardParamList, 'DASH_VIEW'>;

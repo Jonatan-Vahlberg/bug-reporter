@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {ScrollView, View, StyleSheet, Text, Button} from 'react-native';
-import Profile from '../../models/Profile';
-import metrics from '../../static/metrics';
-import colors from '../../static/colors';
-import {ReportState} from '../../screens/dashboard/ViewReportScreen';
+import Profile from '../../../models/Profile';
+import metrics from '../../../static/metrics';
+import colors from '../../../static/colors';
+import {ReportState} from '../ViewReportScreen';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
 import FontIcon from 'react-native-vector-icons/Fontisto';

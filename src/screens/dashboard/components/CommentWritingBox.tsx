@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {TextInput, ScrollView, Image, View, StyleSheet} from 'react-native';
-import Profile from '../../models/Profile';
-import metrics from '../../static/metrics';
-import colors from '../../static/colors';
-import {ReportState} from '../../screens/dashboard/ViewReportScreen';
+import Profile from 'src/models/Profile';
+import metrics from 'src/static/metrics';
+import colors from 'src/static/colors';
+import {ReportState} from '../ViewReportScreen';
 
 export interface CommentWritingBoxProps {
   profile?: Profile;

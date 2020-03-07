@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
-import Team from '../../models/Team';
-import TeamMember from '../../models/TeamMember';
-import {SeverityValue} from '../../models/BugReport';
+import {SeverityValue} from 'src/models/BugReport';
 import {
   View,
   Text,
@@ -9,53 +7,37 @@ import {
   StyleSheet,
   TextInput,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
-import {titleRules} from '../../static/rules';
+import {titleRules} from 'src/static/rules';
 
-import {DashboardParamList} from '../../navigation';
+import {DashboardParamList} from 'src/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-
 import {
   FormError,
   Navbar,
   Button,
   FormWrapper,
   ScreenComponent,
-} from '../../components/common';
-import metrics from '../../static/metrics';
-import colors from '../../static/colors';
-import ReportContentBox, {
-  ReportLine,
-} from '../../components/bugreport/ReportContentBox';
+} from 'src/components/common';
+import colors from 'src/static/colors';
+import ReportContentBox, {ReportLine} from './components/ReportContentBox';
 import Picker from 'react-native-picker-select';
 import {ApplicationContext} from '../../context/ApplicationContext';
-
+import {Text as CText} from 'src/components/common';
 import DateTimeModalPicker from 'react-native-modal-datetime-picker';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import moment from 'moment';
 import Colors from '../../static/colors';
+import {HelperText} from 'react-native-paper';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
   route: RouteProp<DashboardParamList, 'DASH_CREATE'>;
 }
 
-export interface ReportState {
-  title: string;
-  content: string;
-  labelsValue?: string[];
-  dueDate?: string;
-  assgingedTo?: TeamMember;
-  severity: SeverityValue;
-  labels: string;
-}
-
-const Fun_CreateNewReportScreen: React.FC<ReportProps> = ({
-  navigation,
-  route,
-}) => {
+const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [lines, setLines] = useState<ReportLine[]>([]);
@@ -77,11 +59,19 @@ const Fun_CreateNewReportScreen: React.FC<ReportProps> = ({
   const [labels, setLabels] = useState<string>('');
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [dateVisible, setDateVisible] = useState<boolean>(false);
+  const [errorVisible, setErrorVisible] = useState<boolean>(false);
 
   let dateString = 'No selected date';
   if (dueDate !== undefined) {
     dateString = `${moment(dueDate).format('DD MMM YYYY hh:mm')}`;
   }
+
+  const isReportViable = (): boolean => content !== '' && title !== '';
+  const isError = (statement: boolean): string =>
+    errorVisible && !statement
+      ? Colors.severityColors.HIGH
+      : colors.severityColors.CATASTROPHIC;
+
   return (
     <ApplicationContext.Consumer>
       {context => (
@@ -93,104 +83,127 @@ const Fun_CreateNewReportScreen: React.FC<ReportProps> = ({
               root={false}
             />
             <ScrollView>
-              <FormError
-                rules={{
-                  title: titleRules,
-                }}
-                values={[{name: 'title', value: title}]}
-                visible={false}
-              />
-              <FormWrapper>
-                <Text>Title*</Text>
-                <TextInput
-                  value={title}
-                  onChangeText={value => setTitle(value)}
-                  placeholder="Enter your title"
-                  style={styles.textInput}
-                />
-              </FormWrapper>
-              <FormWrapper>
-                <Text>Content*</Text>
-                <TextInput
-                  value={content}
-                  onChangeText={value => {
-                    setContent(value);
-                    let newLines: ReportLine[] = value
-                      .split('\n')
-                      .map((line, index) => {
-                        let newLine: ReportLine = {line, status: 'hashtag'};
-                        if (lines.length === index) {
-                          return newLine;
-                        } else if (lines[index].line === line) {
-                          return lines[index];
-                        } else {
-                          return newLine;
-                        }
-                      });
-                    setLines(newLines);
+              <KeyboardAvoidingView behavior="position">
+                <FormError
+                  rules={{
+                    title: titleRules,
                   }}
-                  numberOfLines={8}
-                  multiline
-                  textAlignVertical="top"
-                  placeholder="Content"
-                  style={styles.textInput}
+                  values={[{name: 'title', value: title}]}
+                  visible={false}
                 />
-                <ReportContentBox
-                  onOutput={lines => setLines([...lines])}
-                  editable
-                  lines={lines}
-                />
-              </FormWrapper>
-              <FormWrapper>
-                <Text>Team options</Text>
+                <FormWrapper>
+                  <Text style={{color: isError(title !== '')}}>Title*</Text>
+                  <TextInput
+                    value={title}
+                    onChangeText={value => setTitle(value)}
+                    placeholder="Enter your title"
+                    style={styles.textInput}
+                  />
+                  <HelperText
+                    type="error"
+                    visible={errorVisible && title === ''}>
+                    Title has to be filled in
+                  </HelperText>
+                </FormWrapper>
+                <FormWrapper>
+                  <Text style={{color: isError(content !== '')}}>Content*</Text>
+                  <TextInput
+                    value={content}
+                    onChangeText={value => {
+                      setContent(value);
+                      let newLines: ReportLine[] = value
+                        .split('\n')
+                        .map((line, index) => {
+                          let newLine: ReportLine = {line, status: 'hashtag'};
+                          if (lines.length === index) {
+                            return newLine;
+                          } else if (lines[index].line === line) {
+                            return lines[index];
+                          } else {
+                            return newLine;
+                          }
+                        });
+                      setLines(newLines);
+                    }}
+                    numberOfLines={8}
+                    multiline
+                    textAlignVertical="top"
+                    placeholder="Content"
+                    style={styles.textInput}
+                  />
+                  <HelperText
+                    type="error"
+                    visible={errorVisible && content === ''}>
+                    Content has to be filled in
+                  </HelperText>
+                  <ReportContentBox
+                    onOutput={lines => setLines([...lines])}
+                    editable
+                    lines={lines}
+                  />
+                </FormWrapper>
+                <FormWrapper>
+                  <Text>Team options</Text>
 
-                <Picker
-                  onValueChange={value => setAssignedTo(value)}
-                  value={assignedTo}
-                  placeholder={{value: '000', label: 'Select a team member'}}
-                  items={
-                    context.featuredTeam !== undefined
-                      ? context.featuredTeam.members.map(member => ({
-                          value: member.uuid,
-                          label: member.name,
-                        }))
-                      : [
-                          {
-                            value: '0000',
-                            label: 'No one',
-                          },
-                        ]
-                  }
-                />
-              </FormWrapper>
-              <FormWrapper>
-                <Text>Advanced options</Text>
-                <TextInput
-                  value={labels}
-                  onChangeText={value => setLabels(value)}
-                  placeholder="Enter labels separting with commas"
-                  style={styles.textInput}
-                />
-                <Picker
-                  onValueChange={value => setSeverity(value)}
-                  value={severity}
-                  placeholder={{
-                    value: '000',
-                    label: 'Select a report severity level',
-                  }}
-                  items={Severities.map(severity => ({
-                    value: severity,
-                    label: severity,
-                  }))}
-                />
-                <Text>Due date</Text>
-                <TouchableOpacity onPress={() => setDateVisible(true)}>
-                  <Text style={styles.dateSelectorText}>{dateString}</Text>
-                </TouchableOpacity>
-              </FormWrapper>
+                  <Picker
+                    onValueChange={value => setAssignedTo(value)}
+                    value={assignedTo}
+                    placeholder={{value: '000', label: 'Select a team member'}}
+                    items={
+                      context.featuredTeam !== undefined
+                        ? context.featuredTeam.members.map(member => ({
+                            value: member.uuid,
+                            label: member.name,
+                          }))
+                        : [
+                            {
+                              value: '0000',
+                              label: 'No one',
+                            },
+                          ]
+                    }
+                  />
+                </FormWrapper>
+                <FormWrapper>
+                  <Text>Advanced options</Text>
+                  <TextInput
+                    value={labels}
+                    onChangeText={value => setLabels(value)}
+                    placeholder="Enter labels separting with commas"
+                    style={styles.textInput}
+                  />
+                  <Text>Severity</Text>
+                  <Picker
+                    onValueChange={value => setSeverity(value)}
+                    value={severity}
+                    placeholder={{
+                      value: '000',
+                      label: 'Select a report severity level',
+                    }}
+                    items={Severities.map(severity => ({
+                      value: severity,
+                      label: severity,
+                    }))}
+                  />
+                  <Text>Due date</Text>
+
+                  <CText.LinkText
+                    onPress={() => setDateVisible(true)}
+                    style={styles.dateSelectorText}>
+                    {dateString}
+                  </CText.LinkText>
+                </FormWrapper>
+              </KeyboardAvoidingView>
             </ScrollView>
             <View style={styles.buttonContainer}>
-              <Button>
+              <Button
+                action={() => {
+                  if (isReportViable()) {
+                    setErrorVisible(false);
+                  } else {
+                    setErrorVisible(true);
+                  }
+                }}>
                 <Text style={styles.buttonTextStyle}>Create Report</Text>
               </Button>
             </View>
@@ -234,4 +247,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Fun_CreateNewReportScreen;
+export default CreateNewReportScreen;
