@@ -9,7 +9,7 @@ import {ApplicationContext} from 'src/context/ApplicationContext';
 
 type HeaderProps = {naviagtion: StackNavigationProp<DashboardParamList>};
 
-const DashHeader: React.FC<HeaderProps> = () => {
+const DashHeader: React.FC<HeaderProps> = ({naviagtion}) => {
   return (
     <ApplicationContext.Consumer>
       {context => {
@@ -25,7 +25,7 @@ const DashHeader: React.FC<HeaderProps> = () => {
             }}>
             <Avatar.Image
               size={100}
-              source={{uri: 'https://picsum.photos/200/200'}}
+              source={{uri: 'https://picsum.photos/808'}}
             />
             {/* {<Text.Title>{profile?.firstName}</Text.Title>
             <Text.LinkText>
@@ -34,7 +34,9 @@ const DashHeader: React.FC<HeaderProps> = () => {
               )}
             </Text.LinkText>} */}
             <Text.Title>Alex Tranought</Text.Title>
-            <Text.LinkText>ZIM&copy;, Lead Developer</Text.LinkText>
+            <Text.LinkText onPress={() => naviagtion.navigate('TEAMS')}>
+              ZIM &copy;, Lead Developer
+            </Text.LinkText>
           </View>
         );
       }}

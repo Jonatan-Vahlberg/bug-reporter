@@ -1,16 +1,19 @@
 import * as React from 'react';
 import Colors from 'src/static/colors';
 import {Text} from 'src/components/common';
-import {Avatar, Divider} from 'react-native-paper';
-import {FlatList} from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
+import {Divider} from 'react-native-paper';
 import {DashboardParamList} from 'src/navigation';
 import {View} from 'react-native';
-import {ApplicationContext} from 'src/context/ApplicationContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {ReportFilter} from 'src/models/BugReport';
 
 type ParamName = keyof DashboardParamList;
-export type ListItem = {name: string; icon?: string; navPath: ParamName};
+export type ListItem = {
+  name: string;
+  icon?: string;
+  navPath: ParamName;
+  filter?: ReportFilter;
+};
 type HeaderProps = {item: ListItem};
 
 const DashListItem: React.FC<HeaderProps> = ({item: {name, icon, navPath}}) => {

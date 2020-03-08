@@ -10,3 +10,4 @@ export * from './Checkbox';
 export * from './FormWrapper';
 export * from './ScreenComponent';
 export * from './Text';
+export * from './ScrollInput';

@@ -1,58 +1,65 @@
 import * as React from 'react';
 import BugReport, {SeverityValue} from '../../models/BugReport';
 import {Navbar, ScreenComponent} from '../../components/common';
-import BugReportListCard from './components/BugReportListCard';
-import {View, ScrollView, StyleSheet} from 'react-native';
+import BugReportListCard from './components/Report/BugReportListCard';
+import {View, ScrollView, StyleSheet, StatusBar} from 'react-native';
 import CommentWritingBox from './components/CommentWritingBox';
 
 import {DashboardParamList} from 'src/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Header from './components/Report/ReportHeader';
+import Subheader from './components/Report/ReportSubHeader';
+import ReportContentBox from './components/Report/ReportContentBox';
+import colors from 'src/static/colors';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
   route: RouteProp<DashboardParamList, 'DASH_VIEW'>;
 }
 
-export interface ReportState {
-  comment: string;
-}
-
-class ViewReportScreen extends React.Component<ReportProps, ReportState> {
-  constructor(props: ReportProps) {
-    super(props);
-    this.state = {
-      comment: '',
-    };
-  }
-  render() {
-    const report = this.props.route.params.report;
-    return (
-      <ScreenComponent>
-        <Navbar navigation={this.props.navigation} title="" root={false} />
-        <ScrollView>
-          <BugReportListCard report={report} detail={true} />
-          <View style={styles.commentBox}>
-            <CommentWritingBox
-              setValue={this.setValue}
-              name="comment"
-              value={this.state.comment}
-            />
-          </View>
-        </ScrollView>
-      </ScreenComponent>
-    );
-  }
-
-  setValue = (name: keyof ReportState, value: string) => {
-    this.setState({[name]: value} as Pick<ReportState, keyof ReportState>);
-  };
-}
+const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
+  const {report} = route.params;
+  const [comment, setComment] = React.useState<string>('');
+  return (
+    <ScreenComponent>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={colors.severityColors[report.severity]}
+      />
+      <ScrollView>
+        <View style={styles.reportStyle}>
+          <Header report={report} detail goBack={() => navigation.goBack()} />
+          <Subheader report={report} detail />
+          <ReportContentBox
+            lines={report.content}
+            onOutput={() => {}}
+            editable={false}
+            movable
+            maxLines={2e6}
+          />
+        </View>
+        <View style={styles.commentBox}>
+          <CommentWritingBox
+            setValue={(name, value) => setComment(value)}
+            name="comment"
+            value={comment}
+          />
+        </View>
+      </ScrollView>
+    </ScreenComponent>
+  );
+};
 
 const styles = StyleSheet.create({
   commentBox: {
     width: '100%',
     marginHorizontal: 20,
+    paddingBottom: 10,
+  },
+  reportStyle: {
+    backgroundColor: colors.backGroundColor,
+    marginBottom: 20,
     paddingBottom: 10,
   },
 });

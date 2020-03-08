@@ -18,9 +18,10 @@ import TeamsAdminScreen from '../screens/teams/TeamsAdminScreen';
 import CreateNewTeamScreen from '../screens/teams/CreateNewTeamScreen';
 
 import LoginScreen from '../screens/auth/LoginScreen';
-import BugReport from 'src/models/BugReport';
+import BugReport, {ReportFilter} from 'src/models/BugReport';
 import Team from '../models/Team';
 import {ApplicationContext} from '../context/ApplicationContext';
+import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
 
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -67,6 +68,7 @@ export type DashboardParamList = {
   DASH_HOME: undefined;
   DASH_CREATE: undefined;
   DASH_VIEW: {report: BugReport};
+  DASH_LIST: {filters?: ReportFilter};
   TEAMS: undefined;
   PROFILE: undefined;
 };
@@ -79,6 +81,7 @@ const DashNavigator = () => {
       <DashStack.Screen name="DASH_HOME" component={DashboardScreen} />
       <DashStack.Screen name="DASH_CREATE" component={CreateNewReportScreen} />
       <DashStack.Screen name="DASH_VIEW" component={ViewReportScreen} />
+      <DashStack.Screen name="DASH_LIST" component={ReportListScreen} />
     </DashStack.Navigator>
   );
 };

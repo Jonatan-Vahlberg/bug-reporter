@@ -1,7 +1,5 @@
 import * as React from 'react';
 import Colors from 'src/static/colors';
-import {Text} from 'src/components/common';
-import {Avatar} from 'react-native-paper';
 import {FlatList} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {DashboardParamList} from 'src/navigation';
@@ -12,33 +10,30 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 
 type HeaderProps = {naviagtion: StackNavigationProp<DashboardParamList>};
 
-const DashList: React.FC<HeaderProps> = () => {
+const DashList: React.FC<HeaderProps> = ({naviagtion}) => {
   return (
-    <ApplicationContext.Consumer>
-      {context => {
-        const {profile, featuredTeam} = context;
-        return (
-          <View
-            style={{
-              width: '100%',
-              paddingVertical: 10,
-              backgroundColor: Colors.backGroundColor,
-              marginVertical: 15,
-              flex: 1,
-            }}>
-            <FlatList
-              data={listItems}
-              keyExtractor={(item, index) => index + ''}
-              renderItem={({item, index}) => (
-                <TouchableOpacity>
-                  <DashListItem item={item} />
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        );
-      }}
-    </ApplicationContext.Consumer>
+    <View
+      style={{
+        width: '100%',
+        paddingVertical: 10,
+        backgroundColor: Colors.backGroundColor,
+        marginVertical: 15,
+        flex: 1,
+        paddingHorizontal: 20,
+      }}>
+      <FlatList
+        data={listItems}
+        keyExtractor={(item, index) => index + ''}
+        renderItem={({item, index}) => (
+          <TouchableOpacity
+            onPress={() =>
+              naviagtion.navigate('DASH_LIST', {filters: item.filter})
+            }>
+            <DashListItem item={item} />
+          </TouchableOpacity>
+        )}
+      />
+    </View>
   );
 };
 
@@ -46,24 +41,30 @@ const listItems: ListItem[] = [
   {
     name: 'All bugs',
     icon: 'bug-outline',
-    navPath: 'DASH_VIEW',
+    navPath: 'DASH_LIST',
+    filter: {all: true},
   },
   {
     name: 'Assigned bugs',
-    navPath: 'DASH_VIEW',
+    navPath: 'DASH_LIST',
+    filter: {assigned: true},
   },
   {
     name: 'Overdue bugs',
-    navPath: 'DASH_VIEW',
+    navPath: 'DASH_LIST',
+    icon: 'alert-circle-outline',
+    filter: {overdue: true},
   },
   {
     name: 'Bugs this week',
-    navPath: 'DASH_VIEW',
+    navPath: 'DASH_LIST',
     icon: 'calendar-outline',
+    filter: {thisWeek: true},
   },
   {
     name: 'Team updates',
-    navPath: 'DASH_VIEW',
+    icon: 'account-group-outline',
+    navPath: 'DASH_LIST',
   },
 ];
 

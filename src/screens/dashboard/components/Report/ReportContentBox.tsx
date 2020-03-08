@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {ScrollView, View, StyleSheet, Text, Button} from 'react-native';
-import Profile from '../../../models/Profile';
-import metrics from '../../../static/metrics';
-import colors from '../../../static/colors';
-import {ReportState} from '../ViewReportScreen';
+import Profile from 'src/models/Profile';
+import {ReportLine, ReportStatus} from 'src/models/BugReport';
+import metrics from 'src/static/metrics';
+import colors from 'src/static/colors';
+
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
 import FontIcon from 'react-native-vector-icons/Fontisto';
@@ -13,26 +14,23 @@ export interface ReportContentBoxProps {
   lines: ReportLine[];
   onOutput: (lines: ReportLine[]) => void;
   editable: boolean;
+  maxLines: number;
+  movable: boolean;
 }
-export type ReportSatus =
-  | 'hashtag'
-  | 'warning'
-  | 'error'
-  | 'done'
-  | 'exclamation'
-  | 'delete';
-export type ReportLine = {line: string; status: ReportSatus};
 
 const ReportContentBox: React.FC<ReportContentBoxProps> = ({
   lines,
   onOutput,
   editable,
+  maxLines,
+  movable,
 }) => {
   return (
-    <View>
-      <ScrollView horizontal>
+    <View style={{padding: 5}}>
+      <ScrollView horizontal scrollEnabled={movable}>
         <View>
           {lines.map((line: ReportLine, index: number) => {
+            if (maxLines === index) return null;
             let Icon = MatIcon;
             let iconColor = statusColors[line.status];
             if (line.status === 'hashtag') {
@@ -51,28 +49,31 @@ const ReportContentBox: React.FC<ReportContentBoxProps> = ({
                 : '#000';
             return (
               <View style={{...styles.lineBox}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    let updatedLine = {
-                      line: line.line,
-                      status: updateStatusOfLine(line.status),
-                    };
+                {editable && (
+                  <TouchableOpacity
+                    disabled={!editable}
+                    onPress={() => {
+                      let updatedLine = {
+                        line: line.line,
+                        status: updateStatusOfLine(line.status),
+                      };
 
-                    let updatedLines = lines;
-                    updatedLines[index] = updatedLine;
-                    onOutput(updatedLines);
-                  }}>
-                  <Icon
-                    name={line.status}
-                    color={statusColors[line.status]}
-                    size={20}
-                    style={{
-                      marginRight: 20,
-                      marginVertical: 2.5,
-                      paddingVertical: 2.5,
-                    }}
-                  />
-                </TouchableOpacity>
+                      let updatedLines = lines;
+                      updatedLines[index] = updatedLine;
+                      onOutput(updatedLines);
+                    }}>
+                    <Icon
+                      name={line.status}
+                      color={statusColors[line.status]}
+                      size={20}
+                      style={{
+                        marginRight: 20,
+                        marginVertical: 2.5,
+                        paddingVertical: 2.5,
+                      }}
+                    />
+                  </TouchableOpacity>
+                )}
                 <Text>
                   {index + 1}.{' '}
                   <Text
@@ -104,7 +105,7 @@ const statusColors = {
   delete: '#d11a2a',
 };
 
-const updateStatusOfLine = (status: ReportSatus): ReportSatus => {
+const updateStatusOfLine = (status: ReportStatus): ReportStatus => {
   switch (status) {
     case 'hashtag':
       return 'warning';
