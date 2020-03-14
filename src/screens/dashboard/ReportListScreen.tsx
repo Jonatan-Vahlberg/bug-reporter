@@ -4,7 +4,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {DashboardParamList} from 'src/navigation';
 import {ApplicationContext} from 'src/context/ApplicationContext';
 import {ScreenComponent, Navbar} from 'src/components/common';
-import {ReportFilter} from 'src/models/BugReport';
+import Report, {ReportFilter} from 'src/models/BugReport';
 import {RouteProp} from '@react-navigation/native';
 import BugReport from './components/Report/BugReportListCard';
 
@@ -14,6 +14,16 @@ type ReportListProps = {
 };
 
 const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
+  const {actions} = React.useContext(ApplicationContext);
+  const [reports, setRepors] = React.useState<Report[]>([]);
+  React.useEffect(() => {
+    (async () => {
+      const reps = await actions.firebase.getReports(
+        '00e0a3cfd2-76f1-437a-91ad-09c6e96a0ba100',
+      );
+      console.log(reps);
+    })();
+  });
   return (
     <ApplicationContext.Consumer>
       {context => {

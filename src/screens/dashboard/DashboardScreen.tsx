@@ -52,8 +52,10 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
       {context => (
         <ScreenComponent>
           <Navbar title="Dashboard" navigation={navigation} root={true} />
-          <DashHeader naviagtion={navigation} />
-          <DashList naviagtion={navigation} />
+          <ScrollView>
+            <DashHeader naviagtion={navigation} />
+            <DashList naviagtion={navigation} />
+          </ScrollView>
           <FAB
             icon="plus"
             color={Colors.backGroundColor}
@@ -72,29 +74,3 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
 };
 
 export default DashboardScreen;
-
-/* <View
-style={{
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: metrics.screenWidth,
-}}>
-<BugReportListCard
-  report={{
-    uuid: 'asdgzijccnoaj',
-    title: 'Crashing on teams screen',
-    content: `var SampleNamespace = {
-    "init" : function() {…},
-    "destroy" : function() {…},
-    "defaultValue" : "…",
-    "NestedNamespace" : {
-      "member" : "..."
-    }
-  }`,
-    reportDate: new Date().toISOString(),
-    severity: 'CATASTROPHIC',
-    closed: false,
-  }}
-  navigation={navigation}
-/>
-</View> */

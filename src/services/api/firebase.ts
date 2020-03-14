@@ -2,13 +2,11 @@ import TeamMember from '../../models/TeamMember';
 import Profile from '../..//models/Profile';
 import BugReport from '../..//models/BugReport';
 import Comment from '../..//models/Comment';
-
-import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
-import db, {FirebaseDatabaseTypes} from '@react-native-firebase/database';
+import axios from 'axios';
 import Team from 'src/models/Team';
+import {firebaseApp} from '../../../enviroment/config';
 
 const UUID_V4 = require('uuid/v4');
-
 export enum firebaseAuthErrorStatus {
   'NO_USER',
   'UNABLE_TO_REGISTER',
@@ -29,7 +27,7 @@ export type FirebaseAuthReturn = {
 
 export type FirebaseDBReturn = {
   error: firebaseDBErrorStatus;
-  snapshot?: FirebaseDatabaseTypes.DataSnapshot;
+  snapshot?: any;
 };
 
 export interface ApiFirebaseInterface {
@@ -51,6 +49,7 @@ export interface ApiFirebaseInterface {
   ) => Promise<FirebaseDBReturn>;
   createReport: (report: BugReport, team: Team) => Promise<FirebaseDBReturn>;
   getReport: (uuid: string) => Promise<FirebaseDBReturn>;
+  getReports: (teamId: string) => Promise<any>;
   updateReport: (report: BugReport) => Promise<void>;
   addCommentToReport: (
     report: BugReport,
@@ -69,10 +68,9 @@ const firebase: ApiFirebaseInterface = {
     try {
       const {
         user: {uid},
-      }: FirebaseAuthTypes.UserCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password,
-      );
+      }: any = await firebaseApp
+        .auth()
+        .signInWithEmailAndPassword(email, password);
       return {uid, error: firebaseAuthErrorStatus.NO_ERROR};
     } catch (error) {
       console.error(error.message);
@@ -88,10 +86,9 @@ const firebase: ApiFirebaseInterface = {
     try {
       const {
         user: {uid},
-      }: FirebaseAuthTypes.UserCredential = await auth().createUserWithEmailAndPassword(
-        email,
-        password,
-      );
+      }: any = await firebaseApp
+        .auth()
+        .createUserWithEmailAndPassword(email, password);
       return {uid, error: firebaseAuthErrorStatus.NO_ERROR};
     } catch (error) {
       console.error(error.message);
@@ -103,7 +100,7 @@ const firebase: ApiFirebaseInterface = {
   },
   getProfile: async (uid: string) => {
     try {
-      const ref = db().ref(`/users/${uid}`);
+      const ref = firebaseApp.database().ref(`/users/${uid}`);
       const snapshot = await ref.once('value');
 
       return {snapshot, error: firebaseDBErrorStatus.NO_ERROR};
@@ -120,8 +117,8 @@ const firebase: ApiFirebaseInterface = {
   ) => {
     try {
       const teamId: string = UUID_V4();
-      const userRef = db().ref(`/users/${creator.uuid}`);
-      const teamRef = db().ref(`/teams/${teamId}`);
+      const userRef = firebaseApp.database().ref(`/users/${creator.uuid}`);
+      const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
       await teamRef.set({
         name,
         description,
@@ -139,8 +136,8 @@ const firebase: ApiFirebaseInterface = {
   joinTeamWithCode: async (code: string, user: Profile) => {
     try {
       const teamId: string = UUID_V4();
-      const userRef = db().ref(`/users/${user.uuid}`);
-      const teamsRef = db().ref(`/teams`);
+      const userRef = firebaseApp.database().ref(`/users/${user.uuid}`);
+      const teamsRef = firebaseApp.database().ref(`/teams`);
 
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
@@ -151,8 +148,8 @@ const firebase: ApiFirebaseInterface = {
   createReport: async (report: BugReport, team: Team) => {
     try {
       const reportID: string = UUID_V4();
-      const reportRef = db().ref(`/reports/${reportID}`);
-      const teamRef = db().ref(`/teams/${team.uuid}`);
+      const reportRef = firebaseApp.database().ref(`/reports/${reportID}`);
+      const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
       await reportRef.set({
         ...report,
       });
@@ -167,13 +164,28 @@ const firebase: ApiFirebaseInterface = {
   },
   getReport: async (uuid: string) => {
     try {
-      const ref = db().ref(`/reports/${uuid}`);
+      const ref = firebaseApp.database().ref(`/reports/${uuid}`);
       const snapshot = await ref.once('value');
 
       return {snapshot, error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
       console.error(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_UPDATE_PROFILE};
+    }
+  },
+  getReports: async (teamId: string) => {
+    try {
+      const ref = firebaseApp.database().ref('/reports/');
+      const ref2 = firebaseApp
+        .database()
+        .app.database()
+        .ref('/reports');
+      console.log(ref2);
+
+      const snap = ref.once('value').then(snap => console.log(snap));
+      console.log('SNAP', snap);
+    } catch (error) {
+      console.warn(error);
     }
   },
   updateReport: async (report: BugReport) => {

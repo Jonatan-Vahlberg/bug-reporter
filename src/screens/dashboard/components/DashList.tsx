@@ -21,18 +21,15 @@ const DashList: React.FC<HeaderProps> = ({naviagtion}) => {
         flex: 1,
         paddingHorizontal: 20,
       }}>
-      <FlatList
-        data={listItems}
-        keyExtractor={(item, index) => index + ''}
-        renderItem={({item, index}) => (
-          <TouchableOpacity
-            onPress={() =>
-              naviagtion.navigate('DASH_LIST', {filters: item.filter})
-            }>
-            <DashListItem item={item} />
-          </TouchableOpacity>
-        )}
-      />
+      {listItems.map(item => (
+        <TouchableOpacity
+          key={item.name}
+          onPress={() =>
+            naviagtion.navigate('DASH_LIST', {filters: item.filter})
+          }>
+          <DashListItem item={item} />
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };
