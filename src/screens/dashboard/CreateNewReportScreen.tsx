@@ -33,6 +33,8 @@ import moment from 'moment';
 import Colors from '../../static/colors';
 import {HelperText, TextInput} from 'react-native-paper';
 import metrics from 'src/static/metrics';
+//@ts-ignore
+import UUID_V4 from 'uuid/v4';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -207,6 +209,19 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
                 action={() => {
                   if (isReportViable()) {
                     setErrorVisible(false);
+                    console.log(severity);
+
+                    context.actions.firebase.createReport(
+                      {
+                        title,
+                        content: lines,
+                        severity: severity.value,
+                        uuid: UUID_V4(),
+                        reportDate: new Date().toISOString(),
+                        closed: false,
+                      },
+                      context.featuredTeam!.uuid,
+                    );
                   } else {
                     setErrorVisible(true);
                   }

@@ -4,7 +4,8 @@ import BugReport from '../..//models/BugReport';
 import Comment from '../..//models/Comment';
 import axios from 'axios';
 import Team from 'src/models/Team';
-import {firebaseApp} from '../../../enviroment/config';
+import firebaseApp from 'firebase';
+import _ from 'lodash';
 
 const UUID_V4 = require('uuid/v4');
 export enum firebaseAuthErrorStatus {
@@ -47,7 +48,10 @@ export interface ApiFirebaseInterface {
     creator: Profile,
     members?: TeamMember[],
   ) => Promise<FirebaseDBReturn>;
-  createReport: (report: BugReport, team: Team) => Promise<FirebaseDBReturn>;
+  createReport: (
+    report: BugReport,
+    teamId: string,
+  ) => Promise<FirebaseDBReturn>;
   getReport: (uuid: string) => Promise<FirebaseDBReturn>;
   getReports: (teamId: string) => Promise<any>;
   updateReport: (report: BugReport) => Promise<void>;
@@ -145,26 +149,23 @@ const firebase: ApiFirebaseInterface = {
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
-  createReport: async (report: BugReport, team: Team) => {
+  createReport: async (report: BugReport, teamId: string) => {
     try {
-      const reportID: string = UUID_V4();
-      const reportRef = firebaseApp.database().ref(`/reports/${reportID}`);
-      const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
+      const reportRef = firebaseApp
+        .database()
+        .ref(`reports/${teamId}/${report.uuid}`);
       await reportRef.set({
         ...report,
       });
-      await teamRef.update({
-        reports: [...team.reports, reportID],
-      });
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
-      console.error(error.message);
+      console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
   getReport: async (uuid: string) => {
     try {
-      const ref = firebaseApp.database().ref(`/reports/${uuid}`);
+      const ref = firebaseApp.database().ref(`reports/${uuid}`);
       const snapshot = await ref.once('value');
 
       return {snapshot, error: firebaseDBErrorStatus.NO_ERROR};
@@ -175,15 +176,12 @@ const firebase: ApiFirebaseInterface = {
   },
   getReports: async (teamId: string) => {
     try {
-      const ref = firebaseApp.database().ref('/reports/');
-      const ref2 = firebaseApp
-        .database()
-        .app.database()
-        .ref('/reports');
-      console.log(ref2);
-
-      const snap = ref.once('value').then(snap => console.log(snap));
-      console.log('SNAP', snap);
+      const ref = firebaseApp.database().ref(`reports/${teamId}`);
+      const snap = await ref.once('value');
+      if (!snap.exists()) {
+        return [];
+      }
+      return _.values(snap.val());
     } catch (error) {
       console.warn(error);
     }

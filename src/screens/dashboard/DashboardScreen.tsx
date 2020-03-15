@@ -43,7 +43,6 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
   React.useEffect(() => {
     (async () => {
       const result = await firebase.login('email@email.com', 'password');
-      console.log(result);
     })();
   });
 

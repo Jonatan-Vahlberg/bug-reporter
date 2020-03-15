@@ -7,6 +7,7 @@ import {ScreenComponent, Navbar} from 'src/components/common';
 import Report, {ReportFilter} from 'src/models/BugReport';
 import {RouteProp} from '@react-navigation/native';
 import BugReport from './components/Report/BugReportListCard';
+import BugReportListCard from './components/Report/BugReportListCard';
 
 type ReportListProps = {
   navigation: StackNavigationProp<DashboardParamList, 'DASH_LIST'>;
@@ -14,14 +15,12 @@ type ReportListProps = {
 };
 
 const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
-  const {actions} = React.useContext(ApplicationContext);
-  const [reports, setRepors] = React.useState<Report[]>([]);
+  const {actions, featuredTeam} = React.useContext(ApplicationContext);
+  const [reports, setReports] = React.useState<Report[]>([]);
   React.useEffect(() => {
     (async () => {
-      const reps = await actions.firebase.getReports(
-        '00e0a3cfd2-76f1-437a-91ad-09c6e96a0ba100',
-      );
-      console.log(reps);
+      const reps = await actions.firebase.getReports(featuredTeam!.uuid);
+      setReports(reps);
     })();
   });
   return (
@@ -34,7 +33,32 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
               navigation={navigation}
               title={getTitle(route.params.filters)}
             />
-            <BugReport
+            {reports.map(report => (
+              <BugReportListCard
+                key={report.uuid}
+                report={{...report}}
+                navigation={navigation}
+              />
+            ))}
+          </ScreenComponent>
+        );
+      }}
+    </ApplicationContext.Consumer>
+  );
+};
+
+const getTitle = (filter?: ReportFilter): string => {
+  if (filter === undefined) return 'Reports';
+  if (filter.overdue !== undefined) return `Reports: Overdue`;
+  if (filter.assigned !== undefined) return `Reports: Assigned`;
+  if (filter.thisWeek !== undefined) return `Reports: This week`;
+  return 'Reports';
+};
+
+export default ReportListScreen;
+
+/*
+ <BugReport
               report={{
                 uuid: 'asdgzijccnoaj',
                 title: 'Crashing on teams screen',
@@ -56,19 +80,4 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
               }}
               navigation={navigation}
             />
-          </ScreenComponent>
-        );
-      }}
-    </ApplicationContext.Consumer>
-  );
-};
-
-const getTitle = (filter?: ReportFilter): string => {
-  if (filter === undefined) return 'Reports';
-  if (filter.overdue !== undefined) return `Reports: Overdue`;
-  if (filter.assigned !== undefined) return `Reports: Assigned`;
-  if (filter.thisWeek !== undefined) return `Reports: This week`;
-  return 'Reports';
-};
-
-export default ReportListScreen;
+            */

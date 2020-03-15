@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, TextStyle } from 'react-native';
+import {View, TouchableOpacity, Text, TextStyle} from 'react-native';
 import colors from '../../static/colors';
 
 interface LinkTextProps {
   text: string;
-  action?: Function;
+  action?: () => void | Function;
   color?: string;
   textStyle?: TextStyle;
 }
@@ -16,7 +16,7 @@ const LinkText: React.FC<LinkTextProps> = ({
   textStyle,
 }) => {
   return (
-    <TouchableOpacity onPress={() => action()}>
+    <TouchableOpacity onPress={action}>
       <Text
         style={[
           {
@@ -28,8 +28,7 @@ const LinkText: React.FC<LinkTextProps> = ({
             textAlign: 'center',
           },
           textStyle,
-        ]}
-      >
+        ]}>
         {text}
       </Text>
     </TouchableOpacity>
@@ -43,4 +42,4 @@ LinkText.defaultProps = {
   textStyle: {},
 };
 
-export { LinkText };
+export {LinkText};
