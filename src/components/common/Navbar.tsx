@@ -6,6 +6,7 @@ import {
   AuthParamList,
   MainNavigatorParamList,
   DashboardParamList,
+  TeamsParamList,
 } from '../../navigation';
 import {Text} from './Text';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,7 +16,8 @@ export interface NavProps {
     | StackNavigationProp<ProfileParamList>
     | StackNavigationProp<AuthParamList>
     | StackNavigationProp<MainNavigatorParamList>
-    | StackNavigationProp<DashboardParamList>;
+    | StackNavigationProp<DashboardParamList>
+    | StackNavigationProp<TeamsParamList>;
   title?: string;
   root: boolean;
   color?: string;
