@@ -3,7 +3,7 @@ export default {
   basicButtonColor: '#a4f4f9',
   darkerBasicBlue: '#1974d2',
   lightGreyBackground: '#f8f8f8',
-  greyDetail: '#c6c6c6',
+  greyDetail: '#b3b3b3',
   redHighlight: '#BB1E17',
   greenHighlight: '#17bb32',
   severityColors: {

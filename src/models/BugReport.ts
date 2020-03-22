@@ -4,7 +4,7 @@ import Comment from './Comment';
 export default interface BugReport {
   uuid: string;
   title: string;
-  content: string; //for now
+  content: ReportLine[]; //for now
   severity: SeverityValue;
   reportDate: string; //ISODATESTRING
   assignedTo?: TeamMember;
@@ -14,11 +14,20 @@ export default interface BugReport {
   closed: boolean;
   reportedBy?: string;
 }
+export type SeverityValue = 'NONE' | 'LOW' | 'NORMAL' | 'HIGH' | 'CATASTROPHIC';
 
-export enum SeverityValue {
-  NONE = 0,
-  LOW = 1,
-  NORMAL = 2,
-  HIGH = 4,
-  CATASTROPHIC = 10,
-}
+export type ReportFilter = {
+  overdue?: boolean;
+  assigned?: boolean;
+  thisWeek?: boolean;
+  all?: boolean;
+};
+
+export type ReportStatus =
+  | 'hashtag'
+  | 'warning'
+  | 'error'
+  | 'done'
+  | 'exclamation'
+  | 'delete';
+export type ReportLine = {line: string; status: ReportStatus};

@@ -1,7 +1,28 @@
+import moment from 'moment';
+
 export const breakoutISODate = (
   dateString: string,
   from: number = 0,
   to: number = 10,
 ) => {
   return dateString.substr(from, to);
+};
+
+export const formatDate = (dateString: string) => {
+  const date: Date = new Date(dateString);
+  const now: Date = new Date();
+
+  if (date.getFullYear() === now.getFullYear()) {
+    if (date.getMonth() === now.getMonth()) {
+      if (date.getDate() === now.getDate()) {
+        return `Today at ${moment(date).format('hh:mm A')}`;
+      } else if (date.getDate() === now.getDate() + 1) {
+        return `Tomorrow at ${moment(date).format('hh:mm A')}`;
+      } else if (date.getDate() === now.getDate() - 1) {
+        return `Yesterday at ${moment(date).format('hh:mm A')}`;
+      }
+    }
+    return moment(date).format('MM DD hh:mm A');
+  }
+  return moment(date).format('YYYY MM DD hh:mm A');
 };

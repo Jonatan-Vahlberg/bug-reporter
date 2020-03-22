@@ -3,7 +3,7 @@ import Team from '../../models/Team';
 import {Navbar, ScreenComponent} from '../../components/common';
 import {View, Button} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {ProfileParamList} from '..';
+import {ProfileParamList} from '../../navigation';
 import {RouteProp} from '@react-navigation/native';
 
 export interface ProfileProps {

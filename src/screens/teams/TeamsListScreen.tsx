@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {Navbar} from '../../components/common';
 import {View, Button} from 'react-native';
-import NavigationPaths from '../NavigationPaths';
+import NavigationPaths from '../../navigation/NavigationPaths';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {TeamsParamList} from '..';
+import {TeamsParamList} from '../../navigation';
 import {RouteProp} from '@react-navigation/native';
 
 export interface ListProps {

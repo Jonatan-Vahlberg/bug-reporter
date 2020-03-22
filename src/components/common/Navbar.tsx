@@ -1,31 +1,46 @@
 import * as React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-
+import {
+  ProfileParamList,
+  AuthParamList,
+  MainNavigatorParamList,
+  DashboardParamList,
+} from '../../navigation';
+import {Text} from './Text';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import colors from 'src/static/colors';
 export interface NavProps {
-  navigation: StackNavigationProp<{}>;
+  navigation:
+    | StackNavigationProp<ProfileParamList>
+    | StackNavigationProp<AuthParamList>
+    | StackNavigationProp<MainNavigatorParamList>
+    | StackNavigationProp<DashboardParamList>;
   title?: string;
   root: boolean;
   color?: string;
+  rightItem?: JSX.Element;
 }
 
-const Navbar: React.FC<NavProps> = (props: NavProps) => {
+const Navbar: React.FC<NavProps> = props => {
   const action = () => props.navigation.pop();
-  const Icon = <TouchableOpacity onPress={action}>{null}</TouchableOpacity>;
+  const CreatedIcon = (
+    <TouchableOpacity onPress={action}>
+      <Icon name="arrow-left" size={40} />
+    </TouchableOpacity>
+  );
 
   return (
     <View style={navStyles.baseStyle}>
-      <View style={navStyles.sideContainerStyle}>{Icon}</View>
+      {!props.root && (
+        <View style={navStyles.sideContainerStyle}>{CreatedIcon}</View>
+      )}
       <View style={navStyles.titleContainerStyle}>
-        <Text style={navStyles.titleStyle}>{props.title}</Text>
+        <Text.Title>{props.title}</Text.Title>
       </View>
-      <View style={navStyles.sideContainerStyle}></View>
+      {props.rightItem !== undefined && (
+        <View style={navStyles.sideContainerStyle}></View>
+      )}
     </View>
   );
 };
@@ -36,30 +51,19 @@ Navbar.defaultProps = {
 
 const navStyles = StyleSheet.create({
   baseStyle: {
-    height: 80,
-    width: Dimensions.get('screen').width,
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    paddingTop: 30,
+    height: 60,
     flexDirection: 'row',
-    marginTop: 0,
+    alignItems: 'center',
+    backgroundColor: colors.backGroundColor,
     borderBottomColor: '#000',
     borderBottomWidth: 0.2,
-    backgroundColor: '#fff',
+    paddingHorizontal: 10,
   },
   titleContainerStyle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   },
-  titleStyle: {
-    fontWeight: '600',
-    fontSize: 20,
-  },
-  sideContainerStyle: {
-    width: 60,
-  },
+  sideContainerStyle: {},
 });
 
 export {Navbar};
