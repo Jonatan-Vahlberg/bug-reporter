@@ -19,7 +19,10 @@ const NavSubBar: React.FC<{
         onPress={() => navigation.navigate('TEAMS_HOME')}>
         <View style={styles.item}>
           <Text.Title
-            style={{color: position ? colors.darkerBasicBlue : '#000'}}>
+            style={{
+              color: isList ? colors.darkerBasicBlue : '#000',
+              fontSize: 22,
+            }}>
             Your Teams
           </Text.Title>
         </View>
@@ -30,7 +33,10 @@ const NavSubBar: React.FC<{
         onPress={() => navigation.navigate('TEAMS_ADMIN')}>
         <View style={styles.item}>
           <Text.Title
-            style={{color: position ? colors.darkerBasicBlue : '#000'}}>
+            style={{
+              color: !isList ? colors.darkerBasicBlue : '#000',
+              fontSize: 22,
+            }}>
             Admin
           </Text.Title>
         </View>
