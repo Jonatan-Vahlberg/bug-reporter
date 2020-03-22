@@ -15,10 +15,13 @@ export interface AdminProps {
 }
 
 const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [publicTeam, setPublic] = useState<boolean>(false);
   return (
-    <View>
+    <View style={{height: '100%'}}>
       <Navbar title="Teams: create New" root={false} navigation={navigation} />
-      <ScrollView>
+      <ScrollView style={{flex: 1}}>
         <Card style={styles.card}>
           <Card.Title title="Team name*" />
           <TextInput style={styles.input} placeholder="name of the team" />
@@ -37,11 +40,15 @@ const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
           <View style={styles.content}>
             <View style={{flexDirection: 'row'}}>
               <Text.Base>Is company public?</Text.Base>
-              <Switch />
+              <Switch value={publicTeam} onValueChange={setPublic} />
             </View>
+            <Text.Base>Roles</Text.Base>
           </View>
         </Card>
       </ScrollView>
+      <Button style={styles.button} color="#fff">
+        Create
+      </Button>
     </View>
   );
 };
@@ -61,6 +68,7 @@ const styles = StyleSheet.create({
     borderRadius: 10000,
     backgroundColor: colors.darkerBasicBlue,
     marginTop: 20,
+    marginBottom: 20,
   },
   content: {
     paddingHorizontal: 20,

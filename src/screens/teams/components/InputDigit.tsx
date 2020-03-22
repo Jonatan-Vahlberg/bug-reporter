@@ -28,11 +28,13 @@ const InputDigit: React.FC<DigitProps> = ({
       blurOnSubmit={false}
       onChangeText={value => {
         setDigit(value);
-        onchange();
-        if (nextRef !== undefined) {
-          textRef.current?.blur();
-        } else {
-          onchange(value);
+        if (value.length === 1) {
+          onchange();
+          if (nextRef !== undefined) {
+            textRef.current?.blur();
+          } else {
+            onchange(value);
+          }
         }
       }}
     />
