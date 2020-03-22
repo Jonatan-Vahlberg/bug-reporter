@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback, useContext} from 'react';
 import {SeverityValue, ReportLine} from 'src/models/BugReport';
 import {
   View,
@@ -42,6 +42,7 @@ export interface ReportProps {
 }
 
 const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
+  const {actions, featuredTeam} = useContext(ApplicationContext);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [lines, setLines] = useState<ReportLine[]>([]);
@@ -76,6 +77,26 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
       ? Colors.severityColors.HIGH
       : colors.severityColors.CATASTROPHIC;
   console.log(lines);
+
+  const submit = useCallback(async () => {
+    if (isReportViable()) {
+      setErrorVisible(false);
+
+      await actions.firebase.createReport(
+        {
+          title,
+          content: lines,
+          severity: severity.value,
+          uuid: UUID_V4(),
+          reportDate: new Date().toISOString(),
+          closed: false,
+        },
+        featuredTeam!.uuid,
+      );
+    } else {
+      setErrorVisible(true);
+    }
+  }, [title, content, severity]);
 
   return (
     <ApplicationContext.Consumer>
@@ -205,27 +226,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
               </FormWrapper>
             </ScrollView>
             <View style={styles.buttonContainer}>
-              <Button
-                action={() => {
-                  if (isReportViable()) {
-                    setErrorVisible(false);
-                    console.log(severity);
-
-                    context.actions.firebase.createReport(
-                      {
-                        title,
-                        content: lines,
-                        severity: severity.value,
-                        uuid: UUID_V4(),
-                        reportDate: new Date().toISOString(),
-                        closed: false,
-                      },
-                      context.featuredTeam!.uuid,
-                    );
-                  } else {
-                    setErrorVisible(true);
-                  }
-                }}>
+              <Button action={submit}>
                 <Text style={styles.buttonTextStyle}>Create Report</Text>
               </Button>
             </View>

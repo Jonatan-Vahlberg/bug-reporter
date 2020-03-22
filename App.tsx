@@ -1,9 +1,10 @@
-import * as React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {ApplicationContext} from './src/context/ApplicationContext';
 import Navigator from './src/navigation';
 import firebase from './src/services/api/firebase';
 import Firebase from 'firebase';
+import BugReport from 'src/models/BugReport';
 const firebaseConfig = {
   apiKey: 'AIzaSyBhvEvFrGhYXHeLUn6VEEfaPATvjfLXo4I',
   authDomain: 'bug-tracker-17906.firebaseapp.com',
@@ -16,14 +17,17 @@ const firebaseConfig = {
 };
 Firebase.initializeApp(firebaseConfig);
 const App = () => {
-  React.useEffect(() => {}, []);
-
+  useEffect(() => {}, []);
+  const [featuredReports, setFeaturedReports] = useState<BugReport[]>([]);
   return (
     <ApplicationContext.Provider
       value={{
         settings: {},
         actions: {
           firebase,
+          setters: {
+            setFeaturedReports,
+          },
         },
         teams: [],
         featuredTeam: {
@@ -34,6 +38,7 @@ const App = () => {
           description: '',
           code: '101010',
         },
+        featuredReports: featuredReports,
       }}>
       <Navigator />
     </ApplicationContext.Provider>

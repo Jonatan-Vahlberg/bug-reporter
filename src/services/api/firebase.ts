@@ -174,16 +174,20 @@ const firebase: ApiFirebaseInterface = {
       return {error: firebaseDBErrorStatus.UNABLE_TO_UPDATE_PROFILE};
     }
   },
-  getReports: async (teamId: string) => {
+  getReports: async (teamId: string): Promise<BugReport[]> => {
     try {
+      console.log('HI');
       const ref = firebaseApp.database().ref(`reports/${teamId}`);
       const snap = await ref.once('value');
       if (!snap.exists()) {
         return [];
       }
+      console.log(snap.val());
+
       return _.values(snap.val());
     } catch (error) {
       console.warn(error);
+      return [];
     }
   },
   updateReport: async (report: BugReport) => {

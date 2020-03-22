@@ -38,13 +38,19 @@ const text = `<View style={{flexDirection: 'row'}}>
 
 const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
   const {
-    actions: {firebase},
+    actions: {firebase, setters},
+    featuredTeam,
+    featuredReports,
   } = useContext(ApplicationContext);
   React.useEffect(() => {
     (async () => {
-      const result = await firebase.login('email@email.com', 'password');
+      console.log('Hell');
+
+      await firebase.login('email@email.com', 'password');
+      const reports = await firebase.getReports(featuredTeam!.uuid);
+      setters.setFeaturedReports!(reports);
     })();
-  });
+  }, []);
 
   return (
     <ApplicationContext.Consumer>
