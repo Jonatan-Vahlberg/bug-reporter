@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {Navbar} from '../../components/common';
 import {View, StyleSheet} from 'react-native';
 import NavigationPaths from '../../navigation/NavigationPaths';
@@ -9,6 +9,7 @@ import NavSubBar from './components/NavSubBar';
 import InputBox from './components/InputBox';
 import {Button, Card} from 'react-native-paper';
 import colors from 'src/static/colors';
+import {ApplicationContext} from 'src/context/ApplicationContext';
 
 export interface AdminProps {
   navigation: StackNavigationProp<TeamsParamList>;
@@ -16,6 +17,7 @@ export interface AdminProps {
 }
 
 const TeamsAdminScreen: React.FC<AdminProps> = ({navigation, route}) => {
+  const {actions, profile} = useContext(ApplicationContext);
   const [code, setCode] = useState<string>('');
   console.log(code);
 
@@ -27,7 +29,9 @@ const TeamsAdminScreen: React.FC<AdminProps> = ({navigation, route}) => {
         <Card.Title title="Join a team" />
         <InputBox onCodeSet={setCode} />
         <Button
-          onPress={() => console.log('Hi')}
+          onPress={async () => {
+            const result = actions.firebase.getTeamWithCode(code);
+          }}
           color={'#fff'}
           style={styles.button}
           disabled={code.length !== 6}>

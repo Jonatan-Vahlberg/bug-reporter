@@ -6,6 +6,7 @@ import axios from 'axios';
 import Team from 'src/models/Team';
 import firebaseApp from 'firebase';
 import _ from 'lodash';
+import {getRandomCode} from 'src/static/functions';
 
 const UUID_V4 = require('uuid/v4');
 export enum firebaseAuthErrorStatus {
@@ -31,43 +32,43 @@ export type FirebaseDBReturn = {
   snapshot?: any;
 };
 
-export interface ApiFirebaseInterface {
-  login: (email: string, password: string) => Promise<FirebaseAuthReturn>;
-  register: (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-  ) => Promise<FirebaseAuthReturn>;
-  logout: (profile: Profile) => Promise<void>;
-  getProfile: (uuid: string, email: string) => Promise<FirebaseDBReturn>;
-  joinTeamWithCode: (code: string, user: Profile) => Promise<FirebaseDBReturn>;
-  createTeam: (
-    name: string,
-    description: string,
-    creator: Profile,
-    members?: TeamMember[],
-  ) => Promise<FirebaseDBReturn>;
-  createReport: (
-    report: BugReport,
-    teamId: string,
-  ) => Promise<FirebaseDBReturn>;
-  getReport: (uuid: string) => Promise<FirebaseDBReturn>;
-  getReports: (teamId: string) => Promise<any>;
-  updateReport: (report: BugReport) => Promise<void>;
-  addCommentToReport: (
-    report: BugReport,
-    comment: Comment,
-    closing?: boolean,
-  ) => Promise<void>;
-  editCommentOnReport: (
-    report: BugReport,
-    newComment: Comment,
-    closing?: boolean,
-  ) => Promise<void>;
-}
+// export interface ApiFirebaseInterface {
+//   login: (email: string, password: string) => Promise<FirebaseAuthReturn>;
+//   register: (
+//     email: string,
+//     password: string,
+//     firstName: string,
+//     lastName: string,
+//   ) => Promise<FirebaseAuthReturn>;
+//   logout: (profile: Profile) => Promise<void>;
+//   getProfile: (uuid: string, email: string) => Promise<FirebaseDBReturn>;
+//   joinTeamWithCode: (code: string, user: Profile) => Promise<FirebaseDBReturn>;
+//   createTeam: (
+//     name: string,
+//     description: string,
+//     creator: Profile,
+//     members?: TeamMember[],
+//   ) => Promise<FirebaseDBReturn>;
+//   createReport: (
+//     report: BugReport,
+//     teamId: string,
+//   ) => Promise<FirebaseDBReturn>;
+//   getReport: (uuid: string) => Promise<FirebaseDBReturn>;
+//   getReports: (teamId: string) => Promise<any>;
+//   updateReport: (report: BugReport) => Promise<void>;
+//   addCommentToReport: (
+//     report: BugReport,
+//     comment: Comment,
+//     closing?: boolean,
+//   ) => Promise<void>;
+//   editCommentOnReport: (
+//     report: BugReport,
+//     newComment: Comment,
+//     closing?: boolean,
+//   ) => Promise<void>;
+// }
 
-const firebase: ApiFirebaseInterface = {
+const firebase = {
   login: async (email: string, password: string) => {
     try {
       const {
@@ -116,36 +117,80 @@ const firebase: ApiFirebaseInterface = {
   createTeam: async (
     name: string,
     description: string,
+    isPublic: boolean,
     creator: Profile,
-    members?: TeamMember[],
   ) => {
     try {
       const teamId: string = UUID_V4();
-      const userRef = firebaseApp.database().ref(`/users/${creator.uuid}`);
-      const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
-      await teamRef.set({
+      const team: Team = {
+        uuid: teamId,
         name,
         description,
-      });
+        members: [
+          {
+            name: `${creator.firstName} ${creator.lastName}`,
+            position: 'ADMIN',
+            positonValue: 5,
+            uuid: creator.uuid,
+          },
+        ],
+        reports: teamId,
+        public: isPublic,
+        code: getRandomCode(),
+      };
+      console.log(team);
+
+      const userRef = firebaseApp.database().ref(`/users/${creator.uuid}`);
+      const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
+      await teamRef.set(team);
       await userRef.update({
         teams: [...creator.teams, teamId],
       });
 
-      return {error: firebaseDBErrorStatus.NO_ERROR};
+      return {error: firebaseDBErrorStatus.NO_ERROR, payload: teamId};
     } catch (error) {
-      console.error(error.message);
+      console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
-  joinTeamWithCode: async (code: string, user: Profile) => {
+  getTeamWithCode: async (code: string) => {
     try {
-      const teamId: string = UUID_V4();
-      const userRef = firebaseApp.database().ref(`/users/${user.uuid}`);
       const teamsRef = firebaseApp.database().ref(`/teams`);
-
+      await teamsRef
+        .orderByChild('code')
+        .equalTo(code)
+        .on('value', async queryResult => {
+          if (queryResult.exists()) {
+            const value = queryResult.val();
+            console.log(value);
+            return {
+              error: firebaseDBErrorStatus.NO_ERROR,
+              payload: value[Object.keys(value)[0]],
+            };
+          }
+        });
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    } catch (error) {
+      console.warn(error.message);
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  joinTeam: async (code: string, profile: Profile, team: Team) => {
+    const newMember: TeamMember = {
+      name: `${profile.firstName} ${profile.lastName}`,
+      position: 'OTHER',
+      positonValue: 1,
+      uuid: profile.uuid,
+    };
+    const newTeams: string[] = [...profile.teams, team.uuid];
+    try {
+      const userRef = firebaseApp.database().ref(`/users/${profile.uuid}`);
+      const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
+      await teamRef.update({...team, members: [...team.members, newMember]});
+      await userRef.update({teams: newTeams});
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
-      console.error(error.message);
+      console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },

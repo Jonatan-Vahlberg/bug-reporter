@@ -33,7 +33,9 @@ const DashHeader: React.FC<HeaderProps> = ({naviagtion}) => {
                 member => profile?.uuid == member.uuid,
               )}
             </Text.LinkText>} */}
-            <Text.Title>Alex Tranought</Text.Title>
+            <Text.Title>
+              {profile?.firstName} {profile?.lastName}
+            </Text.Title>
             <Text.LinkText onPress={() => naviagtion.navigate('TEAMS')}>
               ZIM &copy;, Lead Developer
             </Text.LinkText>

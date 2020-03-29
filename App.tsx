@@ -5,6 +5,7 @@ import Navigator from './src/navigation';
 import firebase from './src/services/api/firebase';
 import Firebase from 'firebase';
 import BugReport from 'src/models/BugReport';
+import Profile from 'src/models/Profile';
 const firebaseConfig = {
   apiKey: 'AIzaSyBhvEvFrGhYXHeLUn6VEEfaPATvjfLXo4I',
   authDomain: 'bug-tracker-17906.firebaseapp.com',
@@ -19,6 +20,14 @@ Firebase.initializeApp(firebaseConfig);
 const App = () => {
   useEffect(() => {}, []);
   const [featuredReports, setFeaturedReports] = useState<BugReport[]>([]);
+  const [profile, setProfile] = useState<Profile>({
+    email: 'email@email.com',
+    firstName: 'Marcus',
+    lastName: 'lang',
+    teams: ['e0a3cfd2-76f1-437a-91ad-09c6e96a0ba1'],
+    uuid: 'IvM9aSjjVCXZ9Up6szWhmGtIjl13',
+    FCMIDS: [],
+  });
   return (
     <ApplicationContext.Provider
       value={{
@@ -27,6 +36,7 @@ const App = () => {
           firebase,
           setters: {
             setFeaturedReports,
+            setProfile,
           },
         },
         teams: [],
@@ -37,8 +47,10 @@ const App = () => {
           uuid: 'e0a3cfd2-76f1-437a-91ad-09c6e96a0ba1',
           description: '',
           code: '101010',
+          public: true,
         },
         featuredReports: featuredReports,
+        profile,
       }}>
       <Navigator />
     </ApplicationContext.Provider>

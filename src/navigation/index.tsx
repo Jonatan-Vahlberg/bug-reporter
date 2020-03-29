@@ -130,7 +130,7 @@ const Navigator = () => {
       {context => (
         <NavigationContainer>
           <RootStack.Navigator screenOptions={{headerShown: false}}>
-            {context.profile === undefined ? (
+            {context.profile !== undefined ? (
               <>
                 <RootStack.Screen name="MAIN" component={MainNavigator} />
               </>

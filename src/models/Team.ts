@@ -8,4 +8,5 @@ export default interface Team {
   uuid: string;
   description: string;
   code: string;
+  public: boolean;
 }

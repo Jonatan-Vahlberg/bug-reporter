@@ -23,6 +23,7 @@
     "moment": "^2.24.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-dialog": "^5.6.0",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-modal-datetime-picker": "^8.5.1",
     "react-native-paper": "^3.6.0",

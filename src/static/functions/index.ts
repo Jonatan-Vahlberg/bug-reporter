@@ -26,3 +26,14 @@ export const formatDate = (dateString: string) => {
   }
   return moment(date).format('YYYY MM DD hh:mm A');
 };
+
+export const getRandomCode = (): string => {
+  let numbersArray: number[] = [0, 0, 0, 0, 0, 0];
+  let code: string = '';
+  numbersArray = numbersArray.map(() => {
+    const newNumber = Math.floor(Math.random() * 10);
+    code = code + newNumber;
+    return newNumber;
+  });
+  return code;
+};
