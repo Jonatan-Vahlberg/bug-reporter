@@ -107,6 +107,7 @@ const firebase = {
     try {
       const ref = firebaseApp.database().ref(`/users/${uid}`);
       const snapshot = await ref.once('value');
+
       if (snapshot.exists()) {
         return {profile: snapshot.val(), error: firebaseDBErrorStatus.NO_ERROR};
       }

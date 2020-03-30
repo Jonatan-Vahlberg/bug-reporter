@@ -1,6 +1,9 @@
 import React, {useEffect, useState, useContext} from 'react';
 
-import {ApplicationContext} from './src/context/ApplicationContext';
+import {
+  ApplicationContext,
+  emptySettings,
+} from './src/context/ApplicationContext';
 import Navigator from './src/navigation';
 import firebase from './src/services/api/firebase';
 import storage from './src/services/storage';
@@ -23,11 +26,7 @@ Firebase.initializeApp(firebaseConfig);
 const App = () => {
   const [featuredReports, setFeaturedReports] = useState<BugReport[]>([]);
   const [featuredTeam, setFeaturedTeam] = useState<Team>();
-  const [settings, setSettings] = useState<Settings>({
-    feautredTeamId: 'UNSET',
-    notifications: 'UNSET',
-    stayLoggedIn: 'FALSE',
-  });
+  const [settings, setSettings] = useState<Settings>({...emptySettings});
   const [profile, setProfile] = useState<Profile | undefined>(undefined);
 
   return (

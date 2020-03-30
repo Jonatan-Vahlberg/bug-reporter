@@ -7,8 +7,16 @@ import storage from 'src/services/storage';
 
 export type Settings = {
   feautredTeamId: string | 'UNSET';
-  notifications: 'FALSE' | 'TRUE' | 'UNSET';
-  stayLoggedIn: 'FALSE' | 'TRUE';
+  notifications: boolean;
+  stayLoggedIn: boolean;
+  neverShowSelectTeam: boolean;
+};
+
+export const emptySettings: Settings = {
+  feautredTeamId: 'UNSET',
+  notifications: false,
+  stayLoggedIn: false,
+  neverShowSelectTeam: false,
 };
 
 export type ContextProps = {
@@ -39,10 +47,6 @@ export const ApplicationContext = React.createContext<ContextProps>({
   },
   teams: [],
   featuredTeam: undefined,
-  settings: {
-    feautredTeamId: 'UNSET',
-    notifications: 'UNSET',
-    stayLoggedIn: 'FALSE',
-  },
+  settings: {...emptySettings},
   featuredReports: [],
 });
