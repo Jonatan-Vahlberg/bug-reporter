@@ -19,7 +19,6 @@ export interface AdminProps {
 const TeamsAdminScreen: React.FC<AdminProps> = ({navigation, route}) => {
   const {actions, profile} = useContext(ApplicationContext);
   const [code, setCode] = useState<string>('');
-  console.log(code);
 
   return (
     <View>

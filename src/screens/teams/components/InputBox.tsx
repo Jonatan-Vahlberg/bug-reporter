@@ -20,7 +20,6 @@ const InputBox: React.FC<BoxProps> = ({onCodeSet}) => {
   const inRef4 = useRef<TextInput>(null);
   const inRef5 = useRef<TextInput>(null);
   const inRef6 = useRef<TextInput>(null);
-  console.log(inRef1);
 
   const inputs = [
     {digit: in1, setDigit: setIn1, textRef: inRef1, nextRef: inRef2},

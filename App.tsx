@@ -1,11 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 
 import {ApplicationContext} from './src/context/ApplicationContext';
 import Navigator from './src/navigation';
 import firebase from './src/services/api/firebase';
+import storage from './src/services/storage';
 import Firebase from 'firebase';
 import BugReport from 'src/models/BugReport';
 import Profile from 'src/models/Profile';
+import {Settings} from './src/context/ApplicationContext';
+import Team from 'src/models/Team';
 const firebaseConfig = {
   apiKey: 'AIzaSyBhvEvFrGhYXHeLUn6VEEfaPATvjfLXo4I',
   authDomain: 'bug-tracker-17906.firebaseapp.com',
@@ -18,37 +21,31 @@ const firebaseConfig = {
 };
 Firebase.initializeApp(firebaseConfig);
 const App = () => {
-  useEffect(() => {}, []);
   const [featuredReports, setFeaturedReports] = useState<BugReport[]>([]);
+  const [featuredTeam, setFeaturedTeam] = useState<Team>();
+  const [settings, setSettings] = useState<Settings>({
+    feautredTeamId: 'UNSET',
+    notifications: 'UNSET',
+    stayLoggedIn: 'FALSE',
+  });
   const [profile, setProfile] = useState<Profile | undefined>(undefined);
+
   return (
     <ApplicationContext.Provider
       value={{
-        settings: {},
+        settings,
         actions: {
           firebase,
           setters: {
             setFeaturedReports,
+            setFeaturedTeam,
             setProfile,
+            setSettings,
           },
+          storage,
         },
         teams: [],
-        featuredTeam: {
-          name: `Leon's developers`,
-          members: [
-            {
-              name: 'Leon lang',
-              position: 'ADMIN',
-              positonValue: 5,
-              uuid: 'IvM9aSjjVCXZ9Up6szWhmGtIjl13',
-            },
-          ],
-          reports: '19816b87-1d2b-49c2-9ca2-f7ce3ed544e9',
-          uuid: '19816b87-1d2b-49c2-9ca2-f7ce3ed544e9',
-          description: 'a test group',
-          code: '089102',
-          public: false,
-        },
+        featuredTeam,
         featuredReports: featuredReports,
         profile,
       }}>

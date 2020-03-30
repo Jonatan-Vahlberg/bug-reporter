@@ -76,7 +76,6 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
     errorVisible && !statement
       ? Colors.severityColors.HIGH
       : colors.severityColors.CATASTROPHIC;
-  console.log(lines);
 
   const submit = useCallback(async () => {
     if (isReportViable()) {

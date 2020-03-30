@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Team from '../../models/Team';
 import {Navbar, CheckBox, ScreenComponent, Text} from '../../components/common';
@@ -16,6 +16,7 @@ import DashList from './components/DashList';
 import {FAB, ActivityIndicator} from 'react-native-paper';
 import Colors from 'src/static/colors';
 import {firebaseDBErrorStatus} from 'src/services/api/firebase';
+import LoadingScreenModal from './components/LoadingScreenModal';
 
 export interface DashProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -39,27 +40,27 @@ const text = `<View style={{flexDirection: 'row'}}>
 
 const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
   const {
-    actions: {firebase, setters},
+    actions: {firebase, setters, storage},
     featuredTeam,
     featuredReports,
     profile,
+    settings,
   } = useContext(ApplicationContext);
-  React.useEffect(() => {
-    (async () => {
-      console.log('Hell');
+  const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
+  console.log(loadingVisible);
 
-      const result = await firebase.login('email@email.com', 'password');
-      const profile = await firebase.getProfile(result.uid);
-      if (profile.error === firebaseDBErrorStatus.NO_ERROR) {
-        setters.setProfile!(profile.profile);
-      }
-      const reports = await firebase.getReports(featuredTeam!.uuid);
-      setters.setFeaturedReports!(reports);
-    })();
-  }, []);
-  if (profile === undefined) {
-    return <ActivityIndicator />;
+  if (loadingVisible) {
+    return (
+      <LoadingScreenModal
+        visible={loadingVisible}
+        userID=""
+        setVisability={() => setLoadingVisible(false)}
+      />
+    );
   }
+  console.log(settings);
+
+  //useEffect(() => {}, [loadingVisible]);
   return (
     <ApplicationContext.Consumer>
       {context => (

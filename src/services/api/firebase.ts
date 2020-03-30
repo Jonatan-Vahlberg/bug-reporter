@@ -140,7 +140,6 @@ const firebase = {
         public: isPublic,
         code: getRandomCode(),
       };
-      console.log(team);
 
       const userRef = firebaseApp.database().ref(`/users/${creator.uuid}`);
       const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
@@ -167,13 +166,25 @@ const firebase = {
         .on('value', async queryResult => {
           if (queryResult.exists()) {
             const value = queryResult.val();
-            console.log(value);
             return {
               error: firebaseDBErrorStatus.NO_ERROR,
               payload: value[Object.keys(value)[0]],
             };
           }
         });
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    } catch (error) {
+      console.warn(error.message);
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  getTeanOnId: async (uuid: string) => {
+    try {
+      const teamRef = firebaseApp.database().ref(`/teams/${uuid}`);
+      const result = await teamRef.once('value');
+      if (result.exists()) {
+        return {error: firebaseDBErrorStatus.NO_ERROR, payload: result.val()};
+      }
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     } catch (error) {
       console.warn(error.message);
@@ -232,13 +243,11 @@ const firebase = {
   },
   getReports: async (teamId: string): Promise<BugReport[]> => {
     try {
-      console.log('HI');
       const ref = firebaseApp.database().ref(`reports/${teamId}`);
       const snap = await ref.once('value');
       if (!snap.exists()) {
         return [];
       }
-      console.log(snap.val());
 
       return _.values(snap.val());
     } catch (error) {
