@@ -13,8 +13,9 @@ import {ApplicationContext} from '../../context/ApplicationContext';
 import ReportContentBox from './components/Report/ReportContentBox';
 import DashHeader from './components/DashHeader';
 import DashList from './components/DashList';
-import {FAB} from 'react-native-paper';
+import {FAB, ActivityIndicator} from 'react-native-paper';
 import Colors from 'src/static/colors';
+import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 
 export interface DashProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -41,17 +42,24 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
     actions: {firebase, setters},
     featuredTeam,
     featuredReports,
+    profile,
   } = useContext(ApplicationContext);
   React.useEffect(() => {
     (async () => {
       console.log('Hell');
 
-      await firebase.login('email@email.com', 'password');
+      const result = await firebase.login('email@email.com', 'password');
+      const profile = await firebase.getProfile(result.uid);
+      if (profile.error === firebaseDBErrorStatus.NO_ERROR) {
+        setters.setProfile!(profile.profile);
+      }
       const reports = await firebase.getReports(featuredTeam!.uuid);
       setters.setFeaturedReports!(reports);
     })();
   }, []);
-
+  if (profile === undefined) {
+    return <ActivityIndicator />;
+  }
   return (
     <ApplicationContext.Consumer>
       {context => (

@@ -10,4 +10,5 @@ export type TeamPosition =
   | 'TECH_LEAD'
   | 'ADMIN'
   | 'TESTER'
+  | 'CONSULTANT'
   | 'OTHER';

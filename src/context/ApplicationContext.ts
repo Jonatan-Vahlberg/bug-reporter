@@ -16,7 +16,7 @@ export type ContextProps = {
       setFeaturedReports?: React.Dispatch<React.SetStateAction<BugReport[]>>;
       setFeaturedTeam?: React.Dispatch<React.SetStateAction<Team>>;
       setSettings?: React.Dispatch<React.SetStateAction<object>>;
-      setProfile?: React.Dispatch<React.SetStateAction<Profile>>;
+      setProfile?: React.Dispatch<React.SetStateAction<Profile | undefined>>;
     };
   };
 };

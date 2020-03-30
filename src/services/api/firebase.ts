@@ -3,7 +3,7 @@ import Profile from '../..//models/Profile';
 import BugReport from '../..//models/BugReport';
 import Comment from '../..//models/Comment';
 import axios from 'axios';
-import Team from 'src/models/Team';
+import Team, {LightTeam} from 'src/models/Team';
 import firebaseApp from 'firebase';
 import _ from 'lodash';
 import {getRandomCode} from 'src/static/functions';
@@ -107,8 +107,10 @@ const firebase = {
     try {
       const ref = firebaseApp.database().ref(`/users/${uid}`);
       const snapshot = await ref.once('value');
-
-      return {snapshot, error: firebaseDBErrorStatus.NO_ERROR};
+      if (snapshot.exists()) {
+        return {profile: snapshot.val(), error: firebaseDBErrorStatus.NO_ERROR};
+      }
+      return {snapshot, error: firebaseDBErrorStatus.UNABLE_TO_GET_PROFILE};
     } catch (error) {
       console.error(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_GET_PROFILE};
@@ -144,7 +146,10 @@ const firebase = {
       const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
       await teamRef.set(team);
       await userRef.update({
-        teams: [...creator.teams, teamId],
+        teams: [
+          ...creator.teams,
+          {uuid: teamId, position: 'ADMIN', positonValue: 5, name: team.name},
+        ],
       });
 
       return {error: firebaseDBErrorStatus.NO_ERROR, payload: teamId};
@@ -182,7 +187,13 @@ const firebase = {
       positonValue: 1,
       uuid: profile.uuid,
     };
-    const newTeams: string[] = [...profile.teams, team.uuid];
+    const lightTeam: LightTeam = {
+      uuid: team.uuid,
+      name: team.name,
+      personalPosition: 'OTHER',
+      personalPositionValue: 1,
+    };
+    const newTeams: LightTeam[] = [...profile.teams, lightTeam];
     try {
       const userRef = firebaseApp.database().ref(`/users/${profile.uuid}`);
       const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);

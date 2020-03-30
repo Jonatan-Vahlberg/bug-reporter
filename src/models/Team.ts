@@ -1,4 +1,4 @@
-import TeamMember from './TeamMember';
+import TeamMember, {TeamPosition} from './TeamMember';
 import BugReport from './BugReport';
 
 export default interface Team {
@@ -9,4 +9,11 @@ export default interface Team {
   description: string;
   code: string;
   public: boolean;
+}
+
+export interface LightTeam {
+  name: string;
+  uuid: string;
+  personalPosition: TeamPosition;
+  personalPositionValue: number;
 }

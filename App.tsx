@@ -20,14 +20,7 @@ Firebase.initializeApp(firebaseConfig);
 const App = () => {
   useEffect(() => {}, []);
   const [featuredReports, setFeaturedReports] = useState<BugReport[]>([]);
-  const [profile, setProfile] = useState<Profile>({
-    email: 'email@email.com',
-    firstName: 'Marcus',
-    lastName: 'lang',
-    teams: ['e0a3cfd2-76f1-437a-91ad-09c6e96a0ba1'],
-    uuid: 'IvM9aSjjVCXZ9Up6szWhmGtIjl13',
-    FCMIDS: [],
-  });
+  const [profile, setProfile] = useState<Profile | undefined>(undefined);
   return (
     <ApplicationContext.Provider
       value={{
@@ -41,13 +34,20 @@ const App = () => {
         },
         teams: [],
         featuredTeam: {
-          name: 'Zim, c',
-          members: [],
-          reports: 'e0a3cfd2-76f1-437a-91ad-09c6e96a0ba1',
-          uuid: 'e0a3cfd2-76f1-437a-91ad-09c6e96a0ba1',
-          description: '',
-          code: '101010',
-          public: true,
+          name: `Leon's developers`,
+          members: [
+            {
+              name: 'Leon lang',
+              position: 'ADMIN',
+              positonValue: 5,
+              uuid: 'IvM9aSjjVCXZ9Up6szWhmGtIjl13',
+            },
+          ],
+          reports: '19816b87-1d2b-49c2-9ca2-f7ce3ed544e9',
+          uuid: '19816b87-1d2b-49c2-9ca2-f7ce3ed544e9',
+          description: 'a test group',
+          code: '089102',
+          public: false,
         },
         featuredReports: featuredReports,
         profile,

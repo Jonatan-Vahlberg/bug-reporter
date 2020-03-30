@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {TeamPosition} from 'src/models/TeamMember';
 
 export const breakoutISODate = (
   dateString: string,
@@ -36,4 +37,19 @@ export const getRandomCode = (): string => {
     return newNumber;
   });
   return code;
+};
+
+export const getWrittenPosition = (position: TeamPosition) => {
+  switch (position) {
+    case 'TECH_LEAD':
+      return 'Tech Lead';
+    case 'ADMIN':
+    case 'DEVELOPER':
+    case 'OTHER':
+    case 'TESTER':
+    default:
+      return `${position.substr(0, 1).toUpperCase()}${position
+        .substr(1)
+        .toLowerCase()}`;
+  }
 };

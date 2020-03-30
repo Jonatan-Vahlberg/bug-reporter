@@ -10,6 +10,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {ApplicationContext} from 'src/context/ApplicationContext';
 import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 import Profile from 'src/models/Profile';
+import {LightTeam} from 'src/models/Team';
 
 export interface AdminProps {
   navigation: StackNavigationProp<TeamsParamList>;
@@ -34,7 +35,13 @@ const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
       );
       setLoading(false);
       if (result.error === firebaseDBErrorStatus.NO_ERROR) {
-        const updatedTeams: string[] = [...profile!.teams, result.payload!];
+        const lightTeam: LightTeam = {
+          uuid: result.payload!,
+          name: name,
+          personalPosition: 'ADMIN',
+          personalPositionValue: 5,
+        };
+        const updatedTeams: LightTeam[] = [...profile!.teams, lightTeam];
         const updatedProfile: Profile = {...profile!, teams: updatedTeams};
         actions.setters.setProfile!(updatedProfile);
         navigation.goBack();
