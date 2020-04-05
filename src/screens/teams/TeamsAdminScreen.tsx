@@ -43,7 +43,7 @@ const TeamsAdminScreen: React.FC<AdminProps> = ({navigation, route}) => {
           onPress={() => navigation.navigate('TEAMS_CREATE')}
           color={'#fff'}
           style={styles.button}>
-          Join Team
+          Create Team
         </Button>
       </Card>
     </View>

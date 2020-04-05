@@ -131,18 +131,18 @@ const firebase = {
   ) => {
     try {
       const teamId: string = UUID_V4();
-      const team: Team = {
+      const team = {
         uuid: teamId,
         name,
         description,
-        members: [
-          {
+        members: {
+          [creator.uuid]: {
             name: `${creator.firstName} ${creator.lastName}`,
             position: 'ADMIN',
             positonValue: 5,
             uuid: creator.uuid,
           },
-        ],
+        },
         reports: teamId,
         public: isPublic,
         code: getRandomCode(),
@@ -175,9 +175,11 @@ const firebase = {
         .on('value', async (queryResult) => {
           if (queryResult.exists()) {
             const value = queryResult.val();
+            let team = value[Object.keys(value)[0]];
+            team.members = _.values(team.members);
             return {
               error: firebaseDBErrorStatus.NO_ERROR,
-              payload: value[Object.keys(value)[0]],
+              payload: team,
             };
           }
         });
@@ -192,7 +194,9 @@ const firebase = {
       const teamRef = firebaseApp.database().ref(`/teams/${uuid}`);
       const result = await teamRef.once('value');
       if (result.exists()) {
-        return {error: firebaseDBErrorStatus.NO_ERROR, payload: result.val()};
+        let team = result.val();
+        team.members = _.values(team.members);
+        return {error: firebaseDBErrorStatus.NO_ERROR, payload: team};
       }
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     } catch (error) {
@@ -218,8 +222,10 @@ const firebase = {
       const userRef = firebaseApp
         .database()
         .ref(`/users/${profile.uuid}/teams/${team.uuid}`);
-      const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
-      await teamRef.update({...team, members: [...team.members, newMember]});
+      const teamMembersRef = firebaseApp
+        .database()
+        .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
+      await teamMembersRef.update(newMember);
       await userRef.set(team);
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
@@ -237,6 +243,22 @@ const firebase = {
         await memberTeamRef.remove();
       });
       await teamRef.remove();
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
+    }
+  },
+  leaveTeam: async (team: Team, profile: Profile) => {
+    try {
+      const profileTeamRef = firebaseApp
+        .database()
+        .ref(`/users/${profile.uuid}/teams/${team.uuid}`);
+      const membersRef = firebaseApp
+        .database()
+        .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
+      await profileTeamRef.remove();
+      await membersRef.remove();
       return true;
     } catch (error) {
       console.warn(error);

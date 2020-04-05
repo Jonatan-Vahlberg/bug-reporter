@@ -23,7 +23,7 @@ export interface DetailProps {
 }
 
 const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
-  const {actions} = useContext(ApplicationContext);
+  const {actions, profile} = useContext(ApplicationContext);
   const [loading, setLoading] = useState<boolean>(true);
   const [team, setTeam] = useState<Team>();
   const [nameSort, setNameSort] = useState<'ascending' | 'descending'>(
@@ -111,7 +111,15 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 minLevel={0}
                 maxLevel={4}>
                 <Button
-                  onPress={async () => {}}
+                  onPress={async () => {
+                    const leftTeam = await actions.firebase.leaveTeam(
+                      team,
+                      profile!,
+                    );
+                    if (leftTeam) {
+                      navigation.goBack();
+                    }
+                  }}
                   color={'#fff'}
                   style={styles().button}>
                   Leave Team

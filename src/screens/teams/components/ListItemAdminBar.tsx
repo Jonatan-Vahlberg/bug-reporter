@@ -23,8 +23,18 @@ const ListItemAdminBar: React.FC<{
     <>
       <View style={styles.bar}>
         <TouchableOpacity
-          onPress={() => setVisible(true)}
-          disabled={settings.feautredTeamId !== uuid}>
+          onPress={async () => {
+            actions.setters.setSettings!({...settings, feautredTeamId: uuid});
+            await actions.storage.setSettings({
+              ...settings,
+              feautredTeamId: uuid,
+            });
+            const firebaseTeam = await actions.firebase.getTeanOnId(uuid);
+            if (firebaseTeam.payload !== undefined) {
+              actions.setters.setFeaturedTeam!(firebaseTeam.payload);
+            }
+          }}
+          disabled={settings.feautredTeamId === uuid}>
           <Icon
             name={settings.feautredTeamId === uuid ? 'star' : 'star-outline'}
             size={25}

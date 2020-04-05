@@ -25,6 +25,16 @@ const LoadingScreenModal: React.FC<{
     !loadingProfile && loadingFeaturedTeam ? 'Loading selected team' : message;
   useEffect(() => {
     (async () => {
+      const firebaseTeam = await actions.firebase.getTeanOnId(
+        settings.feautredTeamId,
+      );
+      if (firebaseTeam.payload !== undefined) {
+        actions.setters.setFeaturedTeam!(firebaseTeam.payload);
+      }
+    })();
+  }, [settings.feautredTeamId]);
+  useEffect(() => {
+    (async () => {
       const storedSettings = await actions.storage.getSettings();
       actions.setters.setSettings!(storedSettings);
       setLoadingProfile(true);
