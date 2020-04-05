@@ -4,13 +4,13 @@ import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 import {ActivityIndicator} from 'react-native-paper';
 import {StyleSheet, View, Modal} from 'react-native';
 import colors from 'src/static/colors';
-import {Text} from 'src/components/common';
+import {Text, LargeSpinner} from 'src/components/common';
 
 const LoadingScreenModal: React.FC<{
   userID: string;
   visible: boolean;
   setVisability: () => void | Function;
-}> = props => {
+}> = (props) => {
   const {actions, settings, profile, featuredTeam} = useContext(
     ApplicationContext,
   );
@@ -28,14 +28,11 @@ const LoadingScreenModal: React.FC<{
       const storedSettings = await actions.storage.getSettings();
       actions.setters.setSettings!(storedSettings);
       setLoadingProfile(true);
-      const firebaseProfile = await actions.firebase.getProfile(
+      await actions.firebase.getProfile(
         'IvM9aSjjVCXZ9Up6szWhmGtIjl13',
+        actions.setters.setProfile!,
       );
-      //const firebaseProfile = await actions.firebase.getProfile(props.userID);
-      if (firebaseProfile.error === firebaseDBErrorStatus.NO_ERROR) {
-        actions.setters.setProfile!(firebaseProfile.profile!);
-        setLoadingProfile(false);
-      }
+      setLoadingProfile(false);
 
       if (storedSettings.feautredTeamId !== 'UNSET') {
         setLoadingFeaturedTeam(true);
@@ -52,13 +49,11 @@ const LoadingScreenModal: React.FC<{
       props.setVisability();
     })();
   }, []);
+  console.log(profile);
 
   return (
     <Modal visible={true}>
-      <View style={styles().base}>
-        <ActivityIndicator style={styles().spinner} />
-        <Text.Caption>{message}</Text.Caption>
-      </View>
+      <LargeSpinner message={message} />
     </Modal>
   );
 };

@@ -11,24 +11,20 @@ import ListItemAdminBar from './ListItemAdminBar';
 const TeamListItem: React.FC<{
   team: LightTeam;
   navigation: StackNavigationProp<TeamsParamList>;
-}> = props => {
+}> = (props) => {
   const {
     team: {name, personalPosition, personalPositionValue, uuid},
     navigation,
   } = props;
 
   return (
-    <TouchableOpacity>
-      <Card style={styles.card}>
-        <View>
-          <Text.Title>{name}</Text.Title>
-          <Text.Base>
-            Position: {getWrittenPosition(personalPosition)}
-          </Text.Base>
-        </View>
-        <ListItemAdminBar team={props.team} navigation={navigation} />
-      </Card>
-    </TouchableOpacity>
+    <Card style={styles.card}>
+      <View>
+        <Text.Title>{name}</Text.Title>
+        <Text.Base>Position: {getWrittenPosition(personalPosition)}</Text.Base>
+      </View>
+      <ListItemAdminBar team={props.team} navigation={navigation} />
+    </Card>
   );
 };
 

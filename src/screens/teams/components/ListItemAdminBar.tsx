@@ -11,7 +11,7 @@ import SelectTeamModal from './SelectTeamModal';
 const ListItemAdminBar: React.FC<{
   team: LightTeam;
   navigation: StackNavigationProp<TeamsParamList>;
-}> = props => {
+}> = (props) => {
   const {settings, actions} = useContext(ApplicationContext);
   const {
     navigation,
@@ -32,27 +32,15 @@ const ListItemAdminBar: React.FC<{
             color={colors.darkerBasicBlue}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('TEAMS_DETAIL')}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('TEAMS_DETAIL', {teamBase: props.team})
+          }>
           <Icon
-            name="eye"
+            name={personalPositionValue >= 4 ? 'pen' : 'eye'}
             size={25}
             style={styles.icon}
             color={colors.darkerBasicBlue}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          disabled={personalPositionValue < 4}
-          onPress={() => {}}>
-          <Icon
-            name="pen"
-            size={25}
-            style={styles.icon}
-            color={
-              personalPositionValue >= 4
-                ? colors.darkerBasicBlue
-                : colors.greyDetail
-            }
           />
         </TouchableOpacity>
       </View>

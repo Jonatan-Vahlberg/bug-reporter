@@ -103,18 +103,24 @@ const firebase = {
   logout: async (profile: Profile) => {
     //TODO: FIREBASE UNREGISTER DEVICEIDS
   },
-  getProfile: async (uid: string) => {
+  getProfile: async (
+    uid: string,
+    setProfile: React.Dispatch<React.SetStateAction<Profile | undefined>>,
+  ) => {
     try {
       const ref = firebaseApp.database().ref(`/users/${uid}`);
-      const snapshot = await ref.once('value');
-
-      if (snapshot.exists()) {
-        return {profile: snapshot.val(), error: firebaseDBErrorStatus.NO_ERROR};
-      }
-      return {snapshot, error: firebaseDBErrorStatus.UNABLE_TO_GET_PROFILE};
+      ref.on('value', (snapshot) => {
+        if (snapshot.exists()) {
+          let profile: Profile = snapshot.val();
+          profile.teams = _.values(snapshot.val().teams);
+          setProfile(profile);
+        } else {
+          setProfile(undefined);
+        }
+      });
     } catch (error) {
       console.error(error.message);
-      return {error: firebaseDBErrorStatus.UNABLE_TO_GET_PROFILE};
+      return setProfile(undefined);
     }
   },
   createTeam: async (
@@ -142,14 +148,16 @@ const firebase = {
         code: getRandomCode(),
       };
 
-      const userRef = firebaseApp.database().ref(`/users/${creator.uuid}`);
+      const userRef = firebaseApp
+        .database()
+        .ref(`/users/${creator.uuid}/teams/${teamId}`);
       const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
       await teamRef.set(team);
-      await userRef.update({
-        teams: [
-          ...creator.teams,
-          {uuid: teamId, position: 'ADMIN', positonValue: 5, name: team.name},
-        ],
+      await userRef.set({
+        uuid: teamId,
+        personalPosition: 'ADMIN',
+        personalPositionValue: 5,
+        name: team.name,
       });
 
       return {error: firebaseDBErrorStatus.NO_ERROR, payload: teamId};
@@ -164,7 +172,7 @@ const firebase = {
       await teamsRef
         .orderByChild('code')
         .equalTo(code)
-        .on('value', async queryResult => {
+        .on('value', async (queryResult) => {
           if (queryResult.exists()) {
             const value = queryResult.val();
             return {
@@ -207,14 +215,32 @@ const firebase = {
     };
     const newTeams: LightTeam[] = [...profile.teams, lightTeam];
     try {
-      const userRef = firebaseApp.database().ref(`/users/${profile.uuid}`);
+      const userRef = firebaseApp
+        .database()
+        .ref(`/users/${profile.uuid}/teams/${team.uuid}`);
       const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
       await teamRef.update({...team, members: [...team.members, newMember]});
-      await userRef.update({teams: newTeams});
+      await userRef.set(team);
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
       console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  removeTeamFully: async (team: Team) => {
+    try {
+      const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
+      team.members.forEach(async (member) => {
+        const memberTeamRef = firebaseApp
+          .database()
+          .ref(`/users/${member.uuid}/teams/${team.uuid}`);
+        await memberTeamRef.remove();
+      });
+      await teamRef.remove();
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
     }
   },
   createReport: async (report: BugReport, teamId: string) => {
@@ -246,7 +272,7 @@ const firebase = {
     try {
       const ref = firebaseApp.database().ref(`reports/${teamId}`);
       const snap = await ref.once('value');
-      if (!snap.exists()) {
+      if (!snap.exists() || snap.val() === null) {
         return [];
       }
 
@@ -254,6 +280,24 @@ const firebase = {
     } catch (error) {
       console.warn(error);
       return [];
+    }
+  },
+  getRealtimeReports: async (
+    teamId: string,
+    setReports: React.Dispatch<React.SetStateAction<BugReport[]>>,
+  ) => {
+    try {
+      const ref = firebaseApp.database().ref(`reports/${teamId}`);
+      const result = ref.on('value', (snap) => {
+        if (!snap.exists() || snap.val() === null) {
+          setReports([]);
+        } else {
+          setReports(_.values(snap.val()));
+        }
+      });
+    } catch (error) {
+      console.warn(error);
+      setReports([]);
     }
   },
   updateReport: async (report: BugReport) => {
@@ -271,7 +315,7 @@ const firebase = {
     newComment: Comment,
     closing: boolean = false,
   ) => {
-    const updatedComments = report.comments!.map(comment => {
+    const updatedComments = report.comments!.map((comment) => {
       if (comment.uuid === newComment.uuid) {
         return newComment;
       }

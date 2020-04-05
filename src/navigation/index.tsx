@@ -19,7 +19,7 @@ import CreateNewTeamScreen from '../screens/teams/CreateNewTeamScreen';
 
 import LoginScreen from '../screens/auth/LoginScreen';
 import BugReport, {ReportFilter} from 'src/models/BugReport';
-import Team from '../models/Team';
+import Team, {LightTeam} from '../models/Team';
 import {ApplicationContext} from '../context/ApplicationContext';
 import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
 
@@ -45,7 +45,7 @@ const ProfileNavigator = () => {
 
 export type TeamsParamList = {
   TEAMS_HOME: undefined;
-  TEAMS_DETAIL: {team: Team};
+  TEAMS_DETAIL: {teamBase: LightTeam};
   TEAMS_ADMIN: object;
   TEAMS_CREATE: undefined;
   PROFILE: undefined;
@@ -127,7 +127,7 @@ const Navigator = () => {
   const RootStack = createStackNavigator<RootParamList>();
   return (
     <ApplicationContext.Consumer>
-      {context => (
+      {(context) => (
         <NavigationContainer>
           <RootStack.Navigator screenOptions={{headerShown: false}}>
             {true ? (
