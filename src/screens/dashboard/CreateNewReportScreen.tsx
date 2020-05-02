@@ -96,6 +96,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
       setErrorVisible(true);
     }
   }, [title, content, severity]);
+  console.log(lines);
 
   return (
     <ApplicationContext.Consumer>
@@ -139,6 +140,9 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
                       .split('\n')
                       .map((line, index) => {
                         let newLine: ReportLine = {line, status: 'hashtag'};
+                        if (value === '') {
+                          return {line: '', status: 'hashtag'};
+                        }
                         if (lines.length === index) {
                           return newLine;
                         } else if (lines[index].line === line) {
