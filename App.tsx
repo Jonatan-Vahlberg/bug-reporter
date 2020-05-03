@@ -1,10 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 
-import {ApplicationContext} from './src/context/ApplicationContext';
+import {
+  ApplicationContext,
+  emptySettings,
+} from './src/context/ApplicationContext';
 import Navigator from './src/navigation';
 import firebase from './src/services/api/firebase';
+import storage from './src/services/storage';
 import Firebase from 'firebase';
 import BugReport from 'src/models/BugReport';
+import Profile from 'src/models/Profile';
+import {Settings} from './src/context/ApplicationContext';
+import Team from 'src/models/Team';
 const firebaseConfig = {
   apiKey: 'AIzaSyBhvEvFrGhYXHeLUn6VEEfaPATvjfLXo4I',
   authDomain: 'bug-tracker-17906.firebaseapp.com',
@@ -17,28 +24,29 @@ const firebaseConfig = {
 };
 Firebase.initializeApp(firebaseConfig);
 const App = () => {
-  useEffect(() => {}, []);
   const [featuredReports, setFeaturedReports] = useState<BugReport[]>([]);
+  const [featuredTeam, setFeaturedTeam] = useState<Team>();
+  const [settings, setSettings] = useState<Settings>({...emptySettings});
+  const [profile, setProfile] = useState<Profile | undefined>(undefined);
+
   return (
     <ApplicationContext.Provider
       value={{
-        settings: {},
+        settings,
         actions: {
           firebase,
           setters: {
             setFeaturedReports,
+            setFeaturedTeam,
+            setProfile,
+            setSettings,
           },
+          storage,
         },
         teams: [],
-        featuredTeam: {
-          name: 'Zim, c',
-          members: [],
-          reports: 'e0a3cfd2-76f1-437a-91ad-09c6e96a0ba1',
-          uuid: 'e0a3cfd2-76f1-437a-91ad-09c6e96a0ba1',
-          description: '',
-          code: '101010',
-        },
+        featuredTeam,
         featuredReports: featuredReports,
+        profile,
       }}>
       <Navigator />
     </ApplicationContext.Provider>

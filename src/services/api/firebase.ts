@@ -3,9 +3,10 @@ import Profile from '../..//models/Profile';
 import BugReport from '../..//models/BugReport';
 import Comment from '../..//models/Comment';
 import axios from 'axios';
-import Team from 'src/models/Team';
+import Team, {LightTeam} from 'src/models/Team';
 import firebaseApp from 'firebase';
 import _ from 'lodash';
+import {getRandomCode} from 'src/static/functions';
 
 const UUID_V4 = require('uuid/v4');
 export enum firebaseAuthErrorStatus {
@@ -31,43 +32,43 @@ export type FirebaseDBReturn = {
   snapshot?: any;
 };
 
-export interface ApiFirebaseInterface {
-  login: (email: string, password: string) => Promise<FirebaseAuthReturn>;
-  register: (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-  ) => Promise<FirebaseAuthReturn>;
-  logout: (profile: Profile) => Promise<void>;
-  getProfile: (uuid: string, email: string) => Promise<FirebaseDBReturn>;
-  joinTeamWithCode: (code: string, user: Profile) => Promise<FirebaseDBReturn>;
-  createTeam: (
-    name: string,
-    description: string,
-    creator: Profile,
-    members?: TeamMember[],
-  ) => Promise<FirebaseDBReturn>;
-  createReport: (
-    report: BugReport,
-    teamId: string,
-  ) => Promise<FirebaseDBReturn>;
-  getReport: (uuid: string) => Promise<FirebaseDBReturn>;
-  getReports: (teamId: string) => Promise<any>;
-  updateReport: (report: BugReport) => Promise<void>;
-  addCommentToReport: (
-    report: BugReport,
-    comment: Comment,
-    closing?: boolean,
-  ) => Promise<void>;
-  editCommentOnReport: (
-    report: BugReport,
-    newComment: Comment,
-    closing?: boolean,
-  ) => Promise<void>;
-}
+// export interface ApiFirebaseInterface {
+//   login: (email: string, password: string) => Promise<FirebaseAuthReturn>;
+//   register: (
+//     email: string,
+//     password: string,
+//     firstName: string,
+//     lastName: string,
+//   ) => Promise<FirebaseAuthReturn>;
+//   logout: (profile: Profile) => Promise<void>;
+//   getProfile: (uuid: string, email: string) => Promise<FirebaseDBReturn>;
+//   joinTeamWithCode: (code: string, user: Profile) => Promise<FirebaseDBReturn>;
+//   createTeam: (
+//     name: string,
+//     description: string,
+//     creator: Profile,
+//     members?: TeamMember[],
+//   ) => Promise<FirebaseDBReturn>;
+//   createReport: (
+//     report: BugReport,
+//     teamId: string,
+//   ) => Promise<FirebaseDBReturn>;
+//   getReport: (uuid: string) => Promise<FirebaseDBReturn>;
+//   getReports: (teamId: string) => Promise<any>;
+//   updateReport: (report: BugReport) => Promise<void>;
+//   addCommentToReport: (
+//     report: BugReport,
+//     comment: Comment,
+//     closing?: boolean,
+//   ) => Promise<void>;
+//   editCommentOnReport: (
+//     report: BugReport,
+//     newComment: Comment,
+//     closing?: boolean,
+//   ) => Promise<void>;
+// }
 
-const firebase: ApiFirebaseInterface = {
+const firebase = {
   login: async (email: string, password: string) => {
     try {
       const {
@@ -102,51 +103,166 @@ const firebase: ApiFirebaseInterface = {
   logout: async (profile: Profile) => {
     //TODO: FIREBASE UNREGISTER DEVICEIDS
   },
-  getProfile: async (uid: string) => {
+  getProfile: async (
+    uid: string,
+    setProfile: React.Dispatch<React.SetStateAction<Profile | undefined>>,
+  ) => {
     try {
       const ref = firebaseApp.database().ref(`/users/${uid}`);
-      const snapshot = await ref.once('value');
-
-      return {snapshot, error: firebaseDBErrorStatus.NO_ERROR};
+      ref.on('value', (snapshot) => {
+        if (snapshot.exists()) {
+          let profile: Profile = snapshot.val();
+          profile.teams = _.values(snapshot.val().teams);
+          setProfile(profile);
+        } else {
+          setProfile(undefined);
+        }
+      });
     } catch (error) {
       console.error(error.message);
-      return {error: firebaseDBErrorStatus.UNABLE_TO_GET_PROFILE};
+      return setProfile(undefined);
     }
   },
   createTeam: async (
     name: string,
     description: string,
+    isPublic: boolean,
     creator: Profile,
-    members?: TeamMember[],
   ) => {
     try {
       const teamId: string = UUID_V4();
-      const userRef = firebaseApp.database().ref(`/users/${creator.uuid}`);
-      const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
-      await teamRef.set({
+      const team = {
+        uuid: teamId,
         name,
         description,
-      });
-      await userRef.update({
-        teams: [...creator.teams, teamId],
+        members: {
+          [creator.uuid]: {
+            name: `${creator.firstName} ${creator.lastName}`,
+            position: 'ADMIN',
+            positonValue: 5,
+            uuid: creator.uuid,
+          },
+        },
+        reports: teamId,
+        public: isPublic,
+        code: getRandomCode(),
+      };
+
+      const userRef = firebaseApp
+        .database()
+        .ref(`/users/${creator.uuid}/teams/${teamId}`);
+      const teamRef = firebaseApp.database().ref(`/teams/${teamId}`);
+      await teamRef.set(team);
+      await userRef.set({
+        uuid: teamId,
+        personalPosition: 'ADMIN',
+        personalPositionValue: 5,
+        name: team.name,
       });
 
-      return {error: firebaseDBErrorStatus.NO_ERROR};
+      return {error: firebaseDBErrorStatus.NO_ERROR, payload: teamId};
     } catch (error) {
-      console.error(error.message);
+      console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
-  joinTeamWithCode: async (code: string, user: Profile) => {
+  getTeamWithCode: async (code: string) => {
     try {
-      const teamId: string = UUID_V4();
-      const userRef = firebaseApp.database().ref(`/users/${user.uuid}`);
       const teamsRef = firebaseApp.database().ref(`/teams`);
-
+      await teamsRef
+        .orderByChild('code')
+        .equalTo(code)
+        .on('value', async (queryResult) => {
+          if (queryResult.exists()) {
+            const value = queryResult.val();
+            let team = value[Object.keys(value)[0]];
+            team.members = _.values(team.members);
+            return {
+              error: firebaseDBErrorStatus.NO_ERROR,
+              payload: team,
+            };
+          }
+        });
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    } catch (error) {
+      console.warn(error.message);
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  getTeanOnId: async (uuid: string) => {
+    try {
+      const teamRef = firebaseApp.database().ref(`/teams/${uuid}`);
+      const result = await teamRef.once('value');
+      if (result.exists()) {
+        let team = result.val();
+        team.members = _.values(team.members);
+        return {error: firebaseDBErrorStatus.NO_ERROR, payload: team};
+      }
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    } catch (error) {
+      console.warn(error.message);
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  joinTeam: async (code: string, profile: Profile, team: Team) => {
+    const newMember: TeamMember = {
+      name: `${profile.firstName} ${profile.lastName}`,
+      position: 'OTHER',
+      positonValue: 1,
+      uuid: profile.uuid,
+    };
+    const lightTeam: LightTeam = {
+      uuid: team.uuid,
+      name: team.name,
+      personalPosition: 'OTHER',
+      personalPositionValue: 1,
+    };
+    const newTeams: LightTeam[] = [...profile.teams, lightTeam];
+    try {
+      const userRef = firebaseApp
+        .database()
+        .ref(`/users/${profile.uuid}/teams/${team.uuid}`);
+      const teamMembersRef = firebaseApp
+        .database()
+        .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
+      await teamMembersRef.update(newMember);
+      await userRef.set(team);
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
-      console.error(error.message);
+      console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  removeTeamFully: async (team: Team) => {
+    try {
+      const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
+      team.members.forEach(async (member) => {
+        const memberTeamRef = firebaseApp
+          .database()
+          .ref(`/users/${member.uuid}/teams/${team.uuid}`);
+        await memberTeamRef.remove();
+      });
+      await teamRef.remove();
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
+    }
+  },
+  leaveTeam: async (team: Team, profile: Profile) => {
+    try {
+      const profileTeamRef = firebaseApp
+        .database()
+        .ref(`/users/${profile.uuid}/teams/${team.uuid}`);
+      const membersRef = firebaseApp
+        .database()
+        .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
+      await profileTeamRef.remove();
+      await membersRef.remove();
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
     }
   },
   createReport: async (report: BugReport, teamId: string) => {
@@ -176,18 +292,34 @@ const firebase: ApiFirebaseInterface = {
   },
   getReports: async (teamId: string): Promise<BugReport[]> => {
     try {
-      console.log('HI');
       const ref = firebaseApp.database().ref(`reports/${teamId}`);
       const snap = await ref.once('value');
-      if (!snap.exists()) {
+      if (!snap.exists() || snap.val() === null) {
         return [];
       }
-      console.log(snap.val());
 
       return _.values(snap.val());
     } catch (error) {
       console.warn(error);
       return [];
+    }
+  },
+  getRealtimeReports: async (
+    teamId: string,
+    setReports: React.Dispatch<React.SetStateAction<BugReport[]>>,
+  ) => {
+    try {
+      const ref = firebaseApp.database().ref(`reports/${teamId}`);
+      const result = ref.on('value', (snap) => {
+        if (!snap.exists() || snap.val() === null) {
+          setReports([]);
+        } else {
+          setReports(_.values(snap.val()));
+        }
+      });
+    } catch (error) {
+      console.warn(error);
+      setReports([]);
     }
   },
   updateReport: async (report: BugReport) => {
@@ -205,7 +337,7 @@ const firebase: ApiFirebaseInterface = {
     newComment: Comment,
     closing: boolean = false,
   ) => {
-    const updatedComments = report.comments!.map(comment => {
+    const updatedComments = report.comments!.map((comment) => {
       if (comment.uuid === newComment.uuid) {
         return newComment;
       }

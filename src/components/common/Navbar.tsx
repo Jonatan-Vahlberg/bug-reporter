@@ -6,6 +6,7 @@ import {
   AuthParamList,
   MainNavigatorParamList,
   DashboardParamList,
+  TeamsParamList,
 } from '../../navigation';
 import {Text} from './Text';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,11 +16,13 @@ export interface NavProps {
     | StackNavigationProp<ProfileParamList>
     | StackNavigationProp<AuthParamList>
     | StackNavigationProp<MainNavigatorParamList>
-    | StackNavigationProp<DashboardParamList>;
+    | StackNavigationProp<DashboardParamList>
+    | StackNavigationProp<TeamsParamList>;
   title?: string;
   root: boolean;
   color?: string;
   rightItem?: JSX.Element;
+  leftItem?: JSX.Element;
 }
 
 const Navbar: React.FC<NavProps> = props => {
@@ -33,13 +36,17 @@ const Navbar: React.FC<NavProps> = props => {
   return (
     <View style={navStyles.baseStyle}>
       {!props.root && (
-        <View style={navStyles.sideContainerStyle}>{CreatedIcon}</View>
+        <View style={navStyles.sideContainerStyle}>
+          {props.leftItem === undefined ? CreatedIcon : props.leftItem}
+        </View>
       )}
       <View style={navStyles.titleContainerStyle}>
         <Text.Title>{props.title}</Text.Title>
       </View>
       {props.rightItem !== undefined && (
-        <View style={navStyles.sideContainerStyle}></View>
+        <View style={{...navStyles.sideContainerStyle, alignItems: 'flex-end'}}>
+          {props.rightItem}
+        </View>
       )}
     </View>
   );
@@ -63,7 +70,11 @@ const navStyles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
   },
-  sideContainerStyle: {},
+  sideContainerStyle: {
+    flex: 1,
+    minWidth: 70,
+    alignItems: 'flex-start',
+  },
 });
 
 export {Navbar};

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {DashboardParamList} from 'src/navigation';
@@ -15,11 +15,20 @@ type ReportListProps = {
 };
 
 const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
-  const {actions, featuredReports} = React.useContext(ApplicationContext);
-
+  const {actions, featuredReports, featuredTeam} = React.useContext(
+    ApplicationContext,
+  );
+  useEffect(() => {
+    (async () => {
+      await actions.firebase.getRealtimeReports(
+        featuredTeam!.uuid,
+        actions.setters.setFeaturedReports!,
+      );
+    })();
+  }, []);
   return (
     <ApplicationContext.Consumer>
-      {context => {
+      {(context) => {
         return (
           <ScreenComponent>
             <Navbar
@@ -27,7 +36,7 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
               navigation={navigation}
               title={getTitle(route.params.filters)}
             />
-            {featuredReports.map(report => (
+            {featuredReports.map((report) => (
               <BugReportListCard
                 key={report.uuid}
                 report={{...report}}

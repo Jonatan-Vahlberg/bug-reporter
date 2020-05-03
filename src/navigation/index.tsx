@@ -18,10 +18,11 @@ import TeamsAdminScreen from '../screens/teams/TeamsAdminScreen';
 import CreateNewTeamScreen from '../screens/teams/CreateNewTeamScreen';
 
 import LoginScreen from '../screens/auth/LoginScreen';
-import BugReport, {ReportFilter} from 'src/models/BugReport';
-import Team from '../models/Team';
+import BugReport, {ReportFilter, ReportLine} from 'src/models/BugReport';
+import Team, {LightTeam} from '../models/Team';
 import {ApplicationContext} from '../context/ApplicationContext';
 import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
+import ContentCreationModalScreen from 'src/screens/dashboard/ContentCreationModalScreen';
 
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -45,7 +46,7 @@ const ProfileNavigator = () => {
 
 export type TeamsParamList = {
   TEAMS_HOME: undefined;
-  TEAMS_DETAIL: {team: Team};
+  TEAMS_DETAIL: {teamBase: LightTeam};
   TEAMS_ADMIN: object;
   TEAMS_CREATE: undefined;
   PROFILE: undefined;
@@ -71,6 +72,11 @@ export type DashboardParamList = {
   DASH_LIST: {filters?: ReportFilter};
   TEAMS: undefined;
   PROFILE: undefined;
+  CONTENT_MODAL: {
+    typeOfContent: 'REPORT' | 'COMMENT';
+    lines: ReportLine[];
+    setLines: React.Dispatch<React.SetStateAction<ReportLine[]>>;
+  };
 };
 
 const DashNavigator = () => {
@@ -80,6 +86,10 @@ const DashNavigator = () => {
     <DashStack.Navigator screenOptions={DefaultStackOptions}>
       <DashStack.Screen name="DASH_HOME" component={DashboardScreen} />
       <DashStack.Screen name="DASH_CREATE" component={CreateNewReportScreen} />
+      <DashStack.Screen
+        name="CONTENT_MODAL"
+        component={ContentCreationModalScreen}
+      />
       <DashStack.Screen name="DASH_VIEW" component={ViewReportScreen} />
       <DashStack.Screen name="DASH_LIST" component={ReportListScreen} />
     </DashStack.Navigator>
@@ -130,7 +140,7 @@ const Navigator = () => {
       {context => (
         <NavigationContainer>
           <RootStack.Navigator screenOptions={{headerShown: false}}>
-            {context.profile === undefined ? (
+            {true ? (
               <>
                 <RootStack.Screen name="MAIN" component={MainNavigator} />
               </>

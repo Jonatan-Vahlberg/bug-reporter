@@ -76,7 +76,6 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
     errorVisible && !statement
       ? Colors.severityColors.HIGH
       : colors.severityColors.CATASTROPHIC;
-  console.log(lines);
 
   const submit = useCallback(async () => {
     if (isReportViable()) {
@@ -97,6 +96,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
       setErrorVisible(true);
     }
   }, [title, content, severity]);
+  console.log(lines);
 
   return (
     <ApplicationContext.Consumer>
@@ -132,46 +132,21 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
               </FormWrapper>
               <FormWrapper>
                 <Text style={{color: isError(content !== '')}}>Content*</Text>
-                <ScrollInput
-                  value={content}
-                  onChangeText={value => {
-                    setContent(value);
-                    let newLines: ReportLine[] = value
-                      .split('\n')
-                      .map((line, index) => {
-                        let newLine: ReportLine = {line, status: 'hashtag'};
-                        if (lines.length === index) {
-                          return newLine;
-                        } else if (lines[index].line === line) {
-                          return lines[index];
-                        } else {
-                          return newLine;
-                        }
-                      });
-                    setLines(newLines);
-                  }}
-                  numberOfLines={8}
-                  multiline
-                  textAlignVertical="top"
-                  placeholder="Content"
-                  style={{
-                    ...styles.textInput,
-                    minWidth: metrics.screenWidth - 50,
-                  }}
-                  selectTextOnFocus
-                />
+                <Button
+                  action={() =>
+                    navigation.navigate('CONTENT_MODAL', {
+                      typeOfContent: 'REPORT',
+                      lines: lines,
+                      setLines,
+                    })
+                  }>
+                  <Text style={styles.buttonTextStyle}>Set content</Text>
+                </Button>
                 <HelperText
                   type="error"
                   visible={errorVisible && content === ''}>
                   Content has to be filled in
                 </HelperText>
-                <ReportContentBox
-                  onOutput={lines => setLines([...lines])}
-                  editable
-                  lines={lines}
-                  maxLines={1000}
-                  movable={true}
-                />
               </FormWrapper>
               <FormWrapper>
                 <Text>Team options</Text>

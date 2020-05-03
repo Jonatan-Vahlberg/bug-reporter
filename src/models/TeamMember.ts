@@ -5,10 +5,10 @@ export default interface TeamMember {
   positonValue: number;
 }
 
-export const enum TeamPosition {
-  DEVELOPER,
-  TECH_LEAD,
-  ADMIN,
-  TESTER,
-  OTHER,
-}
+export type TeamPosition =
+  | 'DEVELOPER'
+  | 'TECH_LEAD'
+  | 'ADMIN'
+  | 'TESTER'
+  | 'CONSULTANT'
+  | 'OTHER';
