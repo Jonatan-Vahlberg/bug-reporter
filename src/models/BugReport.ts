@@ -7,7 +7,7 @@ export default interface BugReport {
   content: ReportLine[]; //for now
   severity: SeverityValue;
   reportDate: string; //ISODATESTRING
-  assignedTo?: TeamMember;
+  assignedTo?: TeamMember | null;
   labels?: string[];
   dueDate?: string; //ISODATESTRING
   comments?: Comment[];

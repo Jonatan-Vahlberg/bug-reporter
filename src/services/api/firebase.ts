@@ -109,7 +109,7 @@ const firebase = {
   ) => {
     try {
       const ref = firebaseApp.database().ref(`/users/${uid}`);
-      ref.on('value', (snapshot) => {
+      ref.on('value', snapshot => {
         if (snapshot.exists()) {
           let profile: Profile = snapshot.val();
           profile.teams = _.values(snapshot.val().teams);
@@ -172,7 +172,7 @@ const firebase = {
       await teamsRef
         .orderByChild('code')
         .equalTo(code)
-        .on('value', async (queryResult) => {
+        .on('value', async queryResult => {
           if (queryResult.exists()) {
             const value = queryResult.val();
             let team = value[Object.keys(value)[0]];
@@ -236,7 +236,7 @@ const firebase = {
   removeTeamFully: async (team: Team) => {
     try {
       const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
-      team.members.forEach(async (member) => {
+      team.members.forEach(async member => {
         const memberTeamRef = firebaseApp
           .database()
           .ref(`/users/${member.uuid}/teams/${team.uuid}`);
@@ -266,6 +266,8 @@ const firebase = {
     }
   },
   createReport: async (report: BugReport, teamId: string) => {
+    console.log(report);
+
     try {
       const reportRef = firebaseApp
         .database()
@@ -310,7 +312,7 @@ const firebase = {
   ) => {
     try {
       const ref = firebaseApp.database().ref(`reports/${teamId}`);
-      const result = ref.on('value', (snap) => {
+      const result = ref.on('value', snap => {
         if (!snap.exists() || snap.val() === null) {
           setReports([]);
         } else {
@@ -337,7 +339,7 @@ const firebase = {
     newComment: Comment,
     closing: boolean = false,
   ) => {
-    const updatedComments = report.comments!.map((comment) => {
+    const updatedComments = report.comments!.map(comment => {
       if (comment.uuid === newComment.uuid) {
         return newComment;
       }

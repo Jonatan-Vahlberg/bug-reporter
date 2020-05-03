@@ -75,7 +75,8 @@ export type DashboardParamList = {
   CONTENT_MODAL: {
     typeOfContent: 'REPORT' | 'COMMENT';
     lines: ReportLine[];
-    setLines: React.Dispatch<React.SetStateAction<ReportLine[]>>;
+    setLines: (lines: ReportLine[]) => void;
+    setContent: (content: string) => void;
   };
 };
 

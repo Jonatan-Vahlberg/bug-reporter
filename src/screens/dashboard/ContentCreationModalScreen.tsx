@@ -9,12 +9,19 @@ import {
   FormWrapper,
   ScrollInput,
 } from 'src/components/common';
-import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  View,
+  ScrollView,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {RouteProp} from '@react-navigation/native';
 import metrics from 'src/static/metrics';
 import colors from 'src/static/colors';
 import ReportContentBox from './components/Report/ReportContentBox';
+import Collapsible from 'react-native-collapsible';
 
 type ModalProps = {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -24,6 +31,7 @@ type ModalProps = {
 const ContentCreationModalScreen: React.FC<ModalProps> = props => {
   const [content, setContent] = useState<string>('');
   const [lines, setLines] = useState<ReportLine[]>(props.route.params.lines);
+  const [advancedCollapsed, setAdvancedCollapsed] = useState<boolean>(true);
   const LeftItem = (
     <LinkText
       text="Cancel"
@@ -36,6 +44,8 @@ const ContentCreationModalScreen: React.FC<ModalProps> = props => {
     <LinkText
       text="Save"
       action={() => {
+        props.route.params.setLines(lines);
+        props.route.params.setContent(content);
         props.navigation.goBack();
       }}
     />
@@ -50,50 +60,73 @@ const ContentCreationModalScreen: React.FC<ModalProps> = props => {
         rightItem={RightItem}
       />
       <ScreenComponent>
-        <FormWrapper>
-          <ScrollInput
-            value={content}
-            onChangeText={value => {
-              setContent(value);
-              let newLines: ReportLine[] = value
-                .split('\n')
-                .map((line, index) => {
-                  let newLine: ReportLine = {line, status: 'hashtag'};
-                  if (value === '') {
-                    return {line: '', status: 'hashtag'};
-                  }
-                  if (lines.length === index) {
-                    return newLine;
-                  } else if (lines[index].line === line) {
-                    return lines[index];
-                  } else {
-                    return newLine;
-                  }
-                });
-              setLines(newLines);
-            }}
-            numberOfLines={8}
-            multiline
-            textAlignVertical="top"
-            placeholder="Content"
-            style={{
-              ...styles.textInput,
-              minWidth: metrics.screenWidth - 50,
-            }}
-            selectTextOnFocus
-          />
-        </FormWrapper>
-        <FormWrapper>
-          <View style={{margin: 5}}>
-            <ReportContentBox
-              onOutput={lines => setLines([...lines])}
-              editable
-              lines={lines}
-              maxLines={1000}
-              movable={true}
+        <ScrollView>
+          <FormWrapper>
+            <Text style={styles.subtitleStyle}>Content</Text>
+            <ScrollInput
+              value={content}
+              onChangeText={value => {
+                setContent(value);
+                let newLines: ReportLine[] = value
+                  .split('\n')
+                  .map((line, index) => {
+                    let newLine: ReportLine = {line, status: 'hashtag'};
+                    if (value === '') {
+                      return {line: '', status: 'hashtag'};
+                    }
+                    if (lines.length === index) {
+                      return newLine;
+                    } else if (lines[index].line === line) {
+                      return lines[index];
+                    } else {
+                      return newLine;
+                    }
+                  });
+                setLines(newLines);
+                setAdvancedCollapsed(true);
+              }}
+              numberOfLines={8}
+              multiline
+              textAlignVertical="top"
+              placeholder="Content"
+              style={{
+                ...styles.textInput,
+                minWidth: metrics.screenWidth - 50,
+              }}
+              selectTextOnFocus
             />
-          </View>
-        </FormWrapper>
+          </FormWrapper>
+          <FormWrapper>
+            <Text style={styles.subtitleStyle}>Advanced Tools</Text>
+            <View style={{margin: 5}}>
+              <TouchableOpacity
+                onPress={() => setAdvancedCollapsed(!advancedCollapsed)}>
+                <View style={styles.arrowContainer}>
+                  <View style={styles.arrowSideContainer} />
+                  <Icon
+                    color={colors.severityColors.NONE}
+                    style={{marginHorizontal: 5}}
+                    name={advancedCollapsed ? 'arrow-down' : 'arrow-up'}
+                    size={20}
+                  />
+                  <View style={styles.arrowSideContainer} />
+                </View>
+              </TouchableOpacity>
+              <Collapsible collapsed={advancedCollapsed}>
+                <Text>Content flagging</Text>
+                <ScrollView>
+                  <ReportContentBox
+                    onOutput={lines => setLines([...lines])}
+                    editable
+                    lines={lines}
+                    maxLines={1000}
+                    movable={true}
+                  />
+                </ScrollView>
+              </Collapsible>
+            </View>
+          </FormWrapper>
+        </ScrollView>
       </ScreenComponent>
     </>
   );
@@ -120,6 +153,22 @@ const styles = StyleSheet.create({
   },
   dateSelectorText: {
     color: colors.severityColors.NONE,
+  },
+  subtitleStyle: {
+    fontSize: 18,
+    fontWeight: '600',
+    paddingVertical: 2.5,
+  },
+  arrowSideContainer: {
+    //marginHorizontal: 5,
+    flex: 1,
+    height: 1.9,
+    backgroundColor: colors.severityColors.NONE,
+  },
+  arrowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
 });
 
