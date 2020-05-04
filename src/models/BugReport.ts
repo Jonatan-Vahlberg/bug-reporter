@@ -29,5 +29,7 @@ export type ReportStatus =
   | 'error'
   | 'done'
   | 'exclamation'
-  | 'delete';
-export type ReportLine = {line: string; status: ReportStatus};
+  | 'delete'
+  | 'quote';
+
+export type ReportLine = string;

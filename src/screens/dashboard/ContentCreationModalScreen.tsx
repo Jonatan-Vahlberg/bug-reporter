@@ -30,6 +30,7 @@ type ModalProps = {
 
 const ContentCreationModalScreen: React.FC<ModalProps> = props => {
   const [content, setContent] = useState<string>('');
+  const [filteredContent, setFilteredContent] = useState<string>('');
   const [lines, setLines] = useState<ReportLine[]>(props.route.params.lines);
   const [advancedCollapsed, setAdvancedCollapsed] = useState<boolean>(true);
   const LeftItem = (
@@ -42,11 +43,16 @@ const ContentCreationModalScreen: React.FC<ModalProps> = props => {
   );
   const RightItem = (
     <LinkText
-      text="Save"
+      text="Next"
       action={() => {
-        props.route.params.setLines(lines);
-        props.route.params.setContent(content);
-        props.navigation.goBack();
+        props.navigation.navigate('CONTENT_FLAG', {
+          type: props.route.params.type,
+          lines: lines.length !== 0 ? lines : undefined,
+          content,
+          setContent: props.route.params.setContent,
+          setLines: props.route.params.setLines,
+          originalLines: ['Hello&&;/warning'],
+        });
       }}
     />
   );
@@ -63,73 +69,38 @@ const ContentCreationModalScreen: React.FC<ModalProps> = props => {
         <ScrollView>
           <FormWrapper>
             <Text style={styles.subtitleStyle}>Content</Text>
-            <ScrollInput
-              value={content}
-              onChangeText={value => {
-                setContent(value);
-                let newLines: ReportLine[] = value
-                  .split('\n')
-                  .map((line, index) => {
-                    let newLine: ReportLine = {line, status: 'hashtag'};
-                    if (value === '') {
-                      return {line: '', status: 'hashtag'};
-                    }
-                    if (lines.length === index) {
-                      return newLine;
-                    } else if (lines[index].line === line) {
-                      return lines[index];
-                    } else {
-                      return newLine;
-                    }
-                  });
-                setLines(newLines);
-                setAdvancedCollapsed(true);
-              }}
-              numberOfLines={8}
-              multiline
-              textAlignVertical="top"
-              placeholder="Content"
-              style={{
-                ...styles.textInput,
-                minWidth: metrics.screenWidth - 50,
-              }}
-              selectTextOnFocus
-            />
-          </FormWrapper>
-          <FormWrapper>
-            <Text style={styles.subtitleStyle}>Advanced Tools</Text>
-            <View style={{margin: 5}}>
-              <TouchableOpacity
-                onPress={() => setAdvancedCollapsed(!advancedCollapsed)}>
-                <View style={styles.arrowContainer}>
-                  <View style={styles.arrowSideContainer} />
-                  <Icon
-                    color={colors.severityColors.NONE}
-                    style={{marginHorizontal: 5}}
-                    name={advancedCollapsed ? 'arrow-down' : 'arrow-up'}
-                    size={20}
-                  />
-                  <View style={styles.arrowSideContainer} />
-                </View>
-              </TouchableOpacity>
-              <Collapsible collapsed={advancedCollapsed}>
-                <Text>Content flagging</Text>
-                <ScrollView>
-                  <ReportContentBox
-                    onOutput={lines => setLines([...lines])}
-                    editable
-                    lines={lines}
-                    maxLines={1000}
-                    movable={true}
-                  />
-                </ScrollView>
-              </Collapsible>
+            <View>
+              <ScrollInput
+                value={content}
+                onChangeText={value => {
+                  setContent(value);
+                }}
+                numberOfLines={8}
+                multiline
+                textAlignVertical="top"
+                placeholder="Content"
+                style={{
+                  ...styles.textInput,
+                  minWidth: metrics.screenWidth - 50,
+                }}
+                selectTextOnFocus
+              />
             </View>
           </FormWrapper>
         </ScrollView>
       </ScreenComponent>
     </>
   );
+};
+const replaceContent = (content: string) => {
+  const lines = content.split(/\n/).map(line => {
+    if (line.includes('&&;/')) {
+      return line;
+    } else {
+      return line + '&&;/hashtag';
+    }
+  });
+  return lines.join('\n');
 };
 
 const styles = StyleSheet.create({

@@ -30,41 +30,39 @@ const ReportContentBox: React.FC<ReportContentBoxProps> = ({
       <ScrollView horizontal scrollEnabled={movable}>
         <View>
           {lines.map((line: ReportLine, index: number) => {
+            const status: ReportStatus = getStatusFromLine(line);
             if (maxLines === index) return null;
             let Icon = MatIcon;
-            let iconColor = statusColors[line.status];
-            if (line.status === 'hashtag') {
+            let iconColor = statusColors[status];
+            if (status === 'hashtag') {
               Icon = FontIcon;
-            } else if (line.status === 'exclamation') {
+            } else if (status === 'exclamation') {
               Icon = SimpIcon;
             }
 
             let backgroundColor = iconColor;
-            if (line.status === 'exclamation' || line.status === 'hashtag') {
+            if (status === 'exclamation' || status === 'hashtag') {
               backgroundColor = 'transparent';
             }
             const textColor =
-              line.status === 'error' || line.status === 'done'
-                ? '#fff'
-                : '#000';
+              status === 'error' || status === 'done' ? '#fff' : '#000';
             return (
               <View style={{...styles.lineBox}}>
                 {editable && (
                   <TouchableOpacity
                     disabled={!editable}
                     onPress={() => {
-                      let updatedLine = {
-                        line: line.line,
-                        status: updateStatusOfLine(line.status),
-                      };
-
+                      let updatedLine = line.replace(
+                        `&&;/${status}`,
+                        `&&;/${updateStatusOfLine(status)}`,
+                      );
                       let updatedLines = lines;
                       updatedLines[index] = updatedLine;
                       onOutput(updatedLines);
                     }}>
                     <Icon
-                      name={line.status}
-                      color={statusColors[line.status]}
+                      name={status}
+                      color={statusColors[status]}
                       size={20}
                       style={{
                         marginRight: 20,
@@ -81,10 +79,9 @@ const ReportContentBox: React.FC<ReportContentBoxProps> = ({
                       ...styles.contentTextStyle,
                       backgroundColor,
                       color: textColor,
-                      fontWeight:
-                        line.status === 'exclamation' ? 'bold' : 'normal',
+                      fontWeight: status === 'exclamation' ? 'bold' : 'normal',
                     }}>
-                    {line.line}
+                    {line.replace(/&&;\/.+/, '')}
                   </Text>
                 </Text>
               </View>
@@ -103,6 +100,7 @@ const statusColors = {
   exclamation: '#000',
   done: '#009A34',
   delete: '#d11a2a',
+  quote: '',
 };
 
 const updateStatusOfLine = (status: ReportStatus): ReportStatus => {
@@ -122,6 +120,12 @@ const updateStatusOfLine = (status: ReportStatus): ReportStatus => {
     default:
       return 'hashtag';
   }
+};
+
+const getStatusFromLine = (line: string): ReportStatus => {
+  //@ts-ignore
+  let status: ReportStatus = line.substr(line.indexOf('&&;/') + 4);
+  return status;
 };
 
 const styles = StyleSheet.create({

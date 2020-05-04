@@ -23,6 +23,7 @@ import Team, {LightTeam} from '../models/Team';
 import {ApplicationContext} from '../context/ApplicationContext';
 import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
 import ContentCreationModalScreen from 'src/screens/dashboard/ContentCreationModalScreen';
+import ContentFlaggingModalScreen from 'src/screens/dashboard/ContentFlaggingModalScreen';
 
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -64,7 +65,7 @@ const TeamsNavigator = () => {
     </TeamsStack.Navigator>
   );
 };
-
+type ContentModalType = 'REPORT' | 'UPDATE' | 'COMMENT' | 'COMMENT_UPDATE';
 export type DashboardParamList = {
   DASH_HOME: undefined;
   DASH_CREATE: undefined;
@@ -73,10 +74,18 @@ export type DashboardParamList = {
   TEAMS: undefined;
   PROFILE: undefined;
   CONTENT_MODAL: {
-    typeOfContent: 'REPORT' | 'COMMENT';
+    type: ContentModalType;
     lines: ReportLine[];
     setLines: (lines: ReportLine[]) => void;
     setContent: (content: string) => void;
+  };
+  CONTENT_FLAG: {
+    type: ContentModalType;
+    content: string;
+    setLines: (lines: ReportLine[]) => void;
+    setContent: (content: string) => void;
+    lines?: ReportLine[];
+    originalLines?: ReportLine[];
   };
 };
 
@@ -90,6 +99,10 @@ const DashNavigator = () => {
       <DashStack.Screen
         name="CONTENT_MODAL"
         component={ContentCreationModalScreen}
+      />
+      <DashStack.Screen
+        name="CONTENT_FLAG"
+        component={ContentFlaggingModalScreen}
       />
       <DashStack.Screen name="DASH_VIEW" component={ViewReportScreen} />
       <DashStack.Screen name="DASH_LIST" component={ReportListScreen} />

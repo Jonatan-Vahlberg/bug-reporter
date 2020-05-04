@@ -140,7 +140,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
                 <Button
                   action={() =>
                     navigation.navigate('CONTENT_MODAL', {
-                      typeOfContent: 'REPORT',
+                      type: 'REPORT',
                       lines: lines,
                       setLines: (lines: ReportLine[]) => setLines(lines),
                       setContent: content => setContent(content),

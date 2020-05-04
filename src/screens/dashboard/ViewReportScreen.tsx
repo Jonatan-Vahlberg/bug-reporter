@@ -3,7 +3,7 @@ import BugReport, {SeverityValue} from '../../models/BugReport';
 import {Navbar, ScreenComponent} from '../../components/common';
 import BugReportListCard from './components/Report/BugReportListCard';
 import {View, ScrollView, StyleSheet, StatusBar} from 'react-native';
-import CommentWritingBox from './components/CommentWritingBox';
+import CommentWritingBox from './components/Report/CommentWritingBox';
 
 import {DashboardParamList} from 'src/navigation';
 import {RouteProp} from '@react-navigation/native';
@@ -40,11 +40,7 @@ const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
           />
         </View>
         <View style={styles.commentBox}>
-          <CommentWritingBox
-            setValue={(name, value) => setComment(value)}
-            name="comment"
-            value={comment}
-          />
+          <CommentWritingBox />
         </View>
       </ScrollView>
     </ScreenComponent>
