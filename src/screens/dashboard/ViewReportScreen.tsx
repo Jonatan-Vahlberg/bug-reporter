@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   reportStyle: {
     backgroundColor: colors.backGroundColor,
-    marginBottom: 20,
+    marginBottom: 0,
     paddingBottom: 10,
   },
 });

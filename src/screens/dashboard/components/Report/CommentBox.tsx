@@ -17,7 +17,7 @@ const CommentBox: React.FC<{comment: Comment}> = ({comment}) => {
   console.log(commentMaxLength);
 
   return (
-    <FormWrapper>
+    <FormWrapper outerStyle={{marginVertical: 0}}>
       <View>
         <Text style={styles.nameStyle}>
           {comment.senderName} {formatDate(comment.date)}

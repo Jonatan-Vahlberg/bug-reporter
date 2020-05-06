@@ -1,17 +1,23 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {View, StyleSheet, ViewStyle} from 'react-native';
 
 import colors from '../../static/colors';
 
-interface InputProps {}
+interface InputProps {
+  outerStyle?: ViewStyle;
+}
 
 const FormWrapper: React.FC<InputProps> = props => {
-  const { outerContainer, containerStyle } = styles;
+  const {outerContainer, containerStyle} = styles;
   return (
-    <View style={outerContainer}>
+    <View style={{...outerContainer, ...props.outerStyle}}>
       <View style={containerStyle}>{props.children}</View>
     </View>
   );
+};
+
+FormWrapper.defaultProps = {
+  outerStyle: {},
 };
 
 const styles = StyleSheet.create({
@@ -30,4 +36,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { FormWrapper };
+export {FormWrapper};
