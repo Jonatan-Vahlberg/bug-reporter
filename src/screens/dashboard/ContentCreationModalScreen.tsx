@@ -22,6 +22,7 @@ import metrics from 'src/static/metrics';
 import colors from 'src/static/colors';
 import ReportContentBox from './components/Report/ReportContentBox';
 import Collapsible from 'react-native-collapsible';
+import SourceReportBox from './components/Report/SourceReportBox';
 
 type ModalProps = {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -33,6 +34,9 @@ const ContentCreationModalScreen: React.FC<ModalProps> = props => {
   const [filteredContent, setFilteredContent] = useState<string>('');
   const [lines, setLines] = useState<ReportLine[]>(props.route.params.lines);
   const [advancedCollapsed, setAdvancedCollapsed] = useState<boolean>(true);
+  const isUpdate =
+    props.route.params.type === 'COMMENT' ||
+    props.route.params.type === 'COMMENT_UPDATE';
   const LeftItem = (
     <LinkText
       text="Cancel"
@@ -51,7 +55,7 @@ const ContentCreationModalScreen: React.FC<ModalProps> = props => {
           content,
           setContent: props.route.params.setContent,
           setLines: props.route.params.setLines,
-          originalLines: ['Hello&&;/warning'],
+          originalReport: props.route.params.originalReport,
         });
       }}
     />
@@ -67,6 +71,11 @@ const ContentCreationModalScreen: React.FC<ModalProps> = props => {
       />
       <ScreenComponent>
         <ScrollView>
+          {isUpdate && (
+            <SourceReportBox
+              lines={props.route.params.originalReport!.content!}
+            />
+          )}
           <FormWrapper>
             <Text style={styles.subtitleStyle}>Content</Text>
             <View>

@@ -329,10 +329,22 @@ const firebase = {
   },
   addCommentToReport: async (
     report: BugReport,
+    teamId: string,
     comment: Comment,
-    closing: boolean = false,
+    closed: boolean,
   ) => {
-    //TODO: FIREBASE
+    try {
+      const ref = firebaseApp
+        .database()
+        .ref(`reports/${teamId}/${report.uuid}/comments/${comment.uuid}`);
+      await ref.set({
+        ...comment,
+      });
+      return {error: firebaseDBErrorStatus.NO_ERROR};
+    } catch (error) {
+      console.warn(error.message);
+      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
   },
   editCommentOnReport: async (
     report: BugReport,

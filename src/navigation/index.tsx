@@ -77,15 +77,16 @@ export type DashboardParamList = {
     type: ContentModalType;
     lines: ReportLine[];
     setLines: (lines: ReportLine[]) => void;
-    setContent: (content: string) => void;
+    setContent?: (content: string) => void;
+    originalReport?: BugReport;
   };
   CONTENT_FLAG: {
     type: ContentModalType;
-    content: string;
     setLines: (lines: ReportLine[]) => void;
-    setContent: (content: string) => void;
+    content: string;
+    setContent?: (content: string) => void;
     lines?: ReportLine[];
-    originalLines?: ReportLine[];
+    originalReport?: BugReport;
   };
 };
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 import BugReport, {SeverityValue} from '../../models/BugReport';
 import {Navbar, ScreenComponent} from '../../components/common';
 import BugReportListCard from './components/Report/BugReportListCard';
-import {View, ScrollView, StyleSheet, StatusBar} from 'react-native';
+import {View, ScrollView, StyleSheet, StatusBar, Text} from 'react-native';
 import CommentWritingBox from './components/Report/CommentWritingBox';
 
 import {DashboardParamList} from 'src/navigation';
@@ -12,6 +12,8 @@ import Header from './components/Report/ReportHeader';
 import Subheader from './components/Report/ReportSubHeader';
 import ReportContentBox from './components/Report/ReportContentBox';
 import colors from 'src/static/colors';
+import _ from 'lodash';
+import ReportComments from './components/Report/ReportComments';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -39,8 +41,18 @@ const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
             maxLines={2e6}
           />
         </View>
+        <ReportComments comments={_.values(report.comments)} />
         <View style={styles.commentBox}>
-          <CommentWritingBox />
+          <CommentWritingBox
+            navigateTo={() =>
+              navigation.navigate('CONTENT_MODAL', {
+                type: 'COMMENT',
+                lines: [],
+                setLines: lines => {},
+                originalReport: report,
+              })
+            }
+          />
         </View>
       </ScrollView>
     </ScreenComponent>

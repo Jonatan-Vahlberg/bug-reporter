@@ -31,7 +31,8 @@ const ReportContentBox: React.FC<ReportContentBoxProps> = ({
         <View>
           {lines.map((line: ReportLine, index: number) => {
             const status: ReportStatus = getStatusFromLine(line);
-            if (maxLines === index) return null;
+
+            if (maxLines <= index) return null;
             let Icon = MatIcon;
             let iconColor = statusColors[status];
             if (status === 'hashtag') {
@@ -80,6 +81,7 @@ const ReportContentBox: React.FC<ReportContentBoxProps> = ({
                       backgroundColor,
                       color: textColor,
                       fontWeight: status === 'exclamation' ? 'bold' : 'normal',
+                      fontStyle: status === 'quote' ? 'italic' : 'normal',
                     }}>
                     {line.replace(/&&;\/.+/, '')}
                   </Text>
@@ -100,7 +102,7 @@ const statusColors = {
   exclamation: '#000',
   done: '#009A34',
   delete: '#d11a2a',
-  quote: '',
+  quote: 'rgba(200,200,200,0.6)',
 };
 
 const updateStatusOfLine = (status: ReportStatus): ReportStatus => {

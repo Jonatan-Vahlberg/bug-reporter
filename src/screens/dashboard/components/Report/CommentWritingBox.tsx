@@ -12,7 +12,9 @@ import metrics from 'src/static/metrics';
 import colors from 'src/static/colors';
 import {Button} from 'src/components/common';
 
-export interface CommentWritingBoxProps {}
+export interface CommentWritingBoxProps {
+  navigateTo: Function;
+}
 
 const CommentWritingBox: React.FC<CommentWritingBoxProps> = (
   props: CommentWritingBoxProps,
@@ -24,7 +26,7 @@ const CommentWritingBox: React.FC<CommentWritingBoxProps> = (
         <Image style={img} source={{uri: ''}} resizeMode="contain" />
       </View>
       <View style={commentBox}>
-        <Button>
+        <Button action={props.navigateTo}>
           <Text>Leave Comment</Text>
         </Button>
       </View>
