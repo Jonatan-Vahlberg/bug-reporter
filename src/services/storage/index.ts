@@ -1,5 +1,6 @@
-import {Settings, emptySettings} from 'src/context/ApplicationContext';
+import {emptySettings} from 'src/context/ApplicationContext';
 import AsyncStorage from '@react-native-community/async-storage';
+import {Settings} from 'src/models/settings';
 
 const ASYNC_SETTINGS_KEY = '@ASYNC_SETTINGS_KEY';
 const storage = {

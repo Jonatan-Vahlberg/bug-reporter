@@ -2,8 +2,8 @@ import * as React from 'react';
 import BugReport, {SeverityValue} from '../../models/BugReport';
 import {Navbar, ScreenComponent} from '../../components/common';
 import BugReportListCard from './components/Report/BugReportListCard';
-import {View, ScrollView, StyleSheet, StatusBar} from 'react-native';
-import CommentWritingBox from './components/CommentWritingBox';
+import {View, ScrollView, StyleSheet, StatusBar, Text} from 'react-native';
+import CommentWritingBox from './components/Report/CommentWritingBox';
 
 import {DashboardParamList} from 'src/navigation';
 import {RouteProp} from '@react-navigation/native';
@@ -12,6 +12,8 @@ import Header from './components/Report/ReportHeader';
 import Subheader from './components/Report/ReportSubHeader';
 import ReportContentBox from './components/Report/ReportContentBox';
 import colors from 'src/static/colors';
+import _ from 'lodash';
+import ReportComments from './components/Report/ReportComments';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -39,11 +41,17 @@ const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
             maxLines={2e6}
           />
         </View>
+        <ReportComments comments={_.values(report.comments)} />
         <View style={styles.commentBox}>
           <CommentWritingBox
-            setValue={(name, value) => setComment(value)}
-            name="comment"
-            value={comment}
+            navigateTo={() =>
+              navigation.navigate('CONTENT_MODAL', {
+                type: 'COMMENT',
+                lines: [],
+                setLines: lines => {},
+                originalReport: report,
+              })
+            }
           />
         </View>
       </ScrollView>
@@ -59,7 +67,7 @@ const styles = StyleSheet.create({
   },
   reportStyle: {
     backgroundColor: colors.backGroundColor,
-    marginBottom: 20,
+    marginBottom: 0,
     paddingBottom: 10,
   },
 });

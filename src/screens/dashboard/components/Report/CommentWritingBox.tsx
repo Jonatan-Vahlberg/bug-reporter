@@ -1,16 +1,19 @@
 import * as React from 'react';
-import {TextInput, ScrollView, Image, View, StyleSheet} from 'react-native';
+import {
+  TextInput,
+  ScrollView,
+  Image,
+  View,
+  StyleSheet,
+  Text,
+} from 'react-native';
 import Profile from 'src/models/Profile';
 import metrics from 'src/static/metrics';
 import colors from 'src/static/colors';
-import {ReportState} from '../ViewReportScreen';
+import {Button} from 'src/components/common';
 
 export interface CommentWritingBoxProps {
-  profile?: Profile;
-  setValue: (name: keyof ReportState, value: string) => void;
-  value: string;
-  name: keyof ReportState;
-  onSend?: () => void;
+  navigateTo: Function;
 }
 
 const CommentWritingBox: React.FC<CommentWritingBoxProps> = (
@@ -23,15 +26,9 @@ const CommentWritingBox: React.FC<CommentWritingBoxProps> = (
         <Image style={img} source={{uri: ''}} resizeMode="contain" />
       </View>
       <View style={commentBox}>
-        <ScrollView horizontal>
-          <TextInput
-            multiline
-            value={props.value}
-            placeholder="Enter comment"
-            style={commentTextStyle}
-            onChangeText={value => props.setValue(props.name, value)}
-          />
-        </ScrollView>
+        <Button action={props.navigateTo}>
+          <Text>Leave Comment</Text>
+        </Button>
       </View>
     </View>
   );

@@ -4,17 +4,21 @@ import Team from '../models/Team';
 import firebaseActions from '../services/api/firebase';
 import BugReport from 'src/models/BugReport';
 import storage from 'src/services/storage';
-
-export type Settings = {
-  feautredTeamId: string | 'UNSET';
-  notifications: boolean;
-  stayLoggedIn: boolean;
-  neverShowSelectTeam: boolean;
-};
+import {Settings} from 'src/models/settings';
 
 export const emptySettings: Settings = {
   feautredTeamId: 'UNSET',
-  notifications: false,
+  notifications: {
+    featuredTeam: {
+      all: false,
+      mentions: false,
+    },
+    otherTeams: {
+      all: false,
+      mentions: false,
+      invites: false,
+    },
+  },
   stayLoggedIn: false,
   neverShowSelectTeam: false,
 };

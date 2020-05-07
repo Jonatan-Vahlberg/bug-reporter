@@ -35,21 +35,25 @@ import {HelperText, TextInput} from 'react-native-paper';
 import metrics from 'src/static/metrics';
 //@ts-ignore
 import UUID_V4 from 'uuid/v4';
+import _ from 'lodash';
+import Team from 'src/models/Team';
+import TeamMember from 'src/models/TeamMember';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
   route: RouteProp<DashboardParamList, 'DASH_CREATE'>;
 }
 
+const findInTeam = (uuid: string, team: Team): TeamMember | undefined => {
+  return _.find(team.members, member => member.uuid === uuid);
+};
+
 const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
   const {actions, featuredTeam} = useContext(ApplicationContext);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [lines, setLines] = useState<ReportLine[]>([]);
-  const [assignedTo, setAssignedTo] = useState<{value: string; label: string}>({
-    value: '0000',
-    label: 'No one',
-  });
+  const [assignedTo, setAssignedTo] = useState<string>('000');
   const [severity, setSeverity] = useState<{
     value: SeverityValue;
     label: SeverityValue;
@@ -89,6 +93,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
           uuid: UUID_V4(),
           reportDate: new Date().toISOString(),
           closed: false,
+          assignedTo: findInTeam(assignedTo, featuredTeam!) || null,
         },
         featuredTeam!.uuid,
       );
@@ -96,7 +101,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
       setErrorVisible(true);
     }
   }, [title, content, severity]);
-  console.log(lines);
+  console.log(findInTeam(assignedTo, featuredTeam!));
 
   return (
     <ApplicationContext.Consumer>
@@ -135,9 +140,10 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
                 <Button
                   action={() =>
                     navigation.navigate('CONTENT_MODAL', {
-                      typeOfContent: 'REPORT',
+                      type: 'REPORT',
                       lines: lines,
-                      setLines,
+                      setLines: (lines: ReportLine[]) => setLines(lines),
+                      setContent: content => setContent(content),
                     })
                   }>
                   <Text style={styles.buttonTextStyle}>Set content</Text>
@@ -152,36 +158,33 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
                 <Text>Team options</Text>
 
                 <Picker
-                  onValueChange={value => setAssignedTo(value)}
+                  onValueChange={value => {
+                    setAssignedTo(value);
+                  }}
                   value={assignedTo}
                   placeholder={{value: '000', label: 'Select a team member'}}
-                  items={
-                    context.featuredTeam !== undefined
-                      ? context.featuredTeam.members.map(member => ({
-                          value: member.uuid,
-                          label: member.name,
-                        }))
-                      : [
-                          {
-                            value: '0000',
-                            label: 'No one',
-                          },
-                        ]
-                  }
+                  items={context.featuredTeam!.members.map(member => ({
+                    value: member.uuid,
+                    label: member.name,
+                  }))}
                 />
               </FormWrapper>
               <FormWrapper>
                 <Text>Advanced options</Text>
                 <TextInput
                   value={labels}
-                  onChangeText={value => setLabels(value)}
+                  onChangeText={value => {
+                    setLabels(value);
+                  }}
                   placeholder="Enter labels separting with commas"
                   style={styles.textInput}
                 />
                 <Text>Severity</Text>
                 <Picker
-                  onValueChange={value => setSeverity(value)}
-                  value={severity}
+                  onValueChange={value => {
+                    setSeverity({value: value, label: value});
+                  }}
+                  value={severity.value}
                   placeholder={{
                     value: '000',
                     label: 'Select a report severity level',

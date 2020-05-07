@@ -7,7 +7,7 @@ export default interface BugReport {
   content: ReportLine[]; //for now
   severity: SeverityValue;
   reportDate: string; //ISODATESTRING
-  assignedTo?: TeamMember;
+  assignedTo?: TeamMember | null;
   labels?: string[];
   dueDate?: string; //ISODATESTRING
   comments?: Comment[];
@@ -29,5 +29,7 @@ export type ReportStatus =
   | 'error'
   | 'done'
   | 'exclamation'
-  | 'delete';
-export type ReportLine = {line: string; status: ReportStatus};
+  | 'delete'
+  | 'quote';
+
+export type ReportLine = string;

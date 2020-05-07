@@ -28,6 +28,16 @@ export const formatDate = (dateString: string) => {
   return moment(date).format('YYYY MM DD hh:mm A');
 };
 
+export const getDateOfStartAndEndOfWeek = (): [Date, Date] => {
+  const today = new Date();
+  const day = today.getDay();
+  const startDiff = today.getDate() - day + (day === 0 ? -6 : 1);
+  const endDiff = startDiff + 6;
+  const startDate = new Date(today.setDate(startDiff));
+  const endDate = new Date(today.setDate(endDiff));
+  return [startDate, endDate];
+};
+
 export const getRandomCode = (): string => {
   let numbersArray: number[] = [0, 0, 0, 0, 0, 0];
   let code: string = '';
