@@ -36,24 +36,24 @@ const DashList: React.FC<HeaderProps> = ({naviagtion}) => {
 
 const listItems: ListItem[] = [
   {
-    name: 'All bugs',
+    name: 'All reports',
     icon: 'bug-outline',
     navPath: 'DASH_LIST',
     filter: {all: true},
   },
   {
-    name: 'Assigned bugs',
+    name: 'Assigned reports',
     navPath: 'DASH_LIST',
     filter: {assigned: true},
   },
   {
-    name: 'Overdue bugs',
+    name: 'Overdue reports',
     navPath: 'DASH_LIST',
     icon: 'alert-circle-outline',
     filter: {overdue: true},
   },
   {
-    name: 'Bugs this week',
+    name: 'Reports this week',
     navPath: 'DASH_LIST',
     icon: 'calendar-outline',
     filter: {thisWeek: true},

@@ -4,10 +4,11 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {DashboardParamList} from 'src/navigation';
 import {ApplicationContext} from 'src/context/ApplicationContext';
 import {ScreenComponent, Navbar} from 'src/components/common';
-import Report, {ReportFilter} from 'src/models/BugReport';
+import BugReport, {ReportFilter} from 'src/models/BugReport';
 import {RouteProp} from '@react-navigation/native';
-import BugReport from './components/Report/BugReportListCard';
 import BugReportListCard from './components/Report/BugReportListCard';
+import Profile from 'src/models/Profile';
+import { getDateOfStartAndEndOfWeek } from 'src/static/functions';
 
 type ReportListProps = {
   navigation: StackNavigationProp<DashboardParamList, 'DASH_LIST'>;
@@ -15,9 +16,10 @@ type ReportListProps = {
 };
 
 const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
-  const {actions, featuredReports, featuredTeam} = React.useContext(
+  const {actions, featuredReports, featuredTeam, profile} = React.useContext(
     ApplicationContext,
   );
+      
   useEffect(() => {
     (async () => {
       await actions.firebase.getRealtimeReports(
@@ -36,7 +38,7 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
               navigation={navigation}
               title={getTitle(route.params.filters)}
             />
-            {featuredReports.map((report) => (
+            {getRightReports(featuredReports,profile!, route.params.filters).map((report) => (
               <BugReportListCard
                 key={report.uuid}
                 report={{...report}}
@@ -49,6 +51,26 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
     </ApplicationContext.Consumer>
   );
 };
+
+const getRightReports = (reports: BugReport[],profile: Profile, filters?: ReportFilter): BugReport[] => {
+  if(filters === undefined){
+    return reports
+  }
+  if(filters.assigned){
+    return reports.filter((report) => report.assignedTo?.uuid === profile.uuid )
+  }
+  if(filters.overdue) return reports.filter((report) =>{
+    return report.dueDate !== undefined && new Date(report.dueDate) > new Date() 
+  })
+  if(filters.thisWeek){
+    return reports.filter((report) => {
+     const [startDate,endDate] = getDateOfStartAndEndOfWeek()
+      return report.dueDate !== undefined && (new Date() > startDate && new Date() < endDate) 
+    })
+
+  }
+  return reports
+}
 
 const getTitle = (filter?: ReportFilter): string => {
   if (filter === undefined) return 'Reports';
