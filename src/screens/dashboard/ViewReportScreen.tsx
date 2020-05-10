@@ -14,6 +14,7 @@ import ReportContentBox from './components/Report/ReportContentBox';
 import colors from 'src/static/colors';
 import _ from 'lodash';
 import ReportComments from './components/Report/ReportComments';
+import {ApplicationContext} from 'src/context/ApplicationContext';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -21,7 +22,12 @@ export interface ReportProps {
 }
 
 const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
-  const {report} = route.params;
+  const {featuredReports} = React.useContext(ApplicationContext);
+  const {reportId} = route.params;
+  const report: BugReport = _.find(
+    featuredReports,
+    rep => rep.uuid === reportId,
+  )!;
   const [comment, setComment] = React.useState<string>('');
   return (
     <ScreenComponent>

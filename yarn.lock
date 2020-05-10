@@ -6003,6 +6003,11 @@ react-native-modal@^9.0.0:
     prop-types "^15.6.2"
     react-native-animatable "^1.2.4"
 
+react-native-notifications@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-notifications/-/react-native-notifications-3.2.0.tgz#37be09942f205c25d10f11f2384e900573c3213f"
+  integrity sha512-TLzWbjTISXs1fhhtmtvQJ5bvDxquRHY1YXCy90U/XT2hJObla4Y+eSD41uyhQU2wgkseEfbqwCq0kd0Z+bfQ3w==
+
 react-native-paper@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-3.6.0.tgz#9f8452387bc6e6dae84db90c9c4715af5c7bd142"

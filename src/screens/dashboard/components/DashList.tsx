@@ -25,7 +25,7 @@ const DashList: React.FC<HeaderProps> = ({naviagtion}) => {
         <TouchableOpacity
           key={item.name}
           onPress={() =>
-            naviagtion.navigate('DASH_LIST', {filters: item.filter})
+            naviagtion.navigate(item.navPath, {filters: item.filter})
           }>
           <DashListItem item={item} />
         </TouchableOpacity>
@@ -63,6 +63,7 @@ const listItems: ListItem[] = [
     icon: 'account-group-outline',
     navPath: 'DASH_LIST',
   },
+  {name: 'Settings', icon: 'settings', navPath: 'SETTINGS'},
 ];
 
 export default DashList;

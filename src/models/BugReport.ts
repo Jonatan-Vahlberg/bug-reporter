@@ -32,4 +32,6 @@ export type ReportStatus =
   | 'delete'
   | 'quote';
 
+export type ActionString = 'CLOSED' | 'REOPENED' | null;
+
 export type ReportLine = string;
