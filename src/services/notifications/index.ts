@@ -23,8 +23,9 @@ export const SetupAndroidPushNotifications = () => {
         notification.data.pushData,
       );
       console.log('hello');
+      console.log(checkNotificationPremissions(settings, notificationData));
 
-      if (checkNotificationPremissions(settings, notificationData) || true) {
+      if (checkNotificationPremissions(settings, notificationData)) {
         console.log('is it working');
 
         PushNotification.presentLocalNotification({
@@ -52,7 +53,9 @@ export const checkNotificationPremissions = (
       if (
         data.type === 'NEW' ||
         settings.notifications.featuredTeam.all ||
-        (data.type === 'UPDATE' && settings.notifications.featuredTeam.mentions)
+        (data.type === 'UPDATE' &&
+          (settings.notifications.featuredTeam.all ||
+            settings.notifications.featuredTeam.mentions))
       ) {
         return true;
       }

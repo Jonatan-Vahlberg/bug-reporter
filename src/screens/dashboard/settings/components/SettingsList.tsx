@@ -10,7 +10,11 @@ type Props = {
 
 const SettingsList: React.FC<Props> = ({navigation}) => {
   const settingsItems: SettingsProps[] = [
-    {name: 'Notifications', iconName: 'bell', onPress: () => {}},
+    {
+      name: 'Notifications',
+      iconName: 'bell',
+      onPress: () => navigation.navigate('SETTINGS_NOTIFICATIONS'),
+    },
     {name: 'Clear cache', iconName: 'cached', onPress: () => {}},
     {name: 'Log out', iconName: 'logout-variant', onPress: () => {}},
   ];

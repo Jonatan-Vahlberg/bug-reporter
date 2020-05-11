@@ -25,6 +25,7 @@ import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
 import ContentCreationModalScreen from 'src/screens/dashboard/ContentCreationModalScreen';
 import ContentFlaggingModalScreen from 'src/screens/dashboard/ContentFlaggingModalScreen';
 import SettingsScreen from 'src/screens/dashboard/settings/SettingsScreen';
+import NotificationsScreen from 'src/screens/dashboard/settings/NotificationsScreen';
 
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -90,6 +91,7 @@ export type DashboardParamList = {
     originalReport?: BugReport;
   };
   SETTINGS: undefined;
+  SETTINGS_NOTIFICATIONS: undefined;
 };
 
 const DashNavigator = () => {
@@ -110,6 +112,10 @@ const DashNavigator = () => {
       <DashStack.Screen name="DASH_VIEW" component={ViewReportScreen} />
       <DashStack.Screen name="DASH_LIST" component={ReportListScreen} />
       <DashStack.Screen name="SETTINGS" component={SettingsScreen} />
+      <DashStack.Screen
+        name="SETTINGS_NOTIFICATIONS"
+        component={NotificationsScreen}
+      />
     </DashStack.Navigator>
   );
 };
