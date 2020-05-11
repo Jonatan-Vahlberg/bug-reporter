@@ -28,7 +28,7 @@ export type NotificationProps = {
   signedKey: 'all' | 'mentions';
 };
 
-const NotificationsScreen: React.FC<SettingsProps> = props => {
+const NotificationSettingsScreen: React.FC<SettingsProps> = props => {
   const {
     settings: {notifications},
   } = React.useContext(ApplicationContext);
@@ -108,4 +108,4 @@ const Styles = StyleSheet.create({
   },
 });
 
-export default NotificationsScreen;
+export default NotificationSettingsScreen;

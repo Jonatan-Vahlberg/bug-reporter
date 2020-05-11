@@ -1,17 +1,15 @@
 import React, {useEffect, useState, useContext} from 'react';
 
-import {
-  ApplicationContext,
-  emptySettings,
-} from './src/context/ApplicationContext';
+import {ApplicationContext} from './src/context/ApplicationContext';
 import Navigator from './src/navigation';
 import firebase from './src/services/api/firebase';
 import storage from './src/services/storage';
 import Firebase from 'firebase';
 import BugReport from 'src/models/BugReport';
 import Profile from 'src/models/Profile';
-import {Settings} from './src/context/ApplicationContext';
 import Team from 'src/models/Team';
+import Notification from 'src/models/Notification';
+import {Settings, emptySettings} from 'src/models/settings';
 const firebaseConfig = {
   apiKey: 'AIzaSyBhvEvFrGhYXHeLUn6VEEfaPATvjfLXo4I',
   authDomain: 'bug-tracker-17906.firebaseapp.com',
@@ -28,6 +26,7 @@ const App = () => {
   const [featuredTeam, setFeaturedTeam] = useState<Team>();
   const [settings, setSettings] = useState<Settings>({...emptySettings});
   const [profile, setProfile] = useState<Profile | undefined>(undefined);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   return (
     <ApplicationContext.Provider
@@ -40,6 +39,7 @@ const App = () => {
             setFeaturedTeam,
             setProfile,
             setSettings,
+            setNotifications,
           },
           storage,
         },
@@ -47,6 +47,7 @@ const App = () => {
         featuredTeam,
         featuredReports: featuredReports,
         profile,
+        notifications,
       }}>
       <Navigator />
     </ApplicationContext.Provider>

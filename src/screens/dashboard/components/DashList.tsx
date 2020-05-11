@@ -64,6 +64,7 @@ const listItems: ListItem[] = [
     navPath: 'DASH_LIST',
   },
   {name: 'Settings', icon: 'settings', navPath: 'SETTINGS'},
+  {name: 'Notifications', icon: 'bell', navPath: 'NOTIFICATIONS'},
 ];
 
 export default DashList;

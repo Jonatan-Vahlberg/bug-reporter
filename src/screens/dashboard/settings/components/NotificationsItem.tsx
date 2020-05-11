@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {View, Text, Switch, StyleSheet} from 'react-native';
-import {NotificationProps} from '../NotificationsScreen';
+import {NotificationProps} from '../NotificationSettingsScreen';
 import {ApplicationContext} from 'src/context/ApplicationContext';
 import {Settings} from 'src/models/settings';
 

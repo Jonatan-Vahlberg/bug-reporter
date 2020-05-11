@@ -10,7 +10,7 @@ const LoadingScreenModal: React.FC<{
   userID: string;
   visible: boolean;
   setVisability: () => void | Function;
-}> = (props) => {
+}> = props => {
   const {actions, settings, profile, featuredTeam} = useContext(
     ApplicationContext,
   );
@@ -28,6 +28,10 @@ const LoadingScreenModal: React.FC<{
     (async () => {
       const storedSettings = await actions.storage.getSettings();
       actions.setters.setSettings!(storedSettings);
+
+      const notifications = await actions.storage.getNotifications();
+      actions.setters.setNotifications!(notifications);
+
       setLoadingProfile(true);
       await actions.firebase.getProfile(
         'IvM9aSjjVCXZ9Up6szWhmGtIjl13',

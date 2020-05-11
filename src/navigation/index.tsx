@@ -25,7 +25,8 @@ import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
 import ContentCreationModalScreen from 'src/screens/dashboard/ContentCreationModalScreen';
 import ContentFlaggingModalScreen from 'src/screens/dashboard/ContentFlaggingModalScreen';
 import SettingsScreen from 'src/screens/dashboard/settings/SettingsScreen';
-import NotificationsScreen from 'src/screens/dashboard/settings/NotificationsScreen';
+import NotificationsScreen from 'src/screens/dashboard/NotificationsScreen';
+import NotificationSettingsScreen from 'src/screens/dashboard/settings/NotificationSettingsScreen';
 
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -92,6 +93,7 @@ export type DashboardParamList = {
   };
   SETTINGS: undefined;
   SETTINGS_NOTIFICATIONS: undefined;
+  NOTIFICATIONS: undefined;
 };
 
 const DashNavigator = () => {
@@ -114,8 +116,9 @@ const DashNavigator = () => {
       <DashStack.Screen name="SETTINGS" component={SettingsScreen} />
       <DashStack.Screen
         name="SETTINGS_NOTIFICATIONS"
-        component={NotificationsScreen}
+        component={NotificationSettingsScreen}
       />
+      <DashStack.Screen name="NOTIFICATIONS" component={NotificationsScreen} />
     </DashStack.Navigator>
   );
 };
