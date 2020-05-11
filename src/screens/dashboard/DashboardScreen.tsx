@@ -17,6 +17,7 @@ import {FAB, ActivityIndicator} from 'react-native-paper';
 import Colors from 'src/static/colors';
 import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 import LoadingScreenModal from './components/LoadingScreenModal';
+import {emptySettings} from 'src/models/settings';
 
 export interface DashProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -46,6 +47,7 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
     profile,
     settings,
   } = useContext(ApplicationContext);
+  //storage.setSettings({...emptySettings});
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
   console.log(loadingVisible);
 
