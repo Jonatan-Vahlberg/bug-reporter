@@ -14,13 +14,14 @@ export type TeamJoinPayload = {
   teamCode: string;
 };
 type Notification = {
-  destinationStack: keyof MainNavigatorParamList;
+  destinationStack: 'DASH_VIEW' | 'TEAMS';
   destinationPath: keyof DashboardParamList | keyof TeamsParamList;
   data: {
     title: string;
     message: string;
     payload?: ReportPayload | TeamJoinPayload;
   };
+  timeStamp?: string;
 };
 
 export default Notification;

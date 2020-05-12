@@ -1,6 +1,6 @@
 import moment from 'moment';
 import {TeamPosition} from 'src/models/TeamMember';
-
+export * from './notificationFunctions';
 export const breakoutISODate = (
   dateString: string,
   from: number = 0,

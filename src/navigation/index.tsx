@@ -73,7 +73,7 @@ export type DashboardParamList = {
   DASH_HOME: undefined;
   DASH_CREATE: undefined;
   DASH_VIEW: {reportId: string};
-  DASH_LIST: {filters?: ReportFilter};
+  DASH_LIST: {filters?: ReportFilter; forceId?: string};
   TEAMS: undefined;
   PROFILE: undefined;
   CONTENT_MODAL: {

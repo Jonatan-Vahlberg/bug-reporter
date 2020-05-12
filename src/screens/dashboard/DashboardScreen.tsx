@@ -47,8 +47,8 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
     profile,
     settings,
   } = useContext(ApplicationContext);
-  //storage.setSettings({...emptySettings});
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
+  //const [timePassed,setTimePassed] = useState<
   console.log(loadingVisible);
 
   if (loadingVisible) {
@@ -60,9 +60,12 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
       />
     );
   }
+  setTimeout(async () => {
+    const storedNotifications = await storage.getNotifications();
+    setters.setNotifications!([...storedNotifications]);
+    console.log('GOT NOTIFICATIONS');
+  }, 1000 * 60);
   console.log(settings);
-
-  //useEffect(() => {}, [loadingVisible]);
   return (
     <ApplicationContext.Consumer>
       {context => (

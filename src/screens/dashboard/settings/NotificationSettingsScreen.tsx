@@ -14,7 +14,7 @@ import {ProfileParamList, DashboardParamList} from 'src/navigation';
 import {RouteProp} from '@react-navigation/native';
 import SettingsList from './components/SettingsList';
 import {ApplicationContext} from 'src/context/ApplicationContext';
-import NotificationsItem from './components/NotificationsItem';
+import NotificationSettingsItem from './components/NotificationSettingsItem';
 
 export interface SettingsProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -90,7 +90,7 @@ const NotificationSettingsScreen: React.FC<SettingsProps> = props => {
           );
         }}
         //@ts-ignore
-        renderItem={item => <NotificationsItem {...item.item} />}
+        renderItem={item => <NotificationSettingsItem {...item.item} />}
       />
     </ScreenComponent>
   );

@@ -25,7 +25,10 @@ export const SetupAndroidPushNotifications = () => {
       console.log('hello');
       console.log(checkNotificationPremissions(settings, notificationData));
 
-      if (checkNotificationPremissions(settings, notificationData)) {
+      if (
+        checkNotificationPremissions(settings, notificationData) &&
+        !notification.foreground
+      ) {
         console.log('is it working');
 
         PushNotification.presentLocalNotification({
@@ -33,7 +36,12 @@ export const SetupAndroidPushNotifications = () => {
           message: notificationData.data.message,
         });
       }
-      await storage.setNotifications([...notifications, notificationData]);
+      await storage.setNotifications([
+        ...notifications,
+        {...notificationData, timeStamp: new Date().toISOString()},
+      ]);
+      if (notification.foreground) {
+      }
       notification.finish(PushNotificationIOS.FetchResult.NoData);
     },
 
