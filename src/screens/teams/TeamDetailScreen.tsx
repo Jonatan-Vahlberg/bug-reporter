@@ -5,6 +5,7 @@ import {
   Text,
   LargeSpinner,
   ProtectedView,
+  ModalConfirm,
 } from '../../components/common';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {TeamsParamList} from '../../navigation';
@@ -13,9 +14,16 @@ import {ApplicationContext} from 'src/context/ApplicationContext';
 import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import colors from 'src/static/colors';
-import {Card, DataTable, Button} from 'react-native-paper';
+import {
+  Card,
+  DataTable,
+  Button,
+  TextInput,
+  HelperText,
+} from 'react-native-paper';
 import MemberRow from './components/MemberRow';
 import metrics from 'src/static/metrics';
+import SendInviteModal from './components/SendInviteModal';
 
 export interface DetailProps {
   navigation: StackNavigationProp<TeamsParamList>;
@@ -29,6 +37,8 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
   const [nameSort, setNameSort] = useState<'ascending' | 'descending'>(
     'ascending',
   );
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   const teamBase = route.params.teamBase;
   useEffect(() => {
     (async () => {
@@ -74,7 +84,7 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                     <DataTable.Title> </DataTable.Title>
                   </DataTable.Header>
                   <ScrollView>
-                    {team.members.map((member) => {
+                    {team.members.map(member => {
                       return (
                         <MemberRow
                           premissionLevel={teamBase.personalPositionValue}
@@ -86,6 +96,16 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                   </ScrollView>
                 </DataTable>
               </Card>
+              <ProtectedView
+                userLevel={teamBase.personalPositionValue}
+                minLevel={4}>
+                <Button
+                  onPress={() => setModalVisible(true)}
+                  color={'#fff'}
+                  style={[styles().button]}>
+                  Invite to team
+                </Button>
+              </ProtectedView>
               <ProtectedView
                 userLevel={teamBase.personalPositionValue}
                 minLevel={5}>
@@ -129,6 +149,11 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
           )}
         </View>
       )}
+      <SendInviteModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        team={team!}
+      />
     </View>
   );
 };
@@ -149,6 +174,9 @@ const styles = () =>
       borderRadius: 10000,
       backgroundColor: colors.darkerBasicBlue,
       marginTop: 20,
+    },
+    modalTextBox: {
+      alignItems: 'center',
     },
   });
 

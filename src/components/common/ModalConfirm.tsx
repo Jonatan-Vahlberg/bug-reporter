@@ -1,21 +1,23 @@
 import React from 'react';
-import { View, Modal, TouchableOpacity, StyleSheet, Text } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import {View, Modal, TouchableOpacity, StyleSheet, Text} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 
 import colors from '../../static/colors';
 
+type ModalColors = {
+  background: string;
+  acceptBtn: string;
+  declineBtn: string;
+  btnText: string;
+};
+
 interface ModalConfirmProps {
-  onRequestClose?: Function;
-  onAccept?: Function;
+  onRequestClose: Function;
+  onAccept: Function;
   visible?: boolean;
   transparent?: boolean;
-  colors?: {
-    background: string;
-    acceptBtn: string;
-    declineBtn: string;
-    btnText: string;
-  };
-  texts?: { acceptBtn: string; declineBtn: string };
+  colors?: ModalColors;
+  texts: {acceptBtn: string; declineBtn: string};
 }
 
 const ModalConfirm: React.FC<ModalConfirmProps> = ({
@@ -23,7 +25,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
   onRequestClose,
   onAccept,
   visible,
-  colors,
+  colors: modalColors,
   transparent,
   texts,
 }) => {
@@ -34,13 +36,14 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
     buttonSubView,
     btnTextStyle,
     outsideContainer,
-  } = generateStyles(colors);
+  } = generateStyles(modalColors!);
+  console.log(modalColors?.acceptBtn);
+  const onAcceptColor = modalColors?.acceptBtn
   return (
     <Modal
       onRequestClose={() => onRequestClose()}
       visible={visible}
-      transparent={transparent}
-    >
+      transparent={transparent}>
       <View style={outsideContainer}>
         <View style={container}>
           <ScrollView>{children}</ScrollView>
@@ -48,8 +51,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
             <View style={buttonSubView}>
               <TouchableOpacity onPress={() => onAccept()}>
                 <View
-                  style={[buttonStyle, { backgroundColor: colors.acceptBtn }]}
-                >
+                  style={[buttonStyle, {backgroundColor: modalColors?.acceptBtn}]}>
                   <Text style={btnTextStyle}>{texts.acceptBtn}</Text>
                 </View>
               </TouchableOpacity>
@@ -57,8 +59,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
             <View style={buttonSubView}>
               <TouchableOpacity onPress={() => onRequestClose()}>
                 <View
-                  style={[buttonStyle, { backgroundColor: colors.declineBtn }]}
-                >
+                  style={[buttonStyle, {backgroundColor: modalColors!.declineBtn}]}>
                   <Text style={btnTextStyle}>{texts.declineBtn}</Text>
                 </View>
               </TouchableOpacity>
@@ -70,7 +71,16 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
   );
 };
 
-const generateStyles = colors => {
+ModalConfirm.defaultProps = {
+  colors: {
+    acceptBtn: colors.darkerBasicBlue,
+    declineBtn: colors.redHighlight,
+    background: 'white',
+    btnText: 'white',
+  },
+};
+
+const generateStyles = (colors: ModalColors) => {
   return StyleSheet.create({
     outsideContainer: {
       backgroundColor: '#00000050',
@@ -128,7 +138,7 @@ ModalConfirm.defaultProps = {
     declineBtn: colors.redHighlight,
     btnText: '#fff',
   },
-  texts: { acceptBtn: 'Ok', declineBtn: 'Decline' },
+  texts: {acceptBtn: 'Ok', declineBtn: 'Decline'},
 };
 
-export { ModalConfirm };
+export {ModalConfirm};

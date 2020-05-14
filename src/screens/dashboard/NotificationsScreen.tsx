@@ -12,7 +12,17 @@ interface NotificationsScreenProps {
 }
 
 const NotificationsScreen: React.FC<NotificationsScreenProps> = props => {
-  const {notifications} = useContext(ApplicationContext);
+  const {notifications, featuredTeam} = useContext(ApplicationContext);
+
+  const filteredNotifications = notifications.filter(notification => {
+    if (isReport(notification.data.payload!)) {
+      if (featuredTeam!.uuid === notification.data.payload.teamId) {
+        return notification;
+      }
+    } else {
+      return notification;
+    }
+  });
   return (
     <View style={styles.container}>
       <Navbar
@@ -22,12 +32,12 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = props => {
       />
       <ScrollView>
         <Text>Notifications</Text>
-        {notifications.map(notification => (
+        {filteredNotifications.map(notification => (
           <NotificationsItem
             notification={notification}
             onPress={() => {
               if (notification.destinationStack === 'TEAMS') {
-                props.navigation.navigate(notification.destinationStack);
+                props.navigation.navigate('TEAMS_ADMIN');
               } else if (isReport(notification.data.payload!)) {
                 props.navigation.navigate('DASH_LIST', {
                   forceId: notification.data.payload.reportId,

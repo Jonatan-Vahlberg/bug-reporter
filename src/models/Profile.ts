@@ -5,6 +5,6 @@ export default interface Profile {
   lastName: string;
   email: string;
   uuid: string;
-  FCMIDS: string[];
+  FCMID: string;
   teams: LightTeam[];
 }

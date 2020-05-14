@@ -4,9 +4,10 @@ import BugReport from '../..//models/BugReport';
 import Comment from '../..//models/Comment';
 import axios from 'axios';
 import Team, {LightTeam} from 'src/models/Team';
-import firebaseApp from 'firebase';
+import firebaseApp, {User} from 'firebase';
 import _ from 'lodash';
 import {getRandomCode} from 'src/static/functions';
+import NotificationsFCM from './notificationFCM';
 
 const UUID_V4 = require('uuid/v4');
 export enum firebaseAuthErrorStatus {
@@ -231,6 +232,28 @@ const firebase = {
     } catch (error) {
       console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  sendInviteForTeam: async (team: Team, email: string, senderName: string) => {
+    try {
+      const usersRef = firebaseApp.database().ref(`/users`);
+      usersRef
+        .orderByChild('email')
+        .equalTo(email)
+        .on('value', snap => {
+          const values = _.values(snap.val());
+          if (values.length === 1) {
+            const user: Profile = values[0];
+            if (user.FCMID !== undefined) {
+              NotificationsFCM.sendTeamFCM(senderName, [user.FCMID], team);
+            }
+          }
+        });
+      return true;
+    } catch (error) {
+      console.warn(error);
+
+      return false;
     }
   },
   removeTeamFully: async (team: Team) => {

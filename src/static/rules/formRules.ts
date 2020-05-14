@@ -1,4 +1,4 @@
-import { FormValueRule } from '../../components/common';
+import {FormValueRule} from '../../components/common';
 
 export const titleRules: FormValueRule[] = [
   (title: string) => {
@@ -8,6 +8,6 @@ export const titleRules: FormValueRule[] = [
         message: 'The title has to be three characters or longer.',
       };
     }
-    return { triggerd: false, message: '' };
+    return {triggerd: false, message: ''};
   },
 ];
