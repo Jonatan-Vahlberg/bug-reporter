@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {ModalConfirm, Text} from 'src/components/common';
 import colors from 'src/static/colors';
@@ -24,22 +24,45 @@ const SendInviteModal: React.FC<SendInviteModalProps> = ({
   } = useContext(ApplicationContext);
   const [input, setInput] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string>(
+    'Email has to be correct and not belong to another team member.',
+  );
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const isNotTeamMember = useCallback((team: Team, mail: string) => {
+    console.log(!team.members.some(member => member.mail === mail));
+
+    return !team.members.some(member => member.mail === mail);
+  }, []);
   return (
     <ModalConfirm
       visible={modalVisible}
+      loading={loading}
       onRequestClose={() => setModalVisible(false)}
       onAccept={async () => {
-        if (isEmail(input)) {
+        if (isEmail(input) && isNotTeamMember(team, input)) {
           setErrorVisible(false);
+          setLoading(true);
           try {
             await firebase.sendInviteForTeam(
               team,
               input,
               `${profile!.firstName} ${profile!.lastName}`,
             );
-          } catch (error) {}
+            setModalVisible(false);
+            setLoading(false);
+          } catch (error) {
+            setErrorMsg('Error ocurred whilst sending invite.');
+
+            setLoading(false);
+          }
+        } else {
+          setErrorMsg(
+            'Email has to be correct and not belong to another team member.',
+          );
+          setErrorVisible(true);
+          setLoading(false);
         }
-        setErrorVisible(true);
         return;
       }}
       texts={{
@@ -60,9 +83,16 @@ const SendInviteModal: React.FC<SendInviteModalProps> = ({
         <TextInput
           style={{width: '100%', height: 40}}
           value={input}
-          onChangeText={setInput}
+          onChangeText={value => {
+            if (errorVisible) setErrorVisible(false);
+            setInput(value);
+          }}
         />
-        <HelperText type="error" visable={errorVisible} />
+        {errorVisible && (
+          <HelperText type="error" visable={errorVisible}>
+            {errorMsg}
+          </HelperText>
+        )}
       </View>
     </ModalConfirm>
   );

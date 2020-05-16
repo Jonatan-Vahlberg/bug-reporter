@@ -1,6 +1,6 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {Navbar} from '../../components/common';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import NavigationPaths from '../../navigation/NavigationPaths';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {TeamsParamList} from '../../navigation';
@@ -29,7 +29,12 @@ const TeamsAdminScreen: React.FC<AdminProps> = ({navigation, route}) => {
         <InputBox onCodeSet={setCode} />
         <Button
           onPress={async () => {
-            const result = actions.firebase.getTeamWithCode(code);
+            const result = await actions.firebase.getTeamWithCode(
+              code,
+              profile!,
+              actions.firebase.joinTeam,
+            );
+            console.log(result);
           }}
           color={'#fff'}
           style={styles.button}

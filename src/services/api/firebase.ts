@@ -142,6 +142,7 @@ const firebase = {
             position: 'ADMIN',
             positonValue: 5,
             uuid: creator.uuid,
+            mail: creator.email,
           },
         },
         reports: teamId,
@@ -167,27 +168,33 @@ const firebase = {
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
-  getTeamWithCode: async (code: string) => {
+  getTeamWithCode: async (
+    code: string,
+    profile: Profile,
+    joinTeam: (profile: Profile, team: Team) => Promise<any>,
+  ): Promise<boolean> => {
+    let resultValue = false;
+    let ResultTeam: Team | undefined = undefined;
     try {
       const teamsRef = firebaseApp.database().ref(`/teams`);
-      await teamsRef
+      teamsRef
         .orderByChild('code')
         .equalTo(code)
         .on('value', async queryResult => {
           if (queryResult.exists()) {
             const value = queryResult.val();
-            let team = value[Object.keys(value)[0]];
+
+            let team: Team = value[Object.keys(value)[0]];
             team.members = _.values(team.members);
-            return {
-              error: firebaseDBErrorStatus.NO_ERROR,
-              payload: team,
-            };
+            console.log('JOIN VALUE', team);
+            await joinTeam(profile, team);
+            return true;
           }
         });
-      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+      return true;
     } catch (error) {
       console.warn(error.message);
-      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+      return false;
     }
   },
   getTeanOnId: async (uuid: string) => {
@@ -205,12 +212,13 @@ const firebase = {
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
-  joinTeam: async (code: string, profile: Profile, team: Team) => {
+  joinTeam: async (profile: Profile, team: Team) => {
     const newMember: TeamMember = {
       name: `${profile.firstName} ${profile.lastName}`,
       position: 'OTHER',
       positonValue: 1,
       uuid: profile.uuid,
+      mail: profile.email,
     };
     const lightTeam: LightTeam = {
       uuid: team.uuid,
@@ -226,8 +234,8 @@ const firebase = {
       const teamMembersRef = firebaseApp
         .database()
         .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
-      await teamMembersRef.update(newMember);
-      await userRef.set(team);
+      await teamMembersRef.set(newMember);
+      await userRef.set(lightTeam);
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
       console.warn(error.message);

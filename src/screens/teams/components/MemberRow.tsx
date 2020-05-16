@@ -5,10 +5,11 @@ import {getWrittenPosition} from 'src/static/functions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ApplicationContext} from 'src/context/ApplicationContext';
 
-const MemberRow: React.FC<{member: TeamMember; premissionLevel: number}> = ({
-  member,
-  premissionLevel,
-}) => {
+const MemberRow: React.FC<{
+  member: TeamMember;
+  premissionLevel: number;
+  personalPremissionLevel: number;
+}> = ({member, premissionLevel, personalPremissionLevel}) => {
   const {profile} = useContext(ApplicationContext);
   return (
     <DataTable.Row>
@@ -16,7 +17,7 @@ const MemberRow: React.FC<{member: TeamMember; premissionLevel: number}> = ({
       <DataTable.Cell>{getWrittenPosition(member.position)}</DataTable.Cell>
       <DataTable.Cell numeric>{member.positonValue}</DataTable.Cell>
       <DataTable.Cell numeric>
-        {premissionLevel > 3 && profile!.uuid !== member.uuid && (
+        {personalPremissionLevel > 3 && profile!.uuid !== member.uuid && (
           <Icon name="close-circle" />
         )}
       </DataTable.Cell>

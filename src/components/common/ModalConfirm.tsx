@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Modal, TouchableOpacity, StyleSheet, Text} from 'react-native';
+import {View, Modal, TouchableOpacity, StyleSheet, Text, ActivityIndicator} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 
 import colors from '../../static/colors';
@@ -14,10 +14,11 @@ type ModalColors = {
 interface ModalConfirmProps {
   onRequestClose: Function;
   onAccept: Function;
+  texts: {acceptBtn: string; declineBtn: string};
   visible?: boolean;
   transparent?: boolean;
   colors?: ModalColors;
-  texts: {acceptBtn: string; declineBtn: string};
+  loading?: boolean
 }
 
 const ModalConfirm: React.FC<ModalConfirmProps> = ({
@@ -28,6 +29,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
   colors: modalColors,
   transparent,
   texts,
+  loading
 }) => {
   const {
     container,
@@ -47,9 +49,10 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
       <View style={outsideContainer}>
         <View style={container}>
           <ScrollView>{children}</ScrollView>
+                {loading && <ActivityIndicator style={{alignSelf: "center", marginTop: 10, marginBottom: 0}}/>}
           <View style={buttonView}>
             <View style={buttonSubView}>
-              <TouchableOpacity onPress={() => onAccept()}>
+              <TouchableOpacity onPress={() => onAccept()} disabled={loading}>
                 <View
                   style={[buttonStyle, {backgroundColor: modalColors?.acceptBtn}]}>
                   <Text style={btnTextStyle}>{texts.acceptBtn}</Text>
@@ -57,7 +60,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
               </TouchableOpacity>
             </View>
             <View style={buttonSubView}>
-              <TouchableOpacity onPress={() => onRequestClose()}>
+              <TouchableOpacity onPress={() => onRequestClose()} disabled={loading}>
                 <View
                   style={[buttonStyle, {backgroundColor: modalColors!.declineBtn}]}>
                   <Text style={btnTextStyle}>{texts.declineBtn}</Text>

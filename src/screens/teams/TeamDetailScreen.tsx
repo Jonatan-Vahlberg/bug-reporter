@@ -49,6 +49,7 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
       setLoading(false);
     })();
   }, [teamBase]);
+  console.log(team);
 
   return (
     <View style={styles().base}>
@@ -60,7 +61,16 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
         <View>
           {team !== undefined && (
             <View>
-              <Text.Base>{team.description}</Text.Base>
+              <Card
+                style={{
+                  ...styles().cardBase,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: 5,
+                }}>
+                <Text.Caption>Description</Text.Caption>
+                <Text.Base>{team.description}</Text.Base>
+              </Card>
               <ProtectedView
                 userLevel={teamBase.personalPositionValue}
                 minLevel={4}>
@@ -85,11 +95,16 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                   </DataTable.Header>
                   <ScrollView>
                     {team.members.map(member => {
+                      console.log(member);
+
                       return (
                         <MemberRow
-                          premissionLevel={teamBase.personalPositionValue}
+                          premissionLevel={member.positonValue}
                           key={member.uuid}
                           member={member}
+                          personalPremissionLevel={
+                            teamBase.personalPositionValue
+                          }
                         />
                       );
                     })}
