@@ -167,7 +167,7 @@ const Navigator = () => {
       {context => (
         <NavigationContainer>
           <RootStack.Navigator screenOptions={{headerShown: false}}>
-            {true ? (
+            {context.profile ? (
               <>
                 <RootStack.Screen name="MAIN" component={MainNavigator} />
               </>

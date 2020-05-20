@@ -1,4 +1,4 @@
-import TeamMember from '../../models/TeamMember';
+import TeamMember, {TeamPosition} from '../../models/TeamMember';
 import Profile from '../..//models/Profile';
 import BugReport from '../..//models/BugReport';
 import Comment from '../..//models/Comment';
@@ -280,16 +280,43 @@ const firebase = {
       return false;
     }
   },
-  leaveTeam: async (team: Team, profile: Profile) => {
+  leaveTeam: async (teamUuid: string, uuid: string) => {
     try {
       const profileTeamRef = firebaseApp
         .database()
-        .ref(`/users/${profile.uuid}/teams/${team.uuid}`);
+        .ref(`/users/${uuid}/teams/${teamUuid}`);
       const membersRef = firebaseApp
         .database()
-        .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
+        .ref(`/teams/${teamUuid}/members/${uuid}`);
       await profileTeamRef.remove();
       await membersRef.remove();
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
+    }
+  },
+
+  changeMembersPosition: async (
+    teamUuid: string,
+    member: TeamMember,
+    newPosition: {value: number; position: TeamPosition},
+  ) => {
+    try {
+      const profileTeamRef = firebaseApp
+        .database()
+        .ref(`/users/${member.uuid}/teams/${teamUuid}`);
+      const membersRef = firebaseApp
+        .database()
+        .ref(`/teams/${teamUuid}/members/${member.uuid}`);
+      await membersRef.update({
+        position: newPosition.position,
+        positonValue: newPosition.value,
+      });
+      await profileTeamRef.update({
+        personalPosition: newPosition.position,
+        personalPositionValue: newPosition.value,
+      });
       return true;
     } catch (error) {
       console.warn(error);

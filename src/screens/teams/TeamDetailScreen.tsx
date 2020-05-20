@@ -24,6 +24,8 @@ import {
 import MemberRow from './components/MemberRow';
 import metrics from 'src/static/metrics';
 import SendInviteModal from './components/SendInviteModal';
+import MemberModal from './components/MemberModal';
+import TeamMember from 'src/models/TeamMember';
 
 export interface DetailProps {
   navigation: StackNavigationProp<TeamsParamList>;
@@ -39,16 +41,21 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
   );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
+  const [chosenMember, setChosenMember] = useState<TeamMember>();
+  const [updateMade, setUpdateMade] = useState<boolean>(true);
   const teamBase = route.params.teamBase;
   useEffect(() => {
     (async () => {
-      const result = await actions.firebase.getTeanOnId(teamBase.uuid);
-      if (result.error === firebaseDBErrorStatus.NO_ERROR) {
-        setTeam(result.payload);
+      if (updateMade) {
+        const result = await actions.firebase.getTeanOnId(teamBase.uuid);
+        if (result.error === firebaseDBErrorStatus.NO_ERROR) {
+          setTeam(result.payload);
+          setUpdateMade(false);
+        }
       }
       setLoading(false);
     })();
-  }, [teamBase]);
+  }, [teamBase, updateMade]);
   console.log(team);
 
   return (
@@ -70,12 +77,14 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 }}>
                 <Text.Caption>Description</Text.Caption>
                 <Text.Base>{team.description}</Text.Base>
+
+                <ProtectedView
+                  userLevel={teamBase.personalPositionValue}
+                  minLevel={4}>
+                  <Text.Caption>Team code</Text.Caption>
+                  <Text.Base>Code: {team.code} </Text.Base>
+                </ProtectedView>
               </Card>
-              <ProtectedView
-                userLevel={teamBase.personalPositionValue}
-                minLevel={4}>
-                <Text.Base>Public code: {team.code} </Text.Base>
-              </ProtectedView>
               <Card style={styles().cardBase}>
                 <Card.Title title="Members" />
                 <DataTable>
@@ -105,6 +114,7 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                           personalPremissionLevel={
                             teamBase.personalPositionValue
                           }
+                          setChosenMember={setChosenMember}
                         />
                       );
                     })}
@@ -148,8 +158,8 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 <Button
                   onPress={async () => {
                     const leftTeam = await actions.firebase.leaveTeam(
-                      team,
-                      profile!,
+                      team.uuid,
+                      profile!.uuid,
                     );
                     if (leftTeam) {
                       navigation.goBack();
@@ -161,6 +171,15 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 </Button>
               </ProtectedView>
             </View>
+          )}
+          {chosenMember && (
+            <MemberModal
+              teamMember={chosenMember}
+              teamUuid={team!.uuid}
+              visible={true}
+              setTeamMember={setChosenMember}
+              setUpdateMade={setUpdateMade}
+            />
           )}
         </View>
       )}

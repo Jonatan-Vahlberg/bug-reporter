@@ -18,6 +18,7 @@ import Colors from 'src/static/colors';
 import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 import LoadingScreenModal from './components/LoadingScreenModal';
 import {emptySettings} from 'src/models/settings';
+import NoTeamBox from './components/NoTeamBox';
 
 export interface DashProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -49,7 +50,7 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
   } = useContext(ApplicationContext);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
   //const [timePassed,setTimePassed] = useState<
-  console.log(loadingVisible);
+  console.log('PROFILE: ', profile);
 
   if (loadingVisible) {
     return (
@@ -73,7 +74,8 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
           <Navbar title="Dashboard" navigation={navigation} root={true} />
           <ScrollView>
             <DashHeader naviagtion={navigation} />
-            <DashList naviagtion={navigation} />
+            {featuredTeam && <DashList naviagtion={navigation} />}
+            {!featuredTeam && <NoTeamBox navigation={navigation} />}
           </ScrollView>
           <FAB
             icon="plus"
