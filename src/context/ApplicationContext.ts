@@ -5,6 +5,7 @@ import firebaseActions from '../services/api/firebase';
 import BugReport from 'src/models/BugReport';
 import storage from 'src/services/storage';
 import {Settings} from 'src/models/settings';
+import Notification from 'src/models/Notification';
 
 export const emptySettings: Settings = {
   feautredTeamId: 'UNSET',
@@ -29,6 +30,7 @@ export type ContextProps = {
   featuredTeam?: Team;
   featuredReports: BugReport[];
   settings: Settings;
+  notifications: Notification[];
   actions: {
     firebase: typeof firebaseActions;
     storage: typeof storage;
@@ -37,6 +39,7 @@ export type ContextProps = {
       setFeaturedTeam?: React.Dispatch<React.SetStateAction<Team | undefined>>;
       setSettings?: React.Dispatch<React.SetStateAction<Settings>>;
       setProfile?: React.Dispatch<React.SetStateAction<Profile | undefined>>;
+      setNotifications?: React.Dispatch<React.SetStateAction<Notification[]>>;
     };
   };
   uid?: string;
@@ -53,4 +56,5 @@ export const ApplicationContext = React.createContext<ContextProps>({
   featuredTeam: undefined,
   settings: {...emptySettings},
   featuredReports: [],
+  notifications: [],
 });

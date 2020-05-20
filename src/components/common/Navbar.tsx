@@ -69,6 +69,7 @@ const navStyles = StyleSheet.create({
   titleContainerStyle: {
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    width: '100%',
   },
   sideContainerStyle: {
     flex: 1,

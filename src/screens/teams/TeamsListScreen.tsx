@@ -19,13 +19,13 @@ export interface ListState {}
 
 const TeamsListScreen: React.FC<ListProps> = ({navigation, route}) => {
   const {profile} = React.useContext(ApplicationContext);
-  console.log(profile);
+  console.log('PROFILE: ', profile);
 
   return (
     <View>
       <Navbar title="List of teams" root navigation={navigation} />
       <NavSubBar navigation={navigation} position="LIST" />
-      {profile!.teams.map(team => {
+      {profile?.teams.map(team => {
         console.log(team.personalPositionValue);
         return (
           <TeamListItem team={team} key={team.uuid} navigation={navigation} />

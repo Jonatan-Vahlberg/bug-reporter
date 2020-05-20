@@ -22,14 +22,9 @@ const CommentWritingBox: React.FC<CommentWritingBoxProps> = (
   const {root, imgBox, img, commentBox, commentTextStyle} = styles;
   return (
     <View style={root}>
-      <View style={imgBox}>
-        <Image style={img} source={{uri: ''}} resizeMode="contain" />
-      </View>
-      <View style={commentBox}>
-        <Button action={props.navigateTo}>
-          <Text>Leave Comment</Text>
-        </Button>
-      </View>
+      <Button action={props.navigateTo}>
+        <Text>Leave Comment</Text>
+      </Button>
     </View>
   );
 };

@@ -1,0 +1,44 @@
+{
+  "Report": {
+    "to": "FCMID",
+    "time_to_live": 86400,
+    "collapse_key": "new_message",
+    "delay_while_idle": false,
+
+    "data": {
+      "pushData": {
+        "destinationStack": "DASH",
+        "destinationPath": "DASH_VIEW",
+        "data": {
+          "title": "Report comment",
+          "message": "Mia Has commented on a report",
+          "payload": {
+            "reportId": "string",
+            "teamId": "string"
+          }
+        }
+      }
+    }
+  },
+  "Team": {
+    "to": "FCMID",
+    "time_to_live": 86400,
+    "collapse_key": "new_message",
+    "delay_while_idle": false,
+
+    "data": {
+      "pushData": {
+        "destinationStack": "TEAM_LIST",
+        "destinationPath": "DASH_VIEW",
+        "data": {
+          "title": "Report comment",
+          "message": "Mia Has commented on a report",
+          "payload": {
+            "reportId": "string",
+            "teamId": "string"
+          }
+        }
+      }
+    }
+  }
+}

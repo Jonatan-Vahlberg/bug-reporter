@@ -1,6 +1,6 @@
 import moment from 'moment';
 import {TeamPosition} from 'src/models/TeamMember';
-
+export * from './notificationFunctions';
 export const breakoutISODate = (
   dateString: string,
   from: number = 0,
@@ -62,4 +62,10 @@ export const getWrittenPosition = (position: TeamPosition) => {
         .substr(1)
         .toLowerCase()}`;
   }
+};
+
+export const isEmail = (input: string) => {
+  return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+    input,
+  );
 };

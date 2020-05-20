@@ -1,12 +1,13 @@
-import TeamMember from '../../models/TeamMember';
+import TeamMember, {TeamPosition} from '../../models/TeamMember';
 import Profile from '../..//models/Profile';
 import BugReport from '../..//models/BugReport';
 import Comment from '../..//models/Comment';
 import axios from 'axios';
 import Team, {LightTeam} from 'src/models/Team';
-import firebaseApp from 'firebase';
+import firebaseApp, {User} from 'firebase';
 import _ from 'lodash';
 import {getRandomCode} from 'src/static/functions';
+import NotificationsFCM from './notificationFCM';
 
 const UUID_V4 = require('uuid/v4');
 export enum firebaseAuthErrorStatus {
@@ -141,6 +142,7 @@ const firebase = {
             position: 'ADMIN',
             positonValue: 5,
             uuid: creator.uuid,
+            mail: creator.email,
           },
         },
         reports: teamId,
@@ -166,27 +168,33 @@ const firebase = {
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
-  getTeamWithCode: async (code: string) => {
+  getTeamWithCode: async (
+    code: string,
+    profile: Profile,
+    joinTeam: (profile: Profile, team: Team) => Promise<any>,
+  ): Promise<boolean> => {
+    let resultValue = false;
+    let ResultTeam: Team | undefined = undefined;
     try {
       const teamsRef = firebaseApp.database().ref(`/teams`);
-      await teamsRef
+      teamsRef
         .orderByChild('code')
         .equalTo(code)
         .on('value', async queryResult => {
           if (queryResult.exists()) {
             const value = queryResult.val();
-            let team = value[Object.keys(value)[0]];
+
+            let team: Team = value[Object.keys(value)[0]];
             team.members = _.values(team.members);
-            return {
-              error: firebaseDBErrorStatus.NO_ERROR,
-              payload: team,
-            };
+            console.log('JOIN VALUE', team);
+            await joinTeam(profile, team);
+            return true;
           }
         });
-      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+      return true;
     } catch (error) {
       console.warn(error.message);
-      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+      return false;
     }
   },
   getTeanOnId: async (uuid: string) => {
@@ -204,12 +212,13 @@ const firebase = {
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
     }
   },
-  joinTeam: async (code: string, profile: Profile, team: Team) => {
+  joinTeam: async (profile: Profile, team: Team) => {
     const newMember: TeamMember = {
       name: `${profile.firstName} ${profile.lastName}`,
       position: 'OTHER',
       positonValue: 1,
       uuid: profile.uuid,
+      mail: profile.email,
     };
     const lightTeam: LightTeam = {
       uuid: team.uuid,
@@ -225,12 +234,34 @@ const firebase = {
       const teamMembersRef = firebaseApp
         .database()
         .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
-      await teamMembersRef.update(newMember);
-      await userRef.set(team);
+      await teamMembersRef.set(newMember);
+      await userRef.set(lightTeam);
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
       console.warn(error.message);
       return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+    }
+  },
+  sendInviteForTeam: async (team: Team, email: string, senderName: string) => {
+    try {
+      const usersRef = firebaseApp.database().ref(`/users`);
+      usersRef
+        .orderByChild('email')
+        .equalTo(email)
+        .on('value', snap => {
+          const values = _.values(snap.val());
+          if (values.length === 1) {
+            const user: Profile = values[0];
+            if (user.FCMID !== undefined) {
+              NotificationsFCM.sendTeamFCM(senderName, [user.FCMID], team);
+            }
+          }
+        });
+      return true;
+    } catch (error) {
+      console.warn(error);
+
+      return false;
     }
   },
   removeTeamFully: async (team: Team) => {
@@ -249,16 +280,43 @@ const firebase = {
       return false;
     }
   },
-  leaveTeam: async (team: Team, profile: Profile) => {
+  leaveTeam: async (teamUuid: string, uuid: string) => {
     try {
       const profileTeamRef = firebaseApp
         .database()
-        .ref(`/users/${profile.uuid}/teams/${team.uuid}`);
+        .ref(`/users/${uuid}/teams/${teamUuid}`);
       const membersRef = firebaseApp
         .database()
-        .ref(`/teams/${team.uuid}/members/${profile.uuid}`);
+        .ref(`/teams/${teamUuid}/members/${uuid}`);
       await profileTeamRef.remove();
       await membersRef.remove();
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
+    }
+  },
+
+  changeMembersPosition: async (
+    teamUuid: string,
+    member: TeamMember,
+    newPosition: {value: number; position: TeamPosition},
+  ) => {
+    try {
+      const profileTeamRef = firebaseApp
+        .database()
+        .ref(`/users/${member.uuid}/teams/${teamUuid}`);
+      const membersRef = firebaseApp
+        .database()
+        .ref(`/teams/${teamUuid}/members/${member.uuid}`);
+      await membersRef.update({
+        position: newPosition.position,
+        positonValue: newPosition.value,
+      });
+      await profileTeamRef.update({
+        personalPosition: newPosition.position,
+        personalPositionValue: newPosition.value,
+      });
       return true;
     } catch (error) {
       console.warn(error);

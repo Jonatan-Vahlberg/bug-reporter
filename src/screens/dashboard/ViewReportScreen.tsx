@@ -1,6 +1,6 @@
 import * as React from 'react';
 import BugReport, {SeverityValue} from '../../models/BugReport';
-import {Navbar, ScreenComponent} from '../../components/common';
+import {Navbar, ScreenComponent, Button} from '../../components/common';
 import BugReportListCard from './components/Report/BugReportListCard';
 import {View, ScrollView, StyleSheet, StatusBar, Text} from 'react-native';
 import CommentWritingBox from './components/Report/CommentWritingBox';
@@ -14,6 +14,7 @@ import ReportContentBox from './components/Report/ReportContentBox';
 import colors from 'src/static/colors';
 import _ from 'lodash';
 import ReportComments from './components/Report/ReportComments';
+import {ApplicationContext} from 'src/context/ApplicationContext';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -21,7 +22,12 @@ export interface ReportProps {
 }
 
 const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
-  const {report} = route.params;
+  const {featuredReports} = React.useContext(ApplicationContext);
+  const {reportId} = route.params;
+  const report: BugReport = _.find(
+    featuredReports,
+    rep => rep.uuid === reportId,
+  )!;
   const [comment, setComment] = React.useState<string>('');
   return (
     <ScreenComponent>
@@ -43,16 +49,17 @@ const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
         </View>
         <ReportComments comments={_.values(report.comments)} />
         <View style={styles.commentBox}>
-          <CommentWritingBox
-            navigateTo={() =>
+          <Button
+            action={() => {
               navigation.navigate('CONTENT_MODAL', {
                 type: 'COMMENT',
                 lines: [],
                 setLines: lines => {},
                 originalReport: report,
-              })
-            }
-          />
+              });
+            }}>
+            <Text style={styles.buttonTextStyle}>Write comment</Text>
+          </Button>
         </View>
       </ScrollView>
     </ScreenComponent>
@@ -61,9 +68,15 @@ const ViewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   commentBox: {
-    width: '100%',
-    marginHorizontal: 20,
+    marginRight: 40,
+    marginLeft: 20,
     paddingBottom: 10,
+  },
+
+  buttonTextStyle: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   reportStyle: {
     backgroundColor: colors.backGroundColor,

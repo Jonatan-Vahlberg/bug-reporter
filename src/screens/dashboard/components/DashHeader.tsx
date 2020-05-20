@@ -37,7 +37,7 @@ const DashHeader: React.FC<HeaderProps> = ({naviagtion}) => {
             }}>
             <Avatar.Image
               size={100}
-              source={{uri: 'https://picsum.photos/808'}}
+              source={{uri: 'https://i.picsum.photos/id/806/800/800.jpg'}}
             />
             {/* {<Text.Title>{profile?.firstName}</Text.Title>
             <Text.LinkText>
@@ -48,9 +48,9 @@ const DashHeader: React.FC<HeaderProps> = ({naviagtion}) => {
             <Text.Title>
               {profile?.firstName} {profile?.lastName}
             </Text.Title>
-            <Text.LinkText onPress={() => naviagtion.navigate('TEAMS')}>
-              {featuredTeam?.name} &copy; {positionText}
-            </Text.LinkText>
+            {featuredTeam && <Text.LinkText onPress={() => naviagtion.navigate('TEAMS')}>
+              {featuredTeam?.name}, {positionText}
+            </Text.LinkText>}
           </View>
         );
       }}

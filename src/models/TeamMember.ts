@@ -3,6 +3,7 @@ export default interface TeamMember {
   uuid: string;
   position: TeamPosition;
   positonValue: number;
+  mail: string;
 }
 
 export type TeamPosition =

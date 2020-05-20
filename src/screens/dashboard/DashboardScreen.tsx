@@ -17,6 +17,8 @@ import {FAB, ActivityIndicator} from 'react-native-paper';
 import Colors from 'src/static/colors';
 import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 import LoadingScreenModal from './components/LoadingScreenModal';
+import {emptySettings} from 'src/models/settings';
+import NoTeamBox from './components/NoTeamBox';
 
 export interface DashProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -47,7 +49,8 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
     settings,
   } = useContext(ApplicationContext);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
-  console.log(loadingVisible);
+  //const [timePassed,setTimePassed] = useState<
+  console.log('PROFILE: ', profile);
 
   if (loadingVisible) {
     return (
@@ -58,9 +61,12 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
       />
     );
   }
+  setTimeout(async () => {
+    const storedNotifications = await storage.getNotifications();
+    setters.setNotifications!([...storedNotifications]);
+    console.log('GOT NOTIFICATIONS');
+  }, 1000 * 60);
   console.log(settings);
-
-  //useEffect(() => {}, [loadingVisible]);
   return (
     <ApplicationContext.Consumer>
       {context => (
@@ -68,7 +74,8 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
           <Navbar title="Dashboard" navigation={navigation} root={true} />
           <ScrollView>
             <DashHeader naviagtion={navigation} />
-            <DashList naviagtion={navigation} />
+            {featuredTeam && <DashList naviagtion={navigation} />}
+            {!featuredTeam && <NoTeamBox navigation={navigation} />}
           </ScrollView>
           <FAB
             icon="plus"

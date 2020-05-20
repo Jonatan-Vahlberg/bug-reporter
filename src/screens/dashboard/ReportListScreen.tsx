@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {DashboardParamList} from 'src/navigation';
@@ -19,6 +19,7 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
   const {actions, featuredReports, featuredTeam, profile} = React.useContext(
     ApplicationContext,
   );
+   console.log(featuredReports);
       
   useEffect(() => {
     (async () => {
@@ -28,6 +29,17 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
       );
     })();
   }, []);
+  
+  if(route.params.forceId !== undefined){
+    const [foundReport,setFoundReport] = useState<boolean>(false)
+    useEffect(() => {
+      const report = featuredReports.find(report => report.uuid === route.params.forceId)
+      if(report !== undefined && !foundReport){
+        navigation.navigate("DASH_VIEW",{reportId: report.uuid})
+        setFoundReport(true)
+      }
+    },[featuredReports])
+  }
   return (
     <ApplicationContext.Consumer>
       {(context) => {

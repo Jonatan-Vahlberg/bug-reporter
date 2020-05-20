@@ -24,6 +24,9 @@ import {ApplicationContext} from '../context/ApplicationContext';
 import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
 import ContentCreationModalScreen from 'src/screens/dashboard/ContentCreationModalScreen';
 import ContentFlaggingModalScreen from 'src/screens/dashboard/ContentFlaggingModalScreen';
+import SettingsScreen from 'src/screens/dashboard/settings/SettingsScreen';
+import NotificationsScreen from 'src/screens/dashboard/NotificationsScreen';
+import NotificationSettingsScreen from 'src/screens/dashboard/settings/NotificationSettingsScreen';
 
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -69,9 +72,10 @@ type ContentModalType = 'REPORT' | 'UPDATE' | 'COMMENT' | 'COMMENT_UPDATE';
 export type DashboardParamList = {
   DASH_HOME: undefined;
   DASH_CREATE: undefined;
-  DASH_VIEW: {report: BugReport};
-  DASH_LIST: {filters?: ReportFilter};
+  DASH_VIEW: {reportId: string};
+  DASH_LIST: {filters?: ReportFilter; forceId?: string};
   TEAMS: undefined;
+  TEAMS_ADMIN: undefined;
   PROFILE: undefined;
   CONTENT_MODAL: {
     type: ContentModalType;
@@ -88,6 +92,9 @@ export type DashboardParamList = {
     lines?: ReportLine[];
     originalReport?: BugReport;
   };
+  SETTINGS: undefined;
+  SETTINGS_NOTIFICATIONS: undefined;
+  NOTIFICATIONS: undefined;
 };
 
 const DashNavigator = () => {
@@ -107,6 +114,12 @@ const DashNavigator = () => {
       />
       <DashStack.Screen name="DASH_VIEW" component={ViewReportScreen} />
       <DashStack.Screen name="DASH_LIST" component={ReportListScreen} />
+      <DashStack.Screen name="SETTINGS" component={SettingsScreen} />
+      <DashStack.Screen
+        name="SETTINGS_NOTIFICATIONS"
+        component={NotificationSettingsScreen}
+      />
+      <DashStack.Screen name="NOTIFICATIONS" component={NotificationsScreen} />
     </DashStack.Navigator>
   );
 };
@@ -124,7 +137,6 @@ const MainNavigator = () => {
     <MainTab.Navigator screenOptions={DefaultStackOptions}>
       <MainTab.Screen name="DASH" component={DashNavigator} />
       <MainTab.Screen name="TEAMS" component={TeamsNavigator} />
-      <MainTab.Screen name="PROFILE" component={ProfileNavigator} />
     </MainTab.Navigator>
   );
 };
@@ -155,7 +167,7 @@ const Navigator = () => {
       {context => (
         <NavigationContainer>
           <RootStack.Navigator screenOptions={{headerShown: false}}>
-            {true ? (
+            {context.profile ? (
               <>
                 <RootStack.Screen name="MAIN" component={MainNavigator} />
               </>

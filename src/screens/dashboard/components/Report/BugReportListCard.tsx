@@ -24,7 +24,7 @@ const BugReportListCard: React.FC<BugReportListCardProps> = ({
   navigation,
   detail,
 }) => {
-  const {title, severity, content, closed} = report;
+  const {title, severity, content, closed, uuid} = report;
   const {root, header, headerText, cardRoot} = generateStyles(severity, closed);
 
   return (
@@ -33,7 +33,9 @@ const BugReportListCard: React.FC<BugReportListCardProps> = ({
         style={cardRoot}
         elevation={4}
         onPress={() =>
-          detail === false ? navigation!.navigate('DASH_VIEW', {report}) : {}
+          detail === false
+            ? navigation!.navigate('DASH_VIEW', {reportId: uuid})
+            : {}
         }>
         <Header report={report} detail={false} />
         <Subheader

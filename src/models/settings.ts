@@ -16,3 +16,20 @@ export type Settings = {
   stayLoggedIn: boolean;
   neverShowSelectTeam: boolean;
 };
+
+export const emptySettings: Settings = {
+  feautredTeamId: 'UNSET',
+  notifications: {
+    featuredTeam: {
+      all: false,
+      mentions: false,
+    },
+    otherTeams: {
+      all: false,
+      mentions: false,
+      invites: false,
+    },
+  },
+  stayLoggedIn: false,
+  neverShowSelectTeam: false,
+};
