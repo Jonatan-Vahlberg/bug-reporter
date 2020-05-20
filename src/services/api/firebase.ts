@@ -33,54 +33,21 @@ export type FirebaseDBReturn = {
   snapshot?: any;
 };
 
-// export interface ApiFirebaseInterface {
-//   login: (email: string, password: string) => Promise<FirebaseAuthReturn>;
-//   register: (
-//     email: string,
-//     password: string,
-//     firstName: string,
-//     lastName: string,
-//   ) => Promise<FirebaseAuthReturn>;
-//   logout: (profile: Profile) => Promise<void>;
-//   getProfile: (uuid: string, email: string) => Promise<FirebaseDBReturn>;
-//   joinTeamWithCode: (code: string, user: Profile) => Promise<FirebaseDBReturn>;
-//   createTeam: (
-//     name: string,
-//     description: string,
-//     creator: Profile,
-//     members?: TeamMember[],
-//   ) => Promise<FirebaseDBReturn>;
-//   createReport: (
-//     report: BugReport,
-//     teamId: string,
-//   ) => Promise<FirebaseDBReturn>;
-//   getReport: (uuid: string) => Promise<FirebaseDBReturn>;
-//   getReports: (teamId: string) => Promise<any>;
-//   updateReport: (report: BugReport) => Promise<void>;
-//   addCommentToReport: (
-//     report: BugReport,
-//     comment: Comment,
-//     closing?: boolean,
-//   ) => Promise<void>;
-//   editCommentOnReport: (
-//     report: BugReport,
-//     newComment: Comment,
-//     closing?: boolean,
-//   ) => Promise<void>;
-// }
-
 const firebase = {
   login: async (email: string, password: string) => {
     try {
-      const {
-        user: {uid},
-      }: any = await firebaseApp
+      const {user: user} = await firebaseApp
         .auth()
         .signInWithEmailAndPassword(email, password);
-      return {uid, error: firebaseAuthErrorStatus.NO_ERROR};
+      console.log(user);
+
+      if (user !== null) {
+        return {uid: user.uid, error: false};
+      }
+      return {uid: undefined, error: true};
     } catch (error) {
-      console.error(error.message);
-      return {uid: '', error: firebaseAuthErrorStatus.NO_USER};
+      console.warn(error.message);
+      return {uid: undefined, error: true};
     }
   },
   register: async (
@@ -88,17 +55,37 @@ const firebase = {
     password: string,
     firstName: string,
     lastName: string,
-  ) => {
+    FCMID: string,
+  ): Promise<{profile: Profile | undefined; error: boolean}> => {
     try {
-      const {
-        user: {uid},
-      }: any = await firebaseApp
+      const {user} = await firebaseApp
         .auth()
         .createUserWithEmailAndPassword(email, password);
-      return {uid, error: firebaseAuthErrorStatus.NO_ERROR};
+      if (user !== null) {
+        const profile: Profile = {
+          email,
+          firstName,
+          lastName,
+          uuid: user.uid,
+          teams: [],
+          FCMID,
+        };
+        await firebaseApp
+          .database()
+          .ref('users')
+          .child(user.uid)
+          .set({
+            email,
+            firstName,
+            lastName,
+            uuid: user.uid,
+          });
+        return {profile, error: false};
+      }
+      return {profile: undefined, error: true};
     } catch (error) {
-      console.error(error.message);
-      return {uid: '', error: firebaseAuthErrorStatus.UNABLE_TO_REGISTER};
+      console.warn(error.message);
+      return {profile: undefined, error: true};
     }
   },
   logout: async (profile: Profile) => {
@@ -114,6 +101,8 @@ const firebase = {
         if (snapshot.exists()) {
           let profile: Profile = snapshot.val();
           profile.teams = _.values(snapshot.val().teams);
+          console.log(profile);
+
           setProfile(profile);
         } else {
           setProfile(undefined);

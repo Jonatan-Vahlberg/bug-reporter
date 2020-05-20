@@ -5,6 +5,7 @@ import Notification from 'src/models/Notification';
 
 const ASYNC_SETTINGS_KEY = '@ASYNC_SETTINGS_KEY';
 const ASYNC_NOTIFICATIONS_KEY = '@ASYNC_NOTIFICATIONS_KEY';
+const ASYNC_FCMID_KEY = '@ASYNC_FCMID_KEY';
 const storage = {
   setSettings: async (settings: Settings) => {
     try {
@@ -62,6 +63,27 @@ const storage = {
     } catch (error) {
       console.warn(error);
       return [];
+    }
+  },
+
+  setFCMID: async (fcmid: string) => {
+    try {
+      await AsyncStorage.setItem(ASYNC_FCMID_KEY, fcmid);
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
+    }
+  },
+
+  getFCMID: async () => {
+    try {
+      const fcmid = await AsyncStorage.getItem(ASYNC_FCMID_KEY);
+
+      return fcmid;
+    } catch (error) {
+      console.warn(error);
+      return null;
     }
   },
 };
