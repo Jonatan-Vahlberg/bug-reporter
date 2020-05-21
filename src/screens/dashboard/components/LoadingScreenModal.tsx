@@ -32,11 +32,6 @@ const LoadingScreenModal: React.FC<{
       const notifications = await actions.storage.getNotifications();
       actions.setters.setNotifications!(notifications);
 
-      setLoadingProfile(true);
-      await actions.firebase.getProfile(
-        'IvM9aSjjVCXZ9Up6szWhmGtIjl13',
-        actions.setters.setProfile!,
-      );
       setLoadingProfile(false);
 
       if (storedSettings.feautredTeamId !== 'UNSET') {

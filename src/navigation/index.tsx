@@ -9,18 +9,6 @@ import {
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import CreateNewReportScreen from '../screens/dashboard/CreateNewReportScreen';
 import ViewReportScreen from '../screens/dashboard/ViewReportScreen';
-
-import ProfileScreen from '../screens/profile/ProfileScreen';
-
-import TeamsListScreen from '../screens/teams/TeamsListScreen';
-import TeamDetailScreen from '../screens/teams/TeamDetailScreen';
-import TeamsAdminScreen from '../screens/teams/TeamsAdminScreen';
-import CreateNewTeamScreen from '../screens/teams/CreateNewTeamScreen';
-
-import LoginScreen from '../screens/auth/LoginScreen';
-import BugReport, {ReportFilter, ReportLine} from 'src/models/BugReport';
-import Team, {LightTeam} from '../models/Team';
-import {ApplicationContext} from '../context/ApplicationContext';
 import ReportListScreen from 'src/screens/dashboard/ReportListScreen';
 import ContentCreationModalScreen from 'src/screens/dashboard/ContentCreationModalScreen';
 import ContentFlaggingModalScreen from 'src/screens/dashboard/ContentFlaggingModalScreen';
@@ -28,24 +16,19 @@ import SettingsScreen from 'src/screens/dashboard/settings/SettingsScreen';
 import NotificationsScreen from 'src/screens/dashboard/NotificationsScreen';
 import NotificationSettingsScreen from 'src/screens/dashboard/settings/NotificationSettingsScreen';
 
+import TeamsListScreen from '../screens/teams/TeamsListScreen';
+import TeamDetailScreen from '../screens/teams/TeamDetailScreen';
+import TeamsAdminScreen from '../screens/teams/TeamsAdminScreen';
+import CreateNewTeamScreen from '../screens/teams/CreateNewTeamScreen';
+
+import LoginScreen from '../screens/auth/LoginScreen';
+
+import {ApplicationContext} from '../context/ApplicationContext';
+import BugReport, {ReportFilter, ReportLine} from 'src/models/BugReport';
+import Team, {LightTeam} from '../models/Team';
+
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
-};
-
-export type ProfileParamList = {
-  PROFILE_HOME: undefined;
-  PROFILE: undefined;
-  DASH: undefined;
-  AUTH: undefined;
-};
-
-const ProfileNavigator = () => {
-  const ProfileStack = createStackNavigator<ProfileParamList>();
-  return (
-    <ProfileStack.Navigator screenOptions={DefaultStackOptions}>
-      <ProfileStack.Screen name="PROFILE_HOME" component={ProfileScreen} />
-    </ProfileStack.Navigator>
-  );
 };
 
 export type TeamsParamList = {
@@ -68,6 +51,7 @@ const TeamsNavigator = () => {
     </TeamsStack.Navigator>
   );
 };
+
 type ContentModalType = 'REPORT' | 'UPDATE' | 'COMMENT' | 'COMMENT_UPDATE';
 export type DashboardParamList = {
   DASH_HOME: undefined;
@@ -150,7 +134,6 @@ const AuthNavigator = () => {
   return (
     <AuthStack.Navigator screenOptions={DefaultStackOptions}>
       <AuthStack.Screen name="LOGIN" component={LoginScreen} />
-      <AuthStack.Screen name="REGISTER" component={LoginScreen} />
     </AuthStack.Navigator>
   );
 };

@@ -11,6 +11,7 @@ export const SetupAndroidPushNotifications = () => {
   PushNotification.configure({
     onRegister: token => {
       console.log('TOKEN', token);
+      storage.setFCMID(token.token);
     },
 
     onNotification: async notification => {
