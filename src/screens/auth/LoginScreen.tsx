@@ -1,19 +1,21 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect, useContext} from 'react';
 import {
   ScreenComponent,
   Card,
   Navbar,
   LinkText,
   Button,
-  CheckBox,
 } from '../../components/common';
-import {Text, View, TextInput, StyleSheet} from 'react-native';
+import {Text, View, TextInput, StyleSheet, StatusBar} from 'react-native';
 import metrics from '../../static/metrics';
 import {ApplicationContext} from '../../context/ApplicationContext';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {AuthParamList} from '../../navigation';
 import colors from 'src/static/colors';
+import { Checkbox } from 'react-native-paper';
+import { emptySettings, Settings } from 'src/models/settings';
+import Keychain from 'react-native-keychain'
 
 export interface AuthProps {
   navigation: StackNavigationProp<AuthParamList>;
@@ -31,7 +33,13 @@ export interface AuthState {
 }
 
 const LoginScreen: React.FC<AuthProps> = () => {
+  const {actions} = useContext(ApplicationContext)
   const [showLogin, setShowLogin] = useState<boolean>(true);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [tempSettings, setTempSettings] = useState<Settings>({...emptySettings})
+  
 
   const [email, setEmail] = useState<string>('');
   const emailRef = useRef<TextInput>(null);
@@ -45,6 +53,25 @@ const LoginScreen: React.FC<AuthProps> = () => {
   const [lName, setLName] = useState<string>('');
   const lNameRef = useRef<TextInput>(null);
 
+  useEffect(() => {
+    (async () => {
+      const settings = await actions.storage.getSettings()
+      console.log(settings);
+      
+      if(settings.stayLoggedIn){
+        setRememberMe(true)
+        setTempSettings(settings)
+        const credentials = await Keychain.getGenericPassword()
+        console.log(credentials);
+        if(credentials){
+          setEmail(credentials.username)
+          setPassword(credentials.password)
+        }
+      }
+      setIsLoading(false)
+    })()
+  },[])
+  const loadingOrAutheticating = isLoading || isAuthenticating
   return (
     <ApplicationContext.Consumer>
       {context => (
@@ -53,9 +80,11 @@ const LoginScreen: React.FC<AuthProps> = () => {
             justifyContent: 'center',
             alignItems: 'center',
             flex: 1,
+            backgroundColor: colors.lightGreyBackground
           }}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.lightGreyBackground}/>
           <Card label={showLogin ? 'Login' : 'Register'}>
-            <View />
+            <View style={{width: "100%"}} pointerEvents={loadingOrAutheticating ? "none" : "auto"}>
             <TextInput
               ref={emailRef}
               value={email}
@@ -103,6 +132,7 @@ const LoginScreen: React.FC<AuthProps> = () => {
               }}
             />
              <TextInput
+
               ref={lNameRef}
               value={lName}
               style={styles.inputStyle}
@@ -111,19 +141,34 @@ const LoginScreen: React.FC<AuthProps> = () => {
               
             />
             </>)}
+            <View style={styles.remeberMeBox}>      
+            <Checkbox disabled={loadingOrAutheticating} status={rememberMe ? "checked" : "unchecked"} color={colors.darkerBasicBlue} onPress={() => setRememberMe(!rememberMe)}/>
+            <Text>Remeber me?</Text>
+            </View>
             <LinkText
               action={() => setShowLogin(!showLogin)}
               text={showLogin ? 'Register?' : 'Login?'}
             />
+            </View>
           </Card>
           <View>
             <Button
+              loading={loadingOrAutheticating}
               action={async () => {
+                setIsAuthenticating(true)
+                
                 if(showLogin){
                   
                   const result = await context.actions.firebase.login(email, password)
                   if(!result.error){
                     await context.actions.firebase.getProfile(result.uid!,context.actions.setters.setProfile!)
+                  setIsAuthenticating(false)
+                  if(rememberMe){
+                    
+                    await Keychain.setGenericPassword(email,password)
+                    await actions.storage.setSettings({...tempSettings,stayLoggedIn: rememberMe})
+  
+                  }
                   }
                 }
                 else{
@@ -132,10 +177,23 @@ const LoginScreen: React.FC<AuthProps> = () => {
                     const result = await context.actions.firebase.register(email,password,fName,lName,fcmid)
                     if(!result.error){
                       context.actions.setters.setProfile!(result.profile!)
+                      setIsAuthenticating(false)
+                      if(rememberMe){
+                        console.log("Got to Keychain");
+                        
+                        await Keychain.setGenericPassword(email,password)
+                        await actions.storage.setSettings({...tempSettings,stayLoggedIn: rememberMe})
+      
+                      }
                     } 
                   }
                     
                 }
+                if(!rememberMe){
+                  await Keychain.resetGenericPassword()
+                  await actions.storage.setSettings({...tempSettings, stayLoggedIn: rememberMe})
+                }
+                
               }}
               extraStyle={{height: 50, width: metrics.screenWidth * 0.6}}
               rounded>
@@ -163,6 +221,12 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 5
   },
+  remeberMeBox: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    width: "100%"
+  }
 });
 
 export default LoginScreen;

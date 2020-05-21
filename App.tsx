@@ -10,6 +10,8 @@ import Profile from 'src/models/Profile';
 import Team from 'src/models/Team';
 import Notification from 'src/models/Notification';
 import {Settings, emptySettings} from 'src/models/settings';
+import {StatusBar} from 'react-native';
+import colors from 'src/static/colors';
 const firebaseConfig = {
   apiKey: 'AIzaSyBhvEvFrGhYXHeLUn6VEEfaPATvjfLXo4I',
   authDomain: 'bug-tracker-17906.firebaseapp.com',
@@ -49,6 +51,8 @@ const App = () => {
         profile,
         notifications,
       }}>
+      <StatusBar barStyle="dark-content" backgroundColor={'white'} />
+
       <Navigator />
     </ApplicationContext.Provider>
   );
