@@ -89,7 +89,31 @@ const firebase = {
     }
   },
   logout: async (profile: Profile) => {
-    //TODO: FIREBASE UNREGISTER DEVICEIDS
+    try {
+      const result = await firebaseApp
+        .database()
+        .ref(`users/${profile.uuid}/FCMID`)
+        .remove();
+      return;
+    } catch (error) {
+      console.warn(error);
+      return;
+    }
+  },
+  updateProfile: async (profile: Profile) => {
+    try {
+      const reworkedTeams = _.mapValues(_.keyBy(profile.teams, 'uuid'));
+      console.log(reworkedTeams);
+
+      const result = await firebaseApp
+        .database()
+        .ref(`users/${profile.uuid}`)
+        .update({...profile, teams: reworkedTeams});
+      return;
+    } catch (error) {
+      console.warn(error);
+      return;
+    }
   },
   getProfile: async (
     uid: string,
@@ -359,7 +383,9 @@ const firebase = {
   ) => {
     try {
       const ref = firebaseApp.database().ref(`reports/${teamId}`);
-      const result = ref.on('value', snap => {
+      ref.on('value', snap => {
+        console.log('SNAP', snap);
+
         if (!snap.exists() || snap.val() === null) {
           setReports([]);
         } else {
@@ -367,7 +393,7 @@ const firebase = {
         }
       });
     } catch (error) {
-      console.warn(error);
+      console.warn('ERROR: ', error);
       setReports([]);
     }
   },
@@ -378,19 +404,26 @@ const firebase = {
     report: BugReport,
     teamId: string,
     comment: Comment,
-    closed: boolean,
+    changedCloseStatus: boolean,
   ) => {
     try {
-      const ref = firebaseApp
+      const reportRef = firebaseApp
         .database()
-        .ref(`reports/${teamId}/${report.uuid}/comments/${comment.uuid}`);
-      await ref.set({
+        .ref(`reports/${teamId}/${report.uuid}`);
+      const commentRef = reportRef.child(`/comments/${comment.uuid}`);
+      await commentRef.set({
         ...comment,
       });
-      return {error: firebaseDBErrorStatus.NO_ERROR};
+      if (changedCloseStatus) {
+        reportRef.update({
+          closed: !report.closed,
+        });
+      }
+
+      return true;
     } catch (error) {
       console.warn(error.message);
-      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+      return false;
     }
   },
   editCommentOnReport: async (

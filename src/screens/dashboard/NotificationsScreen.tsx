@@ -16,7 +16,10 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = props => {
 
   const filteredNotifications = notifications.filter(notification => {
     if (isReport(notification.data.payload!)) {
-      if (featuredTeam!.uuid === notification.data.payload.teamId) {
+      if (
+        featuredTeam &&
+        featuredTeam.uuid === notification.data.payload.teamId
+      ) {
         return notification;
       }
     } else {
@@ -31,7 +34,6 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = props => {
         title="Notifications"
       />
       <ScrollView>
-        <Text>Notifications</Text>
         {filteredNotifications.map(notification => (
           <NotificationsItem
             notification={notification}

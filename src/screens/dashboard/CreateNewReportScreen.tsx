@@ -69,6 +69,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [dateVisible, setDateVisible] = useState<boolean>(false);
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   let dateString = 'No selected date';
   if (dueDate !== undefined) {
@@ -83,6 +84,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
 
   const submit = useCallback(async () => {
     if (isReportViable()) {
+      setLoading(true);
       setErrorVisible(false);
 
       await actions.firebase.createReport(
@@ -94,9 +96,13 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
           reportDate: new Date().toISOString(),
           closed: false,
           assignedTo: findInTeam(assignedTo, featuredTeam!) || null,
+          //@ts-ignore
+          dueDate: dueDate ? dueDate.toISOString() : null,
         },
         featuredTeam!.uuid,
       );
+      setLoading(false);
+      navigation.goBack();
     } else {
       setErrorVisible(true);
     }
@@ -114,8 +120,10 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
           />
           <ScreenComponent>
             <ScrollView
+              style={{marginBottom: 60}}
               keyboardShouldPersistTaps="handled"
-              removeClippedSubviews={false}>
+              removeClippedSubviews={false}
+              pointerEvents={loading ? 'none' : 'auto'}>
               <FormError
                 rules={{
                   title: titleRules,
@@ -204,7 +212,7 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
               </FormWrapper>
             </ScrollView>
             <View style={styles.buttonContainer}>
-              <Button action={submit}>
+              <Button action={submit} loading={loading}>
                 <Text style={styles.buttonTextStyle}>Create Report</Text>
               </Button>
             </View>

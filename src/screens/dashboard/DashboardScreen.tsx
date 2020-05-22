@@ -50,7 +50,7 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
   } = useContext(ApplicationContext);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
   //const [timePassed,setTimePassed] = useState<
-  console.log('PROFILE: ', profile);
+  console.log('Reports: ', featuredReports, featuredTeam);
 
   if (loadingVisible) {
     return (
@@ -67,6 +67,7 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
     console.log('GOT NOTIFICATIONS');
   }, 1000 * 60);
   console.log(settings);
+
   return (
     <ApplicationContext.Consumer>
       {context => (
@@ -74,20 +75,25 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
           <Navbar title="Dashboard" navigation={navigation} root={true} />
           <ScrollView>
             <DashHeader naviagtion={navigation} />
-            {featuredTeam && <DashList naviagtion={navigation} />}
             {!featuredTeam && <NoTeamBox navigation={navigation} />}
+            <DashList
+              naviagtion={navigation}
+              isFeatured={featuredTeam !== undefined}
+            />
           </ScrollView>
-          <FAB
-            icon="plus"
-            color={Colors.backGroundColor}
-            style={{
-              position: 'absolute',
-              bottom: 10,
-              right: 10,
-              backgroundColor: Colors.darkerBasicBlue,
-            }}
-            onPress={() => navigation.navigate('DASH_CREATE')}
-          />
+          {featuredTeam && (
+            <FAB
+              icon="plus"
+              color={Colors.backGroundColor}
+              style={{
+                position: 'absolute',
+                bottom: 10,
+                right: 10,
+                backgroundColor: Colors.darkerBasicBlue,
+              }}
+              onPress={() => navigation.navigate('DASH_CREATE')}
+            />
+          )}
         </ScreenComponent>
       )}
     </ApplicationContext.Consumer>

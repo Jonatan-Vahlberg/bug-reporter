@@ -38,7 +38,7 @@ const LoginScreen: React.FC<AuthProps> = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [tempSettings, setTempSettings] = useState<Settings>({...emptySettings})
+  const [tempSettings, setTempSettings] = useState<Settings>()
   
 
   const [email, setEmail] = useState<string>('');
@@ -166,7 +166,7 @@ const LoginScreen: React.FC<AuthProps> = () => {
                   if(rememberMe){
                     
                     await Keychain.setGenericPassword(email,password)
-                    await actions.storage.setSettings({...tempSettings,stayLoggedIn: rememberMe})
+                    await actions.storage.setSettings({...tempSettings!,stayLoggedIn: rememberMe})
   
                   }
                   }
@@ -182,7 +182,7 @@ const LoginScreen: React.FC<AuthProps> = () => {
                         console.log("Got to Keychain");
                         
                         await Keychain.setGenericPassword(email,password)
-                        await actions.storage.setSettings({...tempSettings,stayLoggedIn: rememberMe})
+                        await actions.storage.setSettings({...tempSettings!,stayLoggedIn: rememberMe})
       
                       }
                     } 
@@ -191,7 +191,7 @@ const LoginScreen: React.FC<AuthProps> = () => {
                 }
                 if(!rememberMe){
                   await Keychain.resetGenericPassword()
-                  await actions.storage.setSettings({...tempSettings, stayLoggedIn: rememberMe})
+                  await actions.storage.setSettings({...tempSettings!, stayLoggedIn: rememberMe})
                 }
                 
               }}

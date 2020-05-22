@@ -26,6 +26,10 @@ const LoadingScreenModal: React.FC<{
 
   useEffect(() => {
     (async () => {
+      const fcmid = await actions.storage.getFCMID();
+      if (fcmid) {
+        await actions.firebase.updateProfile({...profile!, FCMID: fcmid});
+      }
       const storedSettings = await actions.storage.getSettings();
       actions.setters.setSettings!(storedSettings);
 
