@@ -95,14 +95,15 @@ const ContentFlaggingModalScreen: React.FC<ModalProps> = props => {
           action = isChangingState && !done ? "REOPENED" : action 
           console.log(isChangingState, action);
           
-          const result = await actions.firebase.addCommentToReport(props.route.params.originalReport!, featuredTeam!.uuid,{
+          const result = await actions.firebase.addCommentToReport(props.route.params.originalReport!, featuredTeam!,{
             content: commentContent,
             uuid: uuid.v4(),
             senderName: profile!.firstName + " " + profile!.lastName,
             senderUuid: profile!.uuid,
             date: new Date().toISOString(),
             action: action
-          },isChangingState)
+          },isChangingState,
+          profile!)
           props.navigation.navigate("DASH_VIEW");
 
 

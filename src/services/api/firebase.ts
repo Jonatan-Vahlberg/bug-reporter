@@ -8,6 +8,7 @@ import firebaseApp, {User} from 'firebase';
 import _ from 'lodash';
 import {getRandomCode} from 'src/static/functions';
 import NotificationsFCM from './notificationFCM';
+import notificationFunctions from 'src/static/functions/notificationFunctions';
 
 const UUID_V4 = require('uuid/v4');
 export enum firebaseAuthErrorStatus {
@@ -156,6 +157,7 @@ const firebase = {
             positonValue: 5,
             uuid: creator.uuid,
             mail: creator.email,
+            fcmid: creator.FCMID,
           },
         },
         reports: teamId,
@@ -185,7 +187,7 @@ const firebase = {
     code: string,
     profile: Profile,
     joinTeam: (profile: Profile, team: Team) => Promise<any>,
-  ): Promise<boolean> => {
+  ): Promise<Team | undefined> => {
     let resultValue = false;
     let ResultTeam: Team | undefined = undefined;
     try {
@@ -201,13 +203,13 @@ const firebase = {
             team.members = _.values(team.members);
             console.log('JOIN VALUE', team);
             await joinTeam(profile, team);
-            return true;
+            return team;
           }
         });
-      return true;
+      return undefined;
     } catch (error) {
       console.warn(error.message);
-      return false;
+      return undefined;
     }
   },
   getTeanOnId: async (uuid: string) => {
@@ -232,6 +234,7 @@ const firebase = {
       positonValue: 1,
       uuid: profile.uuid,
       mail: profile.email,
+      fcmid: profile.FCMID,
     };
     const lightTeam: LightTeam = {
       uuid: team.uuid,
@@ -280,6 +283,8 @@ const firebase = {
   removeTeamFully: async (team: Team) => {
     try {
       const teamRef = firebaseApp.database().ref(`/teams/${team.uuid}`);
+      const reportsRef = firebaseApp.database().ref(`reports/${team.uuid}`);
+      await reportsRef.remove();
       team.members.forEach(async member => {
         const memberTeamRef = firebaseApp
           .database()
@@ -336,16 +341,23 @@ const firebase = {
       return false;
     }
   },
-  createReport: async (report: BugReport, teamId: string) => {
+  createReport: async (report: BugReport, recivers: string[], team: Team) => {
     console.log(report);
 
     try {
       const reportRef = firebaseApp
         .database()
-        .ref(`reports/${teamId}/${report.uuid}`);
+        .ref(`reports/${team.uuid}/${report.uuid}`);
       await reportRef.set({
         ...report,
       });
+      await NotificationsFCM.sendReportFCM(
+        report.reportedBy!,
+        recivers,
+        'NEW',
+        report,
+        team,
+      );
       return {error: firebaseDBErrorStatus.NO_ERROR};
     } catch (error) {
       console.warn(error.message);
@@ -397,19 +409,20 @@ const firebase = {
       setReports([]);
     }
   },
-  updateReport: async (report: BugReport) => {
+  updateReport: async (report: BugReport, team: Team) => {
     //TODO: FIREBASE
   },
   addCommentToReport: async (
     report: BugReport,
-    teamId: string,
+    team: Team,
     comment: Comment,
     changedCloseStatus: boolean,
+    sender: Profile,
   ) => {
     try {
       const reportRef = firebaseApp
         .database()
-        .ref(`reports/${teamId}/${report.uuid}`);
+        .ref(`reports/${team.uuid}/${report.uuid}`);
       const commentRef = reportRef.child(`/comments/${comment.uuid}`);
       await commentRef.set({
         ...comment,
@@ -419,7 +432,17 @@ const firebase = {
           closed: !report.closed,
         });
       }
-
+      const recivers = notificationFunctions.getFCMIDsFromTeamMebers(
+        team,
+        sender,
+      );
+      NotificationsFCM.sendReportFCM(
+        report.reportedBy!,
+        recivers,
+        'UPDATE',
+        report,
+        team,
+      );
       return true;
     } catch (error) {
       console.warn(error.message);

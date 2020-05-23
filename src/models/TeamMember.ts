@@ -4,6 +4,7 @@ export default interface TeamMember {
   position: TeamPosition;
   positonValue: number;
   mail: string;
+  fcmid: string;
 }
 
 export type TeamPosition =

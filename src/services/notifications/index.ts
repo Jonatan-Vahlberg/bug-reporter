@@ -23,8 +23,6 @@ export const SetupAndroidPushNotifications = () => {
         //@ts-ignore
         notification.data.pushData,
       );
-      console.log('hello');
-      console.log(checkNotificationPremissions(settings, notificationData));
 
       if (
         checkNotificationPremissions(settings, notificationData) &&

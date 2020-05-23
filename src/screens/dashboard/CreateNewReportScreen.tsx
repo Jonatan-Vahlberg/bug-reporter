@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useContext} from 'react';
-import {SeverityValue, ReportLine} from 'src/models/BugReport';
+import BugReport, {SeverityValue, ReportLine} from 'src/models/BugReport';
 import {
   View,
   Text,
@@ -38,6 +38,8 @@ import UUID_V4 from 'uuid/v4';
 import _ from 'lodash';
 import Team from 'src/models/Team';
 import TeamMember from 'src/models/TeamMember';
+import NotifcaionFunctions from 'src/static/functions/notificationFunctions';
+import notificationFunctions from 'src/static/functions/notificationFunctions';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -49,7 +51,7 @@ const findInTeam = (uuid: string, team: Team): TeamMember | undefined => {
 };
 
 const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
-  const {actions, featuredTeam} = useContext(ApplicationContext);
+  const {actions, featuredTeam, profile} = useContext(ApplicationContext);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [lines, setLines] = useState<ReportLine[]>([]);
@@ -86,20 +88,22 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
     if (isReportViable()) {
       setLoading(true);
       setErrorVisible(false);
-
+      const report: BugReport = {
+        title,
+        content: lines,
+        severity: severity.value,
+        uuid: UUID_V4(),
+        reportDate: new Date().toISOString(),
+        closed: false,
+        assignedTo: findInTeam(assignedTo, featuredTeam!) || null,
+        //@ts-ignore
+        dueDate: dueDate ? dueDate.toISOString() : null,
+        reportedBy: profile!.firstName + ' ' + profile!.lastName,
+      };
       await actions.firebase.createReport(
-        {
-          title,
-          content: lines,
-          severity: severity.value,
-          uuid: UUID_V4(),
-          reportDate: new Date().toISOString(),
-          closed: false,
-          assignedTo: findInTeam(assignedTo, featuredTeam!) || null,
-          //@ts-ignore
-          dueDate: dueDate ? dueDate.toISOString() : null,
-        },
-        featuredTeam!.uuid,
+        report,
+        notificationFunctions.getFCMIDsFromTeamMebers(featuredTeam!, profile!),
+        featuredTeam!,
       );
       setLoading(false);
       navigation.goBack();
