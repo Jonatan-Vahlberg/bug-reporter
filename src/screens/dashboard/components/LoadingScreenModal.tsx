@@ -5,15 +5,14 @@ import {ActivityIndicator} from 'react-native-paper';
 import {StyleSheet, View, Modal} from 'react-native';
 import colors from 'src/static/colors';
 import {Text, LargeSpinner} from 'src/components/common';
+import {emptySettings} from 'src/models/settings';
 
 const LoadingScreenModal: React.FC<{
   userID: string;
   visible: boolean;
   setVisability: () => void | Function;
 }> = props => {
-  const {actions, settings, profile, featuredTeam} = useContext(
-    ApplicationContext,
-  );
+  const {actions, profile, featuredTeam} = useContext(ApplicationContext);
   const [loadingProfile, setLoadingProfile] = useState<boolean>(true);
   const [loadingFeaturedTeam, setLoadingFeaturedTeam] = useState<boolean>(
     false,
@@ -30,7 +29,13 @@ const LoadingScreenModal: React.FC<{
       if (fcmid) {
         await actions.firebase.updateProfile({...profile!, FCMID: fcmid});
       }
-      const storedSettings = await actions.storage.getSettings();
+      let storedSettings = await actions.storage.getSettings();
+
+      if (storedSettings.notifications === undefined) {
+        console.log('STORED', storedSettings);
+        storedSettings.notifications = {...emptySettings.notifications};
+        await actions.storage.setSettings(storedSettings);
+      }
       actions.setters.setSettings!(storedSettings);
 
       const notifications = await actions.storage.getNotifications();

@@ -50,7 +50,7 @@ const DashboardScreen: React.FC<DashProps> = ({navigation, route}) => {
   } = useContext(ApplicationContext);
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
   //const [timePassed,setTimePassed] = useState<
-  console.log('Reports: ', featuredReports, featuredTeam);
+  console.log('Reports: ', settings);
 
   if (loadingVisible) {
     return (

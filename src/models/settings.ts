@@ -4,7 +4,6 @@ export type PushSettings = {
     mentions: boolean;
   };
   otherTeams: {
-    all: boolean;
     mentions: boolean;
     invites: boolean;
   };
@@ -25,7 +24,6 @@ export const emptySettings: Settings = {
       mentions: false,
     },
     otherTeams: {
-      all: false,
       mentions: false,
       invites: false,
     },
