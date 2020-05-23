@@ -3,12 +3,14 @@ export default interface TeamMember {
   uuid: string;
   position: TeamPosition;
   positonValue: number;
+  mail: string;
+  fcmid: string;
 }
 
-export const enum TeamPosition {
-  DEVELOPER,
-  TECH_LEAD,
-  ADMIN,
-  TESTER,
-  OTHER,
-}
+export type TeamPosition =
+  | 'DEVELOPER'
+  | 'TECH_LEAD'
+  | 'ADMIN'
+  | 'TESTER'
+  | 'CONSULTANT'
+  | 'OTHER';

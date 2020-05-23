@@ -1,7 +1,10 @@
+import {ActionString} from './BugReport';
+
 export default interface Comment {
   uuid: string;
-  message: string;
+  content: string[];
   senderName: string;
   senderUuid: string;
-  dated: string;
+  date: string;
+  action?: ActionString;
 }

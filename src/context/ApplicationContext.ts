@@ -1,20 +1,60 @@
 import * as React from 'react';
-import ProfileActions from './ProfileActions';
-import TeamsActions from './TeamsActions';
-import TeamActions from './TeamActions';
 import Profile from '../models/Profile';
 import Team from '../models/Team';
+import firebaseActions from '../services/api/firebase';
+import BugReport from 'src/models/BugReport';
+import storage from 'src/services/storage';
+import {Settings} from 'src/models/settings';
+import Notification from 'src/models/Notification';
+
+export const emptySettings: Settings = {
+  feautredTeamId: 'UNSET',
+  notifications: {
+    featuredTeam: {
+      all: false,
+      mentions: false,
+    },
+    otherTeams: {
+      all: false,
+      mentions: false,
+      invites: false,
+    },
+  },
+  stayLoggedIn: false,
+  neverShowSelectTeam: false,
+};
 
 export type ContextProps = {
   profile?: Profile;
-  teams?: Team[];
+  teams: Team[];
   featuredTeam?: Team;
-  profileActions: ProfileActions;
-  teamsActions: TeamsActions;
-  teamActions: TeamActions;
-  settings: object;
+  featuredReports: BugReport[];
+  settings: Settings;
+  notifications: Notification[];
+  actions: {
+    firebase: typeof firebaseActions;
+    storage: typeof storage;
+    setters: {
+      setFeaturedReports?: React.Dispatch<React.SetStateAction<BugReport[]>>;
+      setFeaturedTeam?: React.Dispatch<React.SetStateAction<Team | undefined>>;
+      setSettings?: React.Dispatch<React.SetStateAction<Settings>>;
+      setProfile?: React.Dispatch<React.SetStateAction<Profile | undefined>>;
+      setNotifications?: React.Dispatch<React.SetStateAction<Notification[]>>;
+    };
+  };
+  uid?: string;
 };
 
-export const ApplicationContext = React.createContext<Partial<ContextProps>>(
-  {},
-);
+export const ApplicationContext = React.createContext<ContextProps>({
+  profile: undefined,
+  actions: {
+    firebase: firebaseActions,
+    setters: {},
+    storage,
+  },
+  teams: [],
+  featuredTeam: undefined,
+  settings: {...emptySettings},
+  featuredReports: [],
+  notifications: [],
+});

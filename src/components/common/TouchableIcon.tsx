@@ -1,20 +1,20 @@
 import React from 'react';
-import {TouchableOpacity, View, Text} from 'react-native';
+import {TouchableOpacity, View, Text, ViewStyle} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface IconProps {
+  action?: () => void;
   name?: string;
   size?: number;
   color?: string;
-  action: Function;
+  style?: ViewStyle;
 }
 
-const TouchableIcon: React.FC<IconProps> = ({name, size, color, action}) => {
+const TouchableIcon: React.FC<IconProps> = ({action, style, ...rest}) => {
   return (
-    <View style={{justifyContent: 'center', alignItems: 'center', padding: 5}}>
-      <TouchableOpacity onPress={() => action()}>
-        <Text>HI</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity onPress={action}>
+      <Icon name={rest.name!} {...rest} style={style} />
+    </TouchableOpacity>
   );
 };
 
