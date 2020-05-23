@@ -23,6 +23,7 @@ const ReportListScreen: React.FC<ReportListProps> = ({navigation, route}) => {
       
   useEffect(() => {
     (async () => {
+      
       await actions.firebase.getRealtimeReports(
         featuredTeam!.uuid,
         actions.setters.setFeaturedReports!,
@@ -72,7 +73,7 @@ const getRightReports = (reports: BugReport[],profile: Profile, filters?: Report
     return reports.filter((report) => report.assignedTo?.uuid === profile.uuid )
   }
   if(filters.overdue) return reports.filter((report) =>{
-    return report.dueDate !== undefined && new Date(report.dueDate) > new Date() 
+    return !report.closed && report.dueDate !== undefined && new Date(report.dueDate) < new Date() 
   })
   if(filters.thisWeek){
     return reports.filter((report) => {

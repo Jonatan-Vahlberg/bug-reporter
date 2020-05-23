@@ -22,7 +22,7 @@ const Subheader: React.FC<{report: BugReport; detail: boolean}> = props => {
 
         <View style={[subheadPart, {flexDirection: 'column'}]}>
           {reportDate && <Text>Report date: {formatDate(reportDate)}</Text>}
-          {dueDate && <Text>Due date: {formatDate(reportDate)}</Text>}
+          {dueDate && <Text>Due date: {formatDate(dueDate)}</Text>}
         </View>
       </View>
     );

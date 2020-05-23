@@ -8,9 +8,12 @@ import {ApplicationContext} from 'src/context/ApplicationContext';
 import DashListItem, {ListItem} from './DashListItem';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-type HeaderProps = {naviagtion: StackNavigationProp<DashboardParamList>};
+type HeaderProps = {
+  naviagtion: StackNavigationProp<DashboardParamList>;
+  isFeatured: boolean;
+};
 
-const DashList: React.FC<HeaderProps> = ({naviagtion}) => {
+const DashList: React.FC<HeaderProps> = ({naviagtion, isFeatured}) => {
   return (
     <View
       style={{
@@ -21,15 +24,22 @@ const DashList: React.FC<HeaderProps> = ({naviagtion}) => {
         flex: 1,
         paddingHorizontal: 20,
       }}>
-      {listItems.map(item => (
-        <TouchableOpacity
-          key={item.name}
-          onPress={() =>
-            naviagtion.navigate(item.navPath, {filters: item.filter})
-          }>
-          <DashListItem item={item} />
-        </TouchableOpacity>
-      ))}
+      {listItems.map(item => {
+        if (
+          isFeatured ||
+          (item.name === 'Settings' || item.name === 'Notifications')
+        ) {
+          return (
+            <TouchableOpacity
+              key={item.name}
+              onPress={() =>
+                naviagtion.navigate(item.navPath, {filters: item.filter})
+              }>
+              <DashListItem item={item} />
+            </TouchableOpacity>
+          );
+        }
+      })}
     </View>
   );
 };

@@ -33,7 +33,7 @@ export interface DetailProps {
 }
 
 const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
-  const {actions, profile} = useContext(ApplicationContext);
+  const {actions, profile, settings} = useContext(ApplicationContext);
   const [loading, setLoading] = useState<boolean>(true);
   const [team, setTeam] = useState<Team>();
   const [nameSort, setNameSort] = useState<'ascending' | 'descending'>(
@@ -136,6 +136,13 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 minLevel={5}>
                 <Button
                   onPress={async () => {
+                    if (team.uuid === settings.feautredTeamId) {
+                      actions.setters.setFeaturedTeam!(undefined);
+                      actions.storage.setSettings({
+                        ...settings,
+                        feautredTeamId: 'UNSET',
+                      });
+                    }
                     const allRemoved = await actions.firebase.removeTeamFully(
                       team,
                     );
@@ -157,6 +164,13 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 maxLevel={4}>
                 <Button
                   onPress={async () => {
+                    if (team.uuid === settings.feautredTeamId) {
+                      actions.setters.setFeaturedTeam!(undefined);
+                      actions.storage.setSettings({
+                        ...settings,
+                        feautredTeamId: 'UNSET',
+                      });
+                    }
                     const leftTeam = await actions.firebase.leaveTeam(
                       team.uuid,
                       profile!.uuid,

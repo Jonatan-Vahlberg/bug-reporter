@@ -22,7 +22,7 @@ const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const isSubmitable = name !== '' && description !== '';
-  const [publicTeam, setPublic] = useState<boolean>(false);
+  const [publicTeam, setPublic] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const handleSubmit = useCallback(async () => {
     setLoading(true);
@@ -51,7 +51,7 @@ const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
     }
   }, [name, description, publicTeam, setLoading, navigation]);
   return (
-    <View style={{height: '100%'}}>
+    <View style={{height: '100%'}} pointerEvents={loading ? 'none' : 'auto'}>
       <Navbar title="Teams: create New" root={false} navigation={navigation} />
       <ScrollView style={{flex: 1}}>
         <Card style={styles.card}>
@@ -74,7 +74,7 @@ const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
             multiline
           />
         </Card>
-        <Card style={styles.card}>
+        {/*<Card style={styles.card}>
           <Card.Title title="Team Options*" />
           <View style={styles.content}>
             <View style={{flexDirection: 'row'}}>
@@ -82,7 +82,7 @@ const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
               <Switch value={publicTeam} onValueChange={setPublic} />
             </View>
           </View>
-        </Card>
+  </Card>*/}
       </ScrollView>
       <Button
         loading={loading}

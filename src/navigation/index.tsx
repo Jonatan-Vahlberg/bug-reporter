@@ -5,6 +5,7 @@ import {
   createStackNavigator,
   StackNavigationOptions,
 } from '@react-navigation/stack';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import CreateNewReportScreen from '../screens/dashboard/CreateNewReportScreen';
@@ -26,6 +27,8 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import {ApplicationContext} from '../context/ApplicationContext';
 import BugReport, {ReportFilter, ReportLine} from 'src/models/BugReport';
 import Team, {LightTeam} from '../models/Team';
+import colors from 'src/static/colors';
+import {Text} from 'react-native';
 
 const DefaultStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -118,7 +121,35 @@ export type MainNavigatorParamList = {
 const MainNavigator = () => {
   const MainTab = createBottomTabNavigator<MainNavigatorParamList>();
   return (
-    <MainTab.Navigator screenOptions={DefaultStackOptions}>
+    <MainTab.Navigator
+      screenOptions={({route}) => ({
+        ...DefaultStackOptions,
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName = 'monitor-dashboard';
+
+          if (route.name === 'TEAMS') {
+            iconName = 'account-group';
+          }
+          return (
+            <Icon
+              name={iconName}
+              color={focused ? colors.darkerBasicBlue : colors.greyDetail}
+              size={size}
+            />
+          );
+        },
+        tabBarLabel: ({focused, color}) => {
+          const labelName = route.name === 'DASH' ? 'Dashboard' : 'Teams';
+          return (
+            <Text
+              style={{
+                color: focused ? colors.darkerBasicBlue : colors.greyDetail,
+              }}>
+              {labelName}
+            </Text>
+          );
+        },
+      })}>
       <MainTab.Screen name="DASH" component={DashNavigator} />
       <MainTab.Screen name="TEAMS" component={TeamsNavigator} />
     </MainTab.Navigator>

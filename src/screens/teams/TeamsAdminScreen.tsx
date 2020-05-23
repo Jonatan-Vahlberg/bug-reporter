@@ -34,6 +34,21 @@ const TeamsAdminScreen: React.FC<AdminProps> = ({navigation, route}) => {
               profile!,
               actions.firebase.joinTeam,
             );
+            if (result) {
+              const {name, uuid} = result;
+              actions.setters.setProfile!({
+                ...profile!,
+                teams: [
+                  ...profile!.teams,
+                  {
+                    name,
+                    uuid,
+                    personalPosition: 'OTHER',
+                    personalPositionValue: 1,
+                  },
+                ],
+              });
+            }
             console.log(result);
           }}
           color={'#fff'}

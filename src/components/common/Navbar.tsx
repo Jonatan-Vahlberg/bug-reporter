@@ -2,7 +2,6 @@ import * as React from 'react';
 import {View, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {
-  ProfileParamList,
   AuthParamList,
   MainNavigatorParamList,
   DashboardParamList,
@@ -13,7 +12,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from 'src/static/colors';
 export interface NavProps {
   navigation:
-    | StackNavigationProp<ProfileParamList>
     | StackNavigationProp<AuthParamList>
     | StackNavigationProp<MainNavigatorParamList>
     | StackNavigationProp<DashboardParamList>
@@ -40,7 +38,7 @@ const Navbar: React.FC<NavProps> = props => {
           {props.leftItem === undefined ? CreatedIcon : props.leftItem}
         </View>
       )}
-      <View style={navStyles.titleContainerStyle}>
+      <View style={!props.rightItem && navStyles.titleContainerStyle}>
         <Text.Title>{props.title}</Text.Title>
       </View>
       {props.rightItem !== undefined && (

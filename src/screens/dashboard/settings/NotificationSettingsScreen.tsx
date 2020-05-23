@@ -10,7 +10,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {ProfileParamList, DashboardParamList} from 'src/navigation';
+import {DashboardParamList} from 'src/navigation';
 import {RouteProp} from '@react-navigation/native';
 import SettingsList from './components/SettingsList';
 import {ApplicationContext} from 'src/context/ApplicationContext';
