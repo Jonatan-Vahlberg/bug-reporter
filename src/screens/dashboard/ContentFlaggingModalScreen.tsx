@@ -109,7 +109,7 @@ const ContentFlaggingModalScreen: React.FC<ModalProps> = props => {
             presentErrorAlert(
               'Something went wrong when trying to make a comment.',
               'An uknown error has caused the comment creation to fail, please try again.',
-            );
+            );  
             return
           }
           props.navigation.navigate("DASH_VIEW");
