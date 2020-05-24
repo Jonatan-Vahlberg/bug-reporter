@@ -11,6 +11,7 @@ import {ApplicationContext} from 'src/context/ApplicationContext';
 import {firebaseDBErrorStatus} from 'src/services/api/firebase';
 import Profile from 'src/models/Profile';
 import {LightTeam} from 'src/models/Team';
+import {presentErrorAlert} from 'src/static/functions';
 
 export interface AdminProps {
   navigation: StackNavigationProp<TeamsParamList>;
@@ -45,6 +46,11 @@ const CreateNewTeamScreen: React.FC<AdminProps> = ({navigation, route}) => {
         const updatedProfile: Profile = {...profile!, teams: updatedTeams};
         actions.setters.setProfile!(updatedProfile);
         navigation.goBack();
+      } else {
+        presentErrorAlert(
+          'Unable to create team',
+          'Unable to create the team at this time please try again,\nMake sure that you have an active internet connection. ',
+        );
       }
     } catch (error) {
       console.warn(error);

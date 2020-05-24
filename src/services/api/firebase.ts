@@ -358,10 +358,10 @@ const firebase = {
         report,
         team,
       );
-      return {error: firebaseDBErrorStatus.NO_ERROR};
+      return true;
     } catch (error) {
       console.warn(error.message);
-      return {error: firebaseDBErrorStatus.UNABLE_TO_CREATE_TEAM};
+      return false;
     }
   },
   getReport: async (uuid: string) => {
