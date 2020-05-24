@@ -3,7 +3,7 @@ import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import {ModalConfirm, Text} from 'src/components/common';
 import TeamMember, {TeamPosition} from 'src/models/TeamMember';
 import Picker from 'react-native-picker-select';
-import {getWrittenPosition} from 'src/static/functions';
+import {getWrittenPosition, presentErrorAlert} from 'src/static/functions';
 import colors from 'src/static/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ApplicationContext} from 'src/context/ApplicationContext';
@@ -31,18 +31,42 @@ const MemberModal: React.FC<MemberModalProps> = ({
   const [toBeDeleted, setToBeDeleted] = useState<boolean>(false);
   return (
     <ModalConfirm
+      loading={loading}
       onAccept={async () => {
+        setLoading(true);
         if (toBeDeleted) {
-          await actions.firebase.leaveTeam(teamUuid, teamMember.uuid);
+          const result = await actions.firebase.leaveTeam(
+            teamUuid,
+            teamMember.uuid,
+          );
+          if (!result) {
+            presentErrorAlert(
+              'Something went wrong when trying to Kick the team member.',
+              'An uknown error has caused to you to not be able to kick the team member, please try again.',
+            );
+            setLoading(false);
+
+            return;
+          }
         } else {
-          await actions.firebase.changeMembersPosition(
+          const result = await actions.firebase.changeMembersPosition(
             teamUuid,
             teamMember,
             getPositionBasedOnPickerValue(pickerValue),
           );
+          if (!result) {
+            presentErrorAlert(
+              'Something went wrong when trying to change the team members status.',
+              'An uknown error has caused to you to not be able to change the status, please try again.',
+            );
+            setLoading(false);
+
+            return;
+          }
         }
         setTeamMember(undefined);
         setUpdateMade(true);
+        setLoading(false);
       }}
       onRequestClose={() => setTeamMember(undefined)}
       texts={{

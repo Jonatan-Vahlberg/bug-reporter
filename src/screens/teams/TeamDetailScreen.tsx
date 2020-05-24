@@ -26,6 +26,7 @@ import metrics from 'src/static/metrics';
 import SendInviteModal from './components/SendInviteModal';
 import MemberModal from './components/MemberModal';
 import TeamMember from 'src/models/TeamMember';
+import {presentErrorAlert} from 'src/static/functions';
 
 export interface DetailProps {
   navigation: StackNavigationProp<TeamsParamList>;
@@ -35,6 +36,10 @@ export interface DetailProps {
 const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
   const {actions, profile, settings} = useContext(ApplicationContext);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingAction, setLoadingAction] = useState<
+    'NONE' | 'LEAVE' | 'DISBAND'
+  >('NONE');
+
   const [team, setTeam] = useState<Team>();
   const [nameSort, setNameSort] = useState<'ascending' | 'descending'>(
     'ascending',
@@ -59,7 +64,9 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
   console.log(team);
 
   return (
-    <View style={styles().base}>
+    <View
+      style={styles().base}
+      pointerEvents={loadingAction === 'NONE' ? 'auto' : 'none'}>
       <Navbar navigation={navigation} title={teamBase.name} root={false} />
 
       {loading ? (
@@ -135,7 +142,9 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 userLevel={teamBase.personalPositionValue}
                 minLevel={5}>
                 <Button
+                  loading={loadingAction === 'DISBAND'}
                   onPress={async () => {
+                    setLoadingAction('DISBAND');
                     if (team.uuid === settings.feautredTeamId) {
                       actions.setters.setFeaturedTeam!(undefined);
                       actions.storage.setSettings({
@@ -148,7 +157,13 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                     );
                     if (allRemoved) {
                       navigation.goBack();
+                    } else {
+                      presentErrorAlert(
+                        'Something went wrong when disbanding the team',
+                        'An uknown error has caused to team disbandment to result in failure please try again.',
+                      );
                     }
+                    setLoadingAction('NONE');
                   }}
                   color={'#fff'}
                   style={[
@@ -163,7 +178,10 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                 minLevel={0}
                 maxLevel={4}>
                 <Button
+                  loading={loadingAction === 'LEAVE'}
                   onPress={async () => {
+                    setLoadingAction('LEAVE');
+
                     if (team.uuid === settings.feautredTeamId) {
                       actions.setters.setFeaturedTeam!(undefined);
                       actions.storage.setSettings({
@@ -177,7 +195,13 @@ const TeamDetailScreen: React.FC<DetailProps> = ({navigation, route}) => {
                     );
                     if (leftTeam) {
                       navigation.goBack();
+                    } else {
+                      presentErrorAlert(
+                        'Something went wrong when trying to leave the team',
+                        'An uknown error has caused to you to not be able to leave the team please try again',
+                      );
                     }
+                    setLoadingAction('NONE');
                   }}
                   color={'#fff'}
                   style={styles().button}>

@@ -40,6 +40,7 @@ import Team from 'src/models/Team';
 import TeamMember from 'src/models/TeamMember';
 import NotifcaionFunctions from 'src/static/functions/notificationFunctions';
 import notificationFunctions from 'src/static/functions/notificationFunctions';
+import {presentErrorAlert} from 'src/static/functions';
 
 export interface ReportProps {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -100,13 +101,20 @@ const CreateNewReportScreen: React.FC<ReportProps> = ({navigation, route}) => {
         dueDate: dueDate ? dueDate.toISOString() : null,
         reportedBy: profile!.firstName + ' ' + profile!.lastName,
       };
-      await actions.firebase.createReport(
+      const result = await actions.firebase.createReport(
         report,
         notificationFunctions.getFCMIDsFromTeamMebers(featuredTeam!, profile!),
         featuredTeam!,
       );
+      if (result) {
+        navigation.goBack();
+      } else {
+        presentErrorAlert(
+          'Something went wrong when trying to create a report.',
+          'An uknown error has caused the report creation failed, please try again.',
+        );
+      }
       setLoading(false);
-      navigation.goBack();
     } else {
       setErrorVisible(true);
     }

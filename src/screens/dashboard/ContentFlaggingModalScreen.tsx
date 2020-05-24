@@ -28,6 +28,7 @@ import {Switch} from 'react-native-paper';
 import { ApplicationContext } from 'src/context/ApplicationContext';
 //@ts-ignore
 import uuid from "uuid"
+import { presentErrorAlert } from 'src/static/functions';
 
 type ModalProps = {
   navigation: StackNavigationProp<DashboardParamList>;
@@ -104,6 +105,13 @@ const ContentFlaggingModalScreen: React.FC<ModalProps> = props => {
             action: action
           },isChangingState,
           profile!)
+          if(!result){
+            presentErrorAlert(
+              'Something went wrong when trying to make a comment.',
+              'An uknown error has caused the comment creation to fail, please try again.',
+            );
+            return
+          }
           props.navigation.navigate("DASH_VIEW");
 
 
