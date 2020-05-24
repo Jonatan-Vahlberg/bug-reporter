@@ -16,6 +16,7 @@ import colors from 'src/static/colors';
 import { Checkbox } from 'react-native-paper';
 import { emptySettings, Settings } from 'src/models/settings';
 import Keychain from 'react-native-keychain'
+import { presentErrorAlert } from 'src/static/functions';
 
 export interface AuthProps {
   navigation: StackNavigationProp<AuthParamList>;
@@ -162,14 +163,17 @@ const LoginScreen: React.FC<AuthProps> = () => {
                   const result = await context.actions.firebase.login(email, password)
                   if(!result.error){
                     await context.actions.firebase.getProfile(result.uid!,context.actions.setters.setProfile!)
+                    if(rememberMe){
+                      
+                      await Keychain.setGenericPassword(email,password)
+                      await actions.storage.setSettings({...tempSettings!,stayLoggedIn: rememberMe})
+                      
+                    }
+                  }
+                  else{
+                    presentErrorAlert("Login Error","Either email or password was incorrect")
+                  }
                   setIsAuthenticating(false)
-                  if(rememberMe){
-                    
-                    await Keychain.setGenericPassword(email,password)
-                    await actions.storage.setSettings({...tempSettings!,stayLoggedIn: rememberMe})
-  
-                  }
-                  }
                 }
                 else{
                   const fcmid = await context.actions.storage.getFCMID()
@@ -177,7 +181,6 @@ const LoginScreen: React.FC<AuthProps> = () => {
                     const result = await context.actions.firebase.register(email,password,fName,lName,fcmid)
                     if(!result.error){
                       context.actions.setters.setProfile!(result.profile!)
-                      setIsAuthenticating(false)
                       if(rememberMe){
                         console.log("Got to Keychain");
                         
@@ -185,7 +188,12 @@ const LoginScreen: React.FC<AuthProps> = () => {
                         await actions.storage.setSettings({...tempSettings!,stayLoggedIn: rememberMe})
       
                       }
+                    }
+                    else{
+                      presentErrorAlert("Regristration Error","Make sure that all data entered is correct")
                     } 
+                    setIsAuthenticating(false)
+
                   }
                     
                 }
