@@ -21,7 +21,7 @@
     "@types/react-native-dialog": "^5.6.1",
     "@types/react-native-push-notification": "^3.0.9",
     "@types/react-native-vector-icons": "^6.4.5",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "firebase": "^7.11.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
